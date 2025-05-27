@@ -413,25 +413,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      fs.writeFileSync(memberPbsPath, csvContent);
+      try {
+        console.log('Writing member PBs to:', memberPbsPath);
+        fs.writeFileSync(memberPbsPath, csvContent);
+        console.log('Member PBs file written successfully');
 
-      // Export county times to CSV
-      const countyTimes = await storage.getCountyTimes();
-      let countyTimesContent = 'Event,Time,Age Category,Course,Time Type,Gender\n';
-      
-      for (const time of countyTimes) {
-        countyTimesContent += `${time.event},${time.time},${time.ageCategory},${time.course},${time.timeType},${time.gender}\n`;
+        // Export county times to CSV
+        const countyTimes = await storage.getCountyTimes();
+        let countyTimesContent = 'Event,Time,Age Category,Course,Time Type,Gender\n';
+        
+        for (const time of countyTimes) {
+          countyTimesContent += `${time.event},${time.time},${time.ageCategory},${time.course},${time.timeType},${time.gender}\n`;
+        }
+        
+        console.log('Writing county times to:', countyTimesPath);
+        fs.writeFileSync(countyTimesPath, countyTimesContent);
+        console.log('County times file written successfully');
+
+        // Write pre-assignments file
+        console.log('Writing pre-assignments to:', preAssignmentsPath);
+        fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
+        console.log('Pre-assignments file written successfully');
+
+        console.log('All files exist check:');
+        console.log('Member PBs exists:', fs.existsSync(memberPbsPath));
+        console.log('County Times exists:', fs.existsSync(countyTimesPath));
+        console.log('Pre-assignments exists:', fs.existsSync(preAssignmentsPath));
+      } catch (fileError) {
+        console.error('File writing error:', fileError);
+        return res.status(500).json({ message: 'Failed to write optimization files', error: String(fileError) });
       }
-      
-      fs.writeFileSync(countyTimesPath, countyTimesContent);
-
-      // Write pre-assignments file
-      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
-
-      console.log('Files created:');
-      console.log('Member PBs:', memberPbsPath, 'exists:', fs.existsSync(memberPbsPath));
-      console.log('County Times:', countyTimesPath, 'exists:', fs.existsSync(countyTimesPath));
-      console.log('Pre-assignments:', preAssignmentsPath, 'exists:', fs.existsSync(preAssignmentsPath));
 
       // Run Python optimization script
       const pythonScript = path.join(process.cwd(), 'server', 'optimizer.py');
