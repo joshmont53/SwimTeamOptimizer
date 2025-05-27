@@ -90,12 +90,15 @@ export default function EventAssignmentSection({
 
   const getEligibleSwimmers = (event: string, ageCategory: number, gender: string) => {
     return availableSwimmers.filter(swimmer => {
+      // Convert M/F to Male/Female to match swimmer data
+      const matchGender = gender === 'M' ? 'Male' : gender === 'F' ? 'Female' : gender;
+      
       // For 16U events, include all swimmers of that gender (no age restriction)
       if (ageCategory === 16) {
-        return swimmer.gender === gender;
+        return swimmer.gender === matchGender;
       }
       // For other age categories, use normal age restrictions
-      return swimmer.gender === gender && swimmer.age <= ageCategory;
+      return swimmer.gender === matchGender && swimmer.age <= ageCategory;
     });
   };
 
@@ -142,13 +145,6 @@ export default function EventAssignmentSection({
                 const assignedSwimmerId = eventAssignments[eventKey];
                 const eligibleSwimmers = getEligibleSwimmers(event.event, event.ageCategory, event.gender);
                 const isAssigned = !!assignedSwimmerId;
-                
-                // Debug logging
-                console.log(`Event: ${event.ageCategory}U ${event.gender} ${event.event}`);
-                console.log(`Available swimmers: ${availableSwimmers.length}`);
-                console.log(`Sample swimmer genders:`, availableSwimmers.slice(0, 3).map(s => s.gender));
-                console.log(`Looking for gender: "${event.gender}"`);
-                console.log(`Eligible swimmers: ${eligibleSwimmers.length}`);
 
                 return (
                   <div 
