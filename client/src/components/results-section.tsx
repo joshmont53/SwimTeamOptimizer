@@ -157,6 +157,20 @@ export default function ResultsSection({ results }: ResultsSectionProps) {
           </div>
         </div>
 
+        {/* Navigation */}
+        <div className="mt-6 flex justify-between items-center">
+          <Button 
+            variant="outline"
+            onClick={() => window.history.back()}
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            ← Back to Event Assignment
+          </Button>
+          <Button onClick={handleExport} className="bg-primary-500 hover:bg-primary-600 text-white">
+            <i className="fas fa-file-export mr-2"></i>Export Team Sheet
+          </Button>
+        </div>
+
         {/* Swimmer Load Summary */}
         <div className="mt-6">
           <h3 className="text-base font-semibold text-gray-900 mb-4">Swimmer Event Summary</h3>

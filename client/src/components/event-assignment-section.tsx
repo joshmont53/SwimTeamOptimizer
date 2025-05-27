@@ -65,23 +65,69 @@ export default function EventAssignmentSection({
 
   const availableSwimmers = swimmers.filter(s => s.isAvailable);
 
-  const handleRunOptimization = () => {
+  const handleRunOptimization = async () => {
     setIsOptimizing(true);
-    // Simulate progress steps
-    const steps = document.querySelectorAll('.w-8.h-8');
-    steps.forEach((step, index) => {
-      setTimeout(() => {
-        step.classList.remove('bg-gray-200', 'text-gray-500');
-        step.classList.add('bg-primary-500', 'text-white');
-        const label = step.nextElementSibling;
-        if (label) {
-          label.classList.remove('text-gray-500');
-          label.classList.add('text-primary-600', 'font-medium');
-        }
-      }, index * 500);
-    });
     
-    optimizeMutation.mutate();
+    // Save event assignments first
+    const assignmentPromises = [];
+    
+    for (const [eventKey, swimmerId] of Object.entries(eventAssignments)) {
+      if (swimmerId) {
+        const [event, ageCategory, gender] = eventKey.split('_');
+        assignmentPromises.push(
+          fetch('/api/event-assignments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event,
+              ageCategory: parseInt(ageCategory),
+              gender,
+              swimmerId,
+              isPreAssigned: true
+            })
+          })
+        );
+      }
+    }
+    
+    for (const [relayKey, swimmerId] of Object.entries(relayAssignments)) {
+      if (swimmerId) {
+        const parts = relayKey.split('_');
+        const relayName = parts[0] + '_' + parts[1];
+        const ageCategory = parseInt(parts[2]);
+        const gender = parts[3];
+        const position = parseInt(parts[4]);
+        const stroke = parts[5] || null;
+        
+        assignmentPromises.push(
+          fetch('/api/relay-assignments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              relayName,
+              ageCategory,
+              gender,
+              position,
+              stroke,
+              swimmerId,
+              isPreAssigned: true
+            })
+          })
+        );
+      }
+    }
+    
+    try {
+      await Promise.all(assignmentPromises);
+      optimizeMutation.mutate();
+    } catch (error) {
+      setIsOptimizing(false);
+      toast({
+        title: "Assignment failed",
+        description: "Failed to save pre-assignments",
+        variant: "destructive",
+      });
+    }
   };
 
   const getEventKey = (event: string, ageCategory: number, gender: string) => {
@@ -94,6 +140,11 @@ export default function EventAssignmentSection({
 
   const getEligibleSwimmers = (event: string, ageCategory: number, gender: string) => {
     return availableSwimmers.filter(swimmer => {
+      // For 16U events, include all swimmers of that gender (no age restriction)
+      if (ageCategory === 16) {
+        return swimmer.gender === gender;
+      }
+      // For other age categories, use normal age restrictions
       return swimmer.gender === gender && swimmer.age <= ageCategory;
     });
   };
@@ -262,7 +313,14 @@ export default function EventAssignmentSection({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex justify-between items-center">
+          <Button 
+            variant="outline"
+            onClick={() => window.history.back()}
+            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            ← Back to Squad Selection
+          </Button>
           <Button 
             onClick={handleRunOptimization}
             disabled={isOptimizing}

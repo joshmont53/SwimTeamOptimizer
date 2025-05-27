@@ -371,6 +371,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const memberPbsPath = path.join(tempDir, `member_pbs_${sessionId}.csv`);
       const countyTimesPath = path.join(tempDir, `county_times_${sessionId}.csv`);
+      const preAssignmentsPath = path.join(tempDir, `pre_assignments_${sessionId}.json`);
+
+      // Get pre-assignments
+      const eventAssignments = await storage.getEventAssignments();
+      const relayAssignments = await storage.getRelayAssignments();
+      
+      const preAssignments = {
+        individual: eventAssignments.filter(a => a.isPreAssigned).map(a => ({
+          event: a.event,
+          ageCategory: a.ageCategory,
+          gender: a.gender,
+          swimmerId: a.swimmerId
+        })),
+        relay: relayAssignments.filter(a => a.isPreAssigned).map(a => ({
+          relayName: a.relayName,
+          ageCategory: a.ageCategory,
+          gender: a.gender,
+          position: a.position,
+          stroke: a.stroke,
+          swimmerId: a.swimmerId
+        }))
+      };
+
+      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
 
       // Export swimmer data to CSV
       const swimmers = await storage.getSwimmers();
@@ -400,7 +424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Run Python optimization script
       const pythonScript = path.join(process.cwd(), 'server', 'optimizer.py');
-      const python = spawn('python3', [pythonScript, memberPbsPath, countyTimesPath], {
+      const python = spawn('python3', [pythonScript, memberPbsPath, countyTimesPath, preAssignmentsPath], {
         cwd: process.cwd()
       });
 
@@ -420,6 +444,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           fs.unlinkSync(memberPbsPath);
           fs.unlinkSync(countyTimesPath);
+          fs.unlinkSync(preAssignmentsPath);
         } catch (e) {
           console.log('Error cleaning up temp files:', e);
         }

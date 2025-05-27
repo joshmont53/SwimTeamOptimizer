@@ -211,12 +211,21 @@ export default function SquadSelectionSection({
           <span className="text-sm text-gray-600">
             Showing {filteredSwimmers.length} of {swimmers.length} swimmers
           </span>
-          <Button 
-            onClick={onSquadConfirmed}
-            className="bg-primary-500 hover:bg-primary-600 text-white"
-          >
-            Continue to Event Assignment
-          </Button>
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              ← Back to Upload
+            </Button>
+            <Button 
+              onClick={onSquadConfirmed}
+              className="bg-primary-500 hover:bg-primary-600 text-white"
+            >
+              Continue to Event Assignment
+            </Button>
+          </div>
         </div>
       </div>
     </div>
