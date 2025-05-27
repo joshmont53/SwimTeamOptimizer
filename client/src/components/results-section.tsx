@@ -1,0 +1,206 @@
+import { Button } from "@/components/ui/button";
+
+interface ResultsSectionProps {
+  results: {
+    individual: Array<{
+      event: string;
+      swimmer: string;
+      time: string;
+      index?: number;
+      status?: string;
+    }>;
+    relay: Array<{
+      relay: string;
+      totalTime: string;
+      swimmers: Array<{
+        name: string;
+        stroke?: string;
+        time: string;
+      }>;
+    }>;
+    stats?: {
+      qualifyingTimes: number;
+      averageIndex: number;
+      relayTeams: number;
+      totalEvents: number;
+    };
+  };
+}
+
+export default function ResultsSection({ results }: ResultsSectionProps) {
+  const stats = results.stats || {
+    qualifyingTimes: results.individual.filter(r => r.status === 'QT').length,
+    averageIndex: results.individual.reduce((acc, r) => acc + (r.index || 0), 0) / results.individual.length,
+    relayTeams: results.relay.length,
+    totalEvents: results.individual.length + results.relay.length
+  };
+
+  const handleExport = () => {
+    // Create CSV content
+    let csvContent = "Event Type,Event,Swimmer(s),Time,Status\n";
+    
+    results.individual.forEach(result => {
+      csvContent += `Individual,"${result.event}","${result.swimmer}","${result.time}","${result.status || 'N/A'}"\n`;
+    });
+    
+    results.relay.forEach(result => {
+      const swimmers = result.swimmers.map(s => `${s.name} (${s.time})`).join('; ');
+      csvContent += `Relay,"${result.relay}","${swimmers}","${result.totalTime}","Team"\n`;
+    });
+
+    // Download file
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `team_selection_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <i className="fas fa-trophy text-warning mr-3"></i>
+            <h2 className="text-lg font-semibold text-gray-900">Step 4: Optimization Results</h2>
+          </div>
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-gray-600">
+              <span className="font-medium text-success">{stats.totalEvents} events</span> • 
+              <span className="font-medium">{stats.relayTeams} relays</span>
+            </span>
+            <Button onClick={handleExport} className="bg-primary-500 hover:bg-primary-600 text-white">
+              <i className="fas fa-file-export mr-2"></i>Export Team Sheet
+            </Button>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-green-700">{stats.qualifyingTimes}</div>
+            <div className="text-sm text-green-600">Qualifying Times</div>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-blue-700">{stats.averageIndex.toFixed(2)}</div>
+            <div className="text-sm text-blue-600">Average Index</div>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-yellow-700">{stats.relayTeams}</div>
+            <div className="text-sm text-yellow-600">Relay Teams</div>
+          </div>
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-purple-700">{stats.totalEvents}</div>
+            <div className="text-sm text-purple-600">Total Events</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Individual Events Results */}
+          <div>
+            <h3 className="text-base font-semibold text-gray-900 mb-4">Individual Events</h3>
+            <div className="space-y-2">
+              {results.individual.map((result, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">{result.event}</div>
+                      <div className="text-sm text-gray-600">{result.swimmer}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium text-gray-900">{result.time}</div>
+                      <div className="text-xs">
+                        {result.index && (
+                          <span className="text-success font-medium">{result.index.toFixed(3)}</span>
+                        )}
+                        {result.status && (
+                          <span className={`ml-1 ${
+                            result.status === 'QT' ? 'text-green-600' : 'text-yellow-600'
+                          }`}>
+                            {result.status}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Relay Events Results */}
+          <div>
+            <h3 className="text-base font-semibold text-gray-900 mb-4">Relay Events</h3>
+            <div className="space-y-3">
+              {results.relay.map((result, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-medium text-gray-900">{result.relay}</div>
+                    <div className="text-right">
+                      <div className="font-medium text-gray-900">{result.totalTime}</div>
+                      <div className="text-xs text-green-600">Projected Time</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {result.swimmers.map((swimmer, swimmerIndex) => (
+                      <div key={swimmerIndex} className="text-gray-600">
+                        {swimmer.stroke ? `${swimmer.stroke}: ` : `${swimmerIndex + 1}. `}
+                        {swimmer.name} ({swimmer.time})
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Swimmer Load Summary */}
+        <div className="mt-6">
+          <h3 className="text-base font-semibold text-gray-900 mb-4">Swimmer Event Summary</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Calculate swimmer summaries from results */}
+            {(() => {
+              const swimmerSummary = new Map<string, { individual: string[], relay: number }>();
+              
+              results.individual.forEach(result => {
+                if (!swimmerSummary.has(result.swimmer)) {
+                  swimmerSummary.set(result.swimmer, { individual: [], relay: 0 });
+                }
+                swimmerSummary.get(result.swimmer)!.individual.push(result.event);
+              });
+              
+              results.relay.forEach(result => {
+                result.swimmers.forEach(swimmer => {
+                  if (!swimmerSummary.has(swimmer.name)) {
+                    swimmerSummary.set(swimmer.name, { individual: [], relay: 0 });
+                  }
+                  swimmerSummary.get(swimmer.name)!.relay++;
+                });
+              });
+              
+              return Array.from(swimmerSummary.entries()).map(([name, summary]) => (
+                <div key={name} className="border border-gray-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="font-medium text-gray-900">{name}</div>
+                    <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
+                      {summary.individual.length} event{summary.individual.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <div>{summary.individual.join(', ')}</div>
+                    {summary.relay > 0 && (
+                      <div className="text-xs text-gray-500 mt-1">Plus {summary.relay} relay leg{summary.relay !== 1 ? 's' : ''}</div>
+                    )}
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

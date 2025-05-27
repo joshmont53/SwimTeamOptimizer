@@ -1,0 +1,487 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts - Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+
+/* Import FontAwesome */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+:root {
+  --background: 210 11% 98%; /* #F5F7FA */
+  --foreground: 224 71% 4%; /* #0F172A */
+  --muted: 210 11% 96%; /* #F1F5F9 */
+  --muted-foreground: 215 13% 65%; /* #64748B */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 224 71% 4%; /* #0F172A */
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 224 71% 4%; /* #0F172A */
+  --border: 220 13% 91%; /* #E2E8F0 */
+  --input: 220 13% 91%; /* #E2E8F0 */
+  --primary: 207 90% 54%; /* #1976D2 */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF */
+  --secondary: 210 11% 96%; /* #F1F5F9 */
+  --secondary-foreground: 224 71% 4%; /* #0F172A */
+  --accent: 210 11% 96%; /* #F1F5F9 */
+  --accent-foreground: 224 71% 4%; /* #0F172A */
+  --destructive: 0 84% 60%; /* #EF4444 */
+  --destructive-foreground: 0 0% 98%; /* #FAFAFA */
+  --ring: 207 90% 54%; /* #1976D2 */
+  --radius: 0.5rem;
+  
+  /* Custom colors matching the design reference */
+  --primary-50: 227 100% 96%; /* #E3F2FD */
+  --primary-100: 220 100% 92%; /* #BBDEFB */
+  --primary-500: 207 90% 54%; /* #1976D2 */
+  --primary-600: 210 98% 44%; /* #1565C0 */
+  --primary-700: 221 83% 53%; /* #0D47A1 */
+  --success: 122 39% 49%; /* #388E3C */
+  --warning: 36 100% 50%; /* #F57C00 */
+  --error: 4 90% 58%; /* #D32F2F */
+}
+
+.dark {
+  --background: 224 71% 4%; /* #0F172A */
+  --foreground: 210 11% 98%; /* #F8FAFC */
+  --muted: 215 25% 27%; /* #334155 */
+  --muted-foreground: 217 10% 65%; /* #94A3B8 */
+  --popover: 224 71% 4%; /* #0F172A */
+  --popover-foreground: 210 11% 98%; /* #F8FAFC */
+  --card: 224 71% 4%; /* #0F172A */
+  --card-foreground: 210 11% 98%; /* #F8FAFC */
+  --border: 215 25% 27%; /* #334155 */
+  --input: 215 25% 27%; /* #334155 */
+  --primary: 207 90% 54%; /* #1976D2 */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF */
+  --secondary: 215 25% 27%; /* #334155 */
+  --secondary-foreground: 210 11% 98%; /* #F8FAFC */
+  --accent: 215 25% 27%; /* #334155 */
+  --accent-foreground: 210 11% 98%; /* #F8FAFC */
+  --destructive: 0 63% 31%; /* #991B1B */
+  --destructive-foreground: 210 11% 98%; /* #F8FAFC */
+  --ring: 207 90% 54%; /* #1976D2 */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Roboto', sans-serif;
+  }
+}
+
+/* Roboto font family utility */
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Primary color utilities */
+.text-primary-50 {
+  color: hsl(var(--primary-50));
+}
+
+.text-primary-100 {
+  color: hsl(var(--primary-100));
+}
+
+.text-primary-500 {
+  color: hsl(var(--primary-500));
+}
+
+.text-primary-600 {
+  color: hsl(var(--primary-600));
+}
+
+.text-primary-700 {
+  color: hsl(var(--primary-700));
+}
+
+.bg-primary-50 {
+  background-color: hsl(var(--primary-50));
+}
+
+.bg-primary-100 {
+  background-color: hsl(var(--primary-100));
+}
+
+.bg-primary-500 {
+  background-color: hsl(var(--primary-500));
+}
+
+.bg-primary-600 {
+  background-color: hsl(var(--primary-600));
+}
+
+.bg-primary-700 {
+  background-color: hsl(var(--primary-700));
+}
+
+.hover\:bg-primary-400:hover {
+  background-color: hsl(var(--primary-500) / 0.8);
+}
+
+.hover\:bg-primary-600:hover {
+  background-color: hsl(var(--primary-600));
+}
+
+.hover\:text-primary-600:hover {
+  color: hsl(var(--primary-600));
+}
+
+.border-primary-200 {
+  border-color: hsl(var(--primary-100) / 0.6);
+}
+
+.border-primary-300 {
+  border-color: hsl(var(--primary-500) / 0.3);
+}
+
+.border-primary-400 {
+  border-color: hsl(var(--primary-500) / 0.4);
+}
+
+.focus\:border-primary-500:focus {
+  border-color: hsl(var(--primary-500));
+}
+
+.focus\:ring-primary-500:focus {
+  --tw-ring-color: hsl(var(--primary-500));
+}
+
+/* Success, Warning, Error utilities */
+.text-success {
+  color: hsl(var(--success));
+}
+
+.bg-success {
+  background-color: hsl(var(--success));
+}
+
+.hover\:bg-green-600:hover {
+  background-color: hsl(122 39% 44%);
+}
+
+.text-warning {
+  color: hsl(var(--warning));
+}
+
+.bg-warning {
+  background-color: hsl(var(--warning));
+}
+
+.text-error {
+  color: hsl(var(--error));
+}
+
+.bg-error {
+  background-color: hsl(var(--error));
+}
+
+/* Focus states for form elements */
+.focus\:ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:border-transparent:focus {
+  border-color: transparent;
+}
+
+/* Button hover states */
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom checkbox styles to match the design */
+input[type="checkbox"] {
+  @apply rounded border-gray-300;
+}
+
+input[type="checkbox"]:checked {
+  @apply bg-primary-500 border-primary-500;
+}
+
+input[type="checkbox"]:focus {
+  @apply ring-2 ring-primary-500 ring-offset-0;
+}
+
+/* Custom select styles */
+select {
+  @apply border border-gray-300 rounded-lg px-3 py-2;
+}
+
+select:focus {
+  @apply ring-2 ring-primary-500 border-transparent outline-none;
+}
+
+/* Custom input styles */
+input[type="text"] {
+  @apply border border-gray-300 rounded-lg px-3 py-2;
+}
+
+input[type="text"]:focus {
+  @apply ring-2 ring-primary-500 border-transparent outline-none;
+}
+
+/* File upload area styles */
+.drag-over {
+  @apply border-primary-400 bg-primary-50;
+}
+
+/* Progress indicator styles */
+.progress-step-active {
+  @apply bg-primary-500 text-white;
+}
+
+.progress-step-inactive {
+  @apply bg-gray-200 text-gray-500;
+}
+
+.progress-label-active {
+  @apply text-primary-600 font-medium;
+}
+
+.progress-label-inactive {
+  @apply text-gray-500;
+}
+
+/* Table hover effects */
+.table-row-hover:hover {
+  @apply bg-gray-50;
+}
+
+/* Badge styles for status indicators */
+.badge-available {
+  @apply px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium;
+}
+
+.badge-unavailable {
+  @apply px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium;
+}
+
+.badge-male {
+  @apply px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium;
+}
+
+.badge-female {
+  @apply px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium;
+}
+
+.badge-assigned {
+  @apply px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium;
+}
+
+.badge-individual {
+  @apply px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium;
+}
+
+.badge-relay {
+  @apply px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium;
+}
+
+/* Card styles for results */
+.stats-card {
+  @apply border rounded-lg p-4;
+}
+
+.stats-card-green {
+  @apply bg-green-50 border-green-200;
+}
+
+.stats-card-blue {
+  @apply bg-blue-50 border-blue-200;
+}
+
+.stats-card-yellow {
+  @apply bg-yellow-50 border-yellow-200;
+}
+
+.stats-card-purple {
+  @apply bg-purple-50 border-purple-200;
+}
+
+/* Event assignment card styles */
+.event-card {
+  @apply border border-gray-200 rounded-lg p-4;
+}
+
+.event-card-assigned {
+  @apply border-primary-200 bg-primary-50;
+}
+
+/* Floating action button styles */
+.fab {
+  @apply rounded-full p-3 shadow-lg transition-colors;
+}
+
+.fab-primary {
+  @apply bg-primary-500 hover:bg-primary-600 text-white;
+}
+
+.fab-success {
+  @apply bg-success hover:bg-green-600 text-white;
+}
+
+/* FontAwesome icon sizing utilities */
+.fa-2xl {
+  font-size: 2rem;
+}
+
+.fa-3xl {
+  font-size: 2.5rem;
+}
+
+.fa-4xl {
+  font-size: 3rem;
+}
+
+/* Loading spinner animation */
+.fa-spin {
+  animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom scrollbar for better UX */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.5);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.7);
+}
+
+/* Responsive table wrapper */
+.table-responsive {
+  @apply overflow-x-auto scrollbar-thin;
+}
+
+/* Header shadow */
+.header-shadow {
+  @apply shadow-sm border-b border-gray-200;
+}
+
+/* Content spacing */
+.content-spacing {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Section spacing */
+.section-spacing {
+  @apply mb-8;
+}
+
+/* Form field spacing */
+.form-field-spacing {
+  @apply mb-4;
+}
+
+/* Button group spacing */
+.button-group {
+  @apply flex items-center space-x-4;
+}
+
+/* Grid responsive utilities */
+.grid-responsive-2 {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+.grid-responsive-3 {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3;
+}
+
+.grid-responsive-4 {
+  @apply grid grid-cols-1 md:grid-cols-4 gap-4;
+}
+
+/* Text color utilities for different states */
+.text-muted {
+  color: hsl(var(--muted-foreground));
+}
+
+.text-muted-dark {
+  color: hsl(var(--muted-foreground) / 0.7);
+}
+
+/* Background utilities for different states */
+.bg-muted {
+  background-color: hsl(var(--muted));
+}
+
+.bg-card {
+  background-color: hsl(var(--card));
+}
+
+/* Border utilities */
+.border-muted {
+  border-color: hsl(var(--border));
+}
+
+/* Shadow utilities */
+.shadow-card {
+  @apply shadow-sm;
+}
+
+/* Disabled state styles */
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+
+/* Selection styles */
+::selection {
+  background-color: hsl(var(--primary-500) / 0.2);
+  color: hsl(var(--primary-700));
+}
+
+/* Focus visible for accessibility */
+.focus-visible\:ring-2:focus-visible {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus-visible\:ring-primary-500:focus-visible {
+  --tw-ring-color: hsl(var(--primary-500));
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+}
