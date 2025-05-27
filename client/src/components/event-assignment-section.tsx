@@ -142,6 +142,11 @@ export default function EventAssignmentSection({
                 const assignedSwimmerId = eventAssignments[eventKey];
                 const eligibleSwimmers = getEligibleSwimmers(event.event, event.ageCategory, event.gender);
                 const isAssigned = !!assignedSwimmerId;
+                
+                // Debug logging
+                console.log(`Event: ${event.ageCategory}U ${event.gender} ${event.event}`);
+                console.log(`Available swimmers: ${availableSwimmers.length}`);
+                console.log(`Eligible swimmers: ${eligibleSwimmers.length}`);
 
                 return (
                   <div 
