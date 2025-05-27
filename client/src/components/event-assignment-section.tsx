@@ -146,6 +146,8 @@ export default function EventAssignmentSection({
                 // Debug logging
                 console.log(`Event: ${event.ageCategory}U ${event.gender} ${event.event}`);
                 console.log(`Available swimmers: ${availableSwimmers.length}`);
+                console.log(`Sample swimmer genders:`, availableSwimmers.slice(0, 3).map(s => s.gender));
+                console.log(`Looking for gender: "${event.gender}"`);
                 console.log(`Eligible swimmers: ${eligibleSwimmers.length}`);
 
                 return (
