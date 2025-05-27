@@ -84,19 +84,23 @@ export default function EventAssignmentSection({
     for (const [eventKey, swimmerId] of Object.entries(eventAssignments)) {
       if (swimmerId) {
         const [event, ageCategory, gender] = eventKey.split('_');
-        assignmentPromises.push(
-          fetch('/api/event-assignments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event,
-              ageCategory: parseInt(ageCategory),
-              gender,
-              swimmerId,
-              isPreAssigned: true
+        // Find the swimmer to get their ASA number
+        const swimmer = swimmers.find(s => s.id === parseInt(swimmerId));
+        if (swimmer) {
+          assignmentPromises.push(
+            fetch('/api/event-assignments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                event,
+                ageCategory: parseInt(ageCategory),
+                gender,
+                swimmerId: swimmer.asaNo, // Use ASA number instead of database ID
+                isPreAssigned: true
+              })
             })
-          })
-        );
+          );
+        }
       }
     }
     
