@@ -48,12 +48,21 @@ class RelaySwimmer:
         return hash(self.name)
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python optimizer.py <member_pbs_csv> <county_times_csv>", file=sys.stderr)
+    if len(sys.argv) != 4:
+        print("Usage: python optimizer.py <member_pbs_csv> <county_times_csv> <pre_assignments_json>", file=sys.stderr)
         sys.exit(1)
 
     member_pbs_file = sys.argv[1]
     county_times_file = sys.argv[2]
+    pre_assignments_file = sys.argv[3]
+
+    # Load pre-assignments
+    pre_assignments = {"individual": [], "relay": []}
+    try:
+        with open(pre_assignments_file, 'r') as f:
+            pre_assignments = json.load(f)
+    except:
+        pass  # No pre-assignments file or empty
 
     # Load swimmer data
     swimmer_list = []
@@ -157,12 +166,45 @@ def main():
         full_name = ' '.join([row[3], row[4]])
         row.append(full_name)
 
+    # Handle pre-assigned individual events BEFORE optimization
+    swimmer_event_count = {}
+    for assignment in pre_assignments.get("individual", []):
+        # Find swimmer by ID (the swimmerId from frontend corresponds to database ID)
+        swimmer_name = None
+        for time_row in full_list:
+            # The swimmer ID should match the ASA number in the CSV
+            if str(time_row[2]) == str(assignment["swimmerId"]):  # ASA_No is at index 2 in CSV
+                swimmer_name = f"{time_row[0]} {time_row[1]}"  # First name + Last name
+                break
+        
+        if swimmer_name:
+            # Find matching event in event_list and assign swimmer
+            event_match = assignment['event']
+            age_match = assignment['ageCategory']
+            gender_match = "Male" if assignment['gender'] == "M" else "Female"
+            
+            for event in event_list:
+                if (event[0] == event_match and 
+                    event[1] == age_match and 
+                    event[2] == gender_match and 
+                    event[-1] == 'Not allocated'):
+                    event[-1] = swimmer_name
+                    # Track this assignment
+                    if swimmer_name not in swimmer_event_count:
+                        swimmer_event_count[swimmer_name] = 0
+                    swimmer_event_count[swimmer_name] += 1
+                    break
+
     # Allocate swimmers to events (max 2 per swimmer)
     for time in full_list:
         swimmer_name = time[-1]
+        
+        # Check current allocation count including pre-assignments
+        current_count = swimmer_event_count.get(swimmer_name, 0)
         allocated_count = sum(1 for event in event_list if event[-1] == swimmer_name)
+        total_count = max(current_count, allocated_count)
 
-        if allocated_count >= 2:
+        if total_count >= 2:
             continue
 
         for event in event_list:

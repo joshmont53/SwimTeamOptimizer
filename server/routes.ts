@@ -334,7 +334,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const assignment = await storage.createRelayAssignment(validatedData);
       res.json(assignment);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create relay assignment" });
+      console.error("Relay assignment error:", error);
+      res.status(500).json({ message: "Failed to create relay assignment", error: String(error) });
     }
   });
 
