@@ -75,9 +75,42 @@ export default function EventAssignmentSection({
 
   const availableSwimmers = swimmers.filter(s => s.isAvailable);
 
-  const handleRunOptimization = () => {
+  const handleRunOptimization = async () => {
     setIsOptimizing(true);
-    optimizeMutation.mutate();
+    
+    // Save event assignments first
+    const assignmentPromises = [];
+    
+    for (const [eventKey, swimmerId] of Object.entries(eventAssignments)) {
+      if (swimmerId) {
+        const [event, ageCategory, gender] = eventKey.split('_');
+        assignmentPromises.push(
+          fetch('/api/event-assignments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event,
+              ageCategory: parseInt(ageCategory),
+              gender,
+              swimmerId,
+              isPreAssigned: true
+            })
+          })
+        );
+      }
+    }
+    
+    try {
+      await Promise.all(assignmentPromises);
+      optimizeMutation.mutate();
+    } catch (error) {
+      setIsOptimizing(false);
+      toast({
+        title: "Assignment failed",
+        description: "Failed to save pre-assignments",
+        variant: "destructive",
+      });
+    }
   };
 
   const getEventKey = (event: string, ageCategory: number, gender: string) => {

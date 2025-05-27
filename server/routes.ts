@@ -223,6 +223,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Event assignments endpoints
+  app.post("/api/event-assignments", async (req, res) => {
+    try {
+      const assignment = await storage.createEventAssignment(req.body);
+      res.json(assignment);
+    } catch (error) {
+      console.error("Error creating event assignment:", error);
+      res.status(500).json({ error: "Failed to create event assignment" });
+    }
+  });
+
+  app.get("/api/event-assignments", async (req, res) => {
+    try {
+      const assignments = await storage.getEventAssignments();
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error getting event assignments:", error);
+      res.status(500).json({ error: "Failed to get event assignments" });
+    }
+  });
+
   // Get events
   app.get("/api/events", async (req, res) => {
     try {
@@ -299,9 +320,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
       const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
 
-      // Create empty pre-assignments for now
-      const preAssignments = { individual: [], relay: [] };
-      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
+      // Get pre-assignments from storage first, then clear all assignments
+      const eventAssignments = await storage.getEventAssignments();
+      const relayAssignments = await storage.getRelayAssignments();
+      
+      const preAssignments = {
+        individual: eventAssignments.filter(a => a.isPreAssigned).map(a => ({
+          event: a.event,
+          ageCategory: a.ageCategory,
+          gender: a.gender,
+          swimmerId: a.swimmerId
+        })),
+        relay: relayAssignments.filter(a => a.isPreAssigned).map(a => ({
+          relayName: a.relayName,
+          ageCategory: a.ageCategory,
+          gender: a.gender,
+          position: a.position,
+          stroke: a.stroke,
+          swimmerId: a.swimmerId
+        }))
+      };
+      
+      // Clear all assignments - the Python script will regenerate everything
+      await storage.clearEventAssignments();
+      await storage.clearRelayAssignments();
+      
+      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
 
       // Export swimmer data to CSV
       const swimmers = await storage.getSwimmers();
