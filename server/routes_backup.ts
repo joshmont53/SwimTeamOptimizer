@@ -288,6 +288,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test endpoint
+  app.post("/api/test", (req, res) => {
+    console.log('Test endpoint called');
+    res.json({ message: 'Test successful' });
+  });
+
   // Run optimization
   app.post("/api/optimize", async (req, res) => {
     console.log('Optimization endpoint called');
