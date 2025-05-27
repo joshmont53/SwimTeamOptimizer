@@ -370,9 +370,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fs.mkdirSync(tempDir);
       }
 
-      const memberPbsPath = path.join(tempDir, `member_pbs_${sessionId}.csv`);
-      const countyTimesPath = path.join(tempDir, `county_times_${sessionId}.csv`);
-      const preAssignmentsPath = path.join(tempDir, `pre_assignments_${sessionId}.json`);
+      // Use fixed file names in the script directory
+      const scriptDir = path.join(process.cwd(), 'server');
+      const memberPbsPath = path.join(scriptDir, 'member_pbs.csv');
+      const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
+      const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
 
       // Get pre-assignments
       const eventAssignments = await storage.getEventAssignments();
@@ -425,8 +427,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Run Python optimization script
       const pythonScript = path.join(process.cwd(), 'server', 'optimizer.py');
-      const python = spawn('python3', [pythonScript, memberPbsPath, countyTimesPath, preAssignmentsPath], {
-        cwd: process.cwd()
+      const python = spawn('python3', [pythonScript], {
+        cwd: scriptDir
       });
 
       let output = '';

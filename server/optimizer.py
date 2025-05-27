@@ -48,13 +48,10 @@ class RelaySwimmer:
         return hash(self.name)
 
 def main():
-    if len(sys.argv) != 4:
-        print("Usage: python optimizer.py <member_pbs_csv> <county_times_csv> <pre_assignments_json>", file=sys.stderr)
-        sys.exit(1)
-
-    member_pbs_file = sys.argv[1]
-    county_times_file = sys.argv[2]
-    pre_assignments_file = sys.argv[3]
+    # Use fixed file names like the original script
+    member_pbs_file = 'member_pbs.csv'
+    county_times_file = 'county_times_cleaned.csv'
+    pre_assignments_file = 'pre_assignments.json'
 
     # Load pre-assignments
     pre_assignments = {"individual": [], "relay": []}
