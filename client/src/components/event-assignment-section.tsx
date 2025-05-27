@@ -162,11 +162,11 @@ export default function EventAssignmentSection({
                       </span>
                     </div>
                     <Select 
-                      value={assignedSwimmerId?.toString() || ""} 
+                      value={assignedSwimmerId?.toString() || "auto"} 
                       onValueChange={(value) => {
                         setEventAssignments(prev => ({
                           ...prev,
-                          [eventKey]: value ? parseInt(value) : null
+                          [eventKey]: value === "auto" ? null : parseInt(value)
                         }));
                       }}
                     >
@@ -174,7 +174,7 @@ export default function EventAssignmentSection({
                         <SelectValue placeholder="Auto-optimize (recommended)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Auto-optimize (recommended)</SelectItem>
+                        <SelectItem value="auto">Auto-optimize (recommended)</SelectItem>
                         {eligibleSwimmers.map(swimmer => (
                           <SelectItem key={swimmer.id} value={swimmer.id.toString()}>
                             {swimmer.firstName} {swimmer.lastName}
@@ -231,11 +231,11 @@ export default function EventAssignmentSection({
                           <div key={relayKey}>
                             <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
                             <Select 
-                              value={relayAssignments[relayKey]?.toString() || ""} 
+                              value={relayAssignments[relayKey]?.toString() || "auto"} 
                               onValueChange={(value) => {
                                 setRelayAssignments(prev => ({
                                   ...prev,
-                                  [relayKey]: value ? parseInt(value) : null
+                                  [relayKey]: value === "auto" ? null : parseInt(value)
                                 }));
                               }}
                             >
@@ -243,7 +243,7 @@ export default function EventAssignmentSection({
                                 <SelectValue placeholder="Auto-optimize" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">Auto-optimize</SelectItem>
+                                <SelectItem value="auto">Auto-optimize</SelectItem>
                                 {eligibleSwimmers.map(swimmer => (
                                   <SelectItem key={swimmer.id} value={swimmer.id.toString()}>
                                     {swimmer.firstName} {swimmer.lastName}
