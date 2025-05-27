@@ -425,6 +425,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       fs.writeFileSync(countyTimesPath, countyTimesContent);
 
+      // Write pre-assignments file
+      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
+
+      console.log('Files created:');
+      console.log('Member PBs:', memberPbsPath, 'exists:', fs.existsSync(memberPbsPath));
+      console.log('County Times:', countyTimesPath, 'exists:', fs.existsSync(countyTimesPath));
+      console.log('Pre-assignments:', preAssignmentsPath, 'exists:', fs.existsSync(preAssignmentsPath));
+
       // Run Python optimization script
       const pythonScript = path.join(process.cwd(), 'server', 'optimizer.py');
       const python = spawn('python3', [pythonScript], {
