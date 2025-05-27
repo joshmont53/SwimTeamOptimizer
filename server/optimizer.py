@@ -223,16 +223,25 @@ def main():
             butterflies = [s for s in group if s.butterfly is not None]
             freestylers = [s for s in group if s.freestyle is not None]
 
-            for b in backstrokers:
-                for br in breaststrokers:
+            # Limit combinations to prevent performance issues
+            max_combinations = 1000
+            combination_count = 0
+            
+            for b in backstrokers[:10]:  # Limit to top 10 swimmers per stroke
+                for br in breaststrokers[:10]:
                     if br.name == b.name:
                         continue
-                    for fly in butterflies:
+                    for fly in butterflies[:10]:
                         if fly.name in {b.name, br.name}:
                             continue
-                        for free in freestylers:
+                        for free in freestylers[:10]:
                             if free.name in {b.name, br.name, fly.name}:
                                 continue
+                            
+                            combination_count += 1
+                            if combination_count > max_combinations:
+                                break
+                                
                             total = b.backstroke + br.breaststroke + fly.butterfly + free.freestyle
                             possible_teams.append({
                                 'time': round(total, 2),
@@ -243,6 +252,12 @@ def main():
                                     {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle:.2f}s'}
                                 ]
                             })
+                        if combination_count > max_combinations:
+                            break
+                    if combination_count > max_combinations:
+                        break
+                if combination_count > max_combinations:
+                    break
 
             if possible_teams:
                 best_team = min(possible_teams, key=lambda x: x['time'])
