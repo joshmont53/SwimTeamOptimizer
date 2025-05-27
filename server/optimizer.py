@@ -165,17 +165,17 @@ def main():
 
     # Handle pre-assigned individual events BEFORE optimization
     swimmer_event_count = {}
-    print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments")
+    print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments", file=sys.stderr)
     
     for assignment in pre_assignments.get("individual", []):
-        print(f"Processing assignment: {assignment}")
+        print(f"Processing assignment: {assignment}", file=sys.stderr)
         # Find swimmer by ID (the swimmerId from frontend corresponds to ASA number)
         swimmer_name = None
         for time_row in full_list:
             # The swimmer ID should match the ASA number in the CSV
             if str(time_row[2]) == str(assignment["swimmerId"]):  # ASA_No is at index 2 in CSV
                 swimmer_name = f"{time_row[0]} {time_row[1]}"  # First name + Last name
-                print(f"Found swimmer: {swimmer_name} for ASA: {assignment['swimmerId']}")
+                print(f"Found swimmer: {swimmer_name} for ASA: {assignment['swimmerId']}", file=sys.stderr)
                 break
         
         if swimmer_name:
@@ -184,7 +184,7 @@ def main():
             age_match = assignment['ageCategory']
             gender_match = "Male" if assignment['gender'] == "M" else "Female"
             
-            print(f"Looking for event: {event_match}, {age_match}, {gender_match}")
+            print(f"Looking for event: {event_match}, {age_match}, {gender_match}", file=sys.stderr)
             
             for event in event_list:
                 if (event[0] == event_match and 
@@ -192,16 +192,16 @@ def main():
                     event[2] == gender_match and 
                     event[-1] == 'Not allocated'):
                     event[-1] = swimmer_name
-                    print(f"PROTECTED: Assigned {swimmer_name} to {event_match} {age_match} {gender_match}")
+                    print(f"PROTECTED: Assigned {swimmer_name} to {event_match} {age_match} {gender_match}", file=sys.stderr)
                     # Track this assignment
                     if swimmer_name not in swimmer_event_count:
                         swimmer_event_count[swimmer_name] = 0
                     swimmer_event_count[swimmer_name] += 1
                     break
         else:
-            print(f"ERROR: Could not find swimmer with ASA: {assignment['swimmerId']}")
+            print(f"ERROR: Could not find swimmer with ASA: {assignment['swimmerId']}", file=sys.stderr)
             # Debug: show first few ASA numbers in the data
-            print("Available ASA numbers:", [row[2] for row in full_list[:5]])
+            print("Available ASA numbers:", [row[2] for row in full_list[:5]], file=sys.stderr)
 
     # Allocate swimmers to events (max 2 per swimmer)
     for time in full_list:
