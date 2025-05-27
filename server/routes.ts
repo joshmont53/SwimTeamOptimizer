@@ -292,14 +292,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/optimize", async (req, res) => {
     console.log('Optimization endpoint called');
     
-    // Return a simple test response first
-    return res.json({
-      individual: [
-        { event: "Test Event", swimmer: "Test Swimmer", time: "1:00.00" }
-      ],
-      relay: [],
-      stats: { qualifyingTimes: 0, averageIndex: 0, relayTeams: 0, totalEvents: 1 }
-    });
+    try {
+      // Use fixed file names in the script directory
+      const scriptDir = path.join(process.cwd(), 'server');
+      const memberPbsPath = path.join(scriptDir, 'member_pbs.csv');
+      const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
+      const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
+
+      // Create empty pre-assignments for now
+      const preAssignments = { individual: [], relay: [] };
+      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
+
+      // Export swimmer data to CSV
+      const swimmers = await storage.getSwimmers();
+      const availableSwimmers = swimmers.filter(s => s.isAvailable);
+      const swimmerTimes = await storage.getSwimmerTimes();
+      
+      let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds\n';
+      
+      for (const time of swimmerTimes) {
+        const swimmer = availableSwimmers.find(s => s.id === time.swimmerId);
+        if (swimmer) {
+          csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds}\n`;
+        }
+      }
+      
+      fs.writeFileSync(memberPbsPath, csvContent);
+
+      // Export county times to CSV
+      const countyTimes = await storage.getCountyTimes();
+      let countyTimesContent = 'Event,Time,Age Category,Course,Time Type,Gender\n';
+      
+      for (const time of countyTimes) {
+        countyTimesContent += `${time.event},${time.time},${time.ageCategory},${time.course},${time.timeType},${time.gender}\n`;
+      }
+      
+      fs.writeFileSync(countyTimesPath, countyTimesContent);
+
+      console.log('Files created successfully, running Python script...');
+
+      // Run Python optimization script
+      const pythonScript = path.join(process.cwd(), 'server', 'optimizer.py');
+      const python = spawn('python3', [pythonScript], {
+        cwd: scriptDir
+      });
+
+      let output = '';
+      let errorOutput = '';
+
+      python.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+
+      python.stderr.on('data', (data) => {
+        errorOutput += data.toString();
+      });
+
+      python.on('close', async (code) => {
+        // Clean up temp files
+        try {
+          fs.unlinkSync(memberPbsPath);
+          fs.unlinkSync(countyTimesPath);
+          fs.unlinkSync(preAssignmentsPath);
+        } catch (e) {
+          console.log('Error cleaning up temp files:', e);
+        }
+
+        if (code !== 0) {
+          console.error('Python script error:', errorOutput);
+          return res.status(500).json({ message: 'Optimization failed', error: errorOutput });
+        }
+
+        try {
+          const results = JSON.parse(output);
+          res.json(results);
+        } catch (parseError) {
+          console.error('Failed to parse optimization results:', parseError);
+          res.status(500).json({ message: 'Failed to parse optimization results' });
+        }
+      });
+
+    } catch (error) {
+      console.error('Optimization error:', error);
+      res.status(500).json({ message: 'Optimization failed', error: String(error) });
+    }
   });
 
   return createServer(app);
