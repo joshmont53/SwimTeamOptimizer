@@ -65,69 +65,9 @@ export default function EventAssignmentSection({
 
   const availableSwimmers = swimmers.filter(s => s.isAvailable);
 
-  const handleRunOptimization = async () => {
+  const handleRunOptimization = () => {
     setIsOptimizing(true);
-    
-    // Save event assignments first
-    const assignmentPromises = [];
-    
-    for (const [eventKey, swimmerId] of Object.entries(eventAssignments)) {
-      if (swimmerId) {
-        const [event, ageCategory, gender] = eventKey.split('_');
-        assignmentPromises.push(
-          fetch('/api/event-assignments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event,
-              ageCategory: parseInt(ageCategory),
-              gender,
-              swimmerId,
-              isPreAssigned: true
-            })
-          })
-        );
-      }
-    }
-    
-    for (const [relayKey, swimmerId] of Object.entries(relayAssignments)) {
-      if (swimmerId) {
-        const parts = relayKey.split('_');
-        const relayName = parts[0] + '_' + parts[1];
-        const ageCategory = parseInt(parts[2]);
-        const gender = parts[3];
-        const position = parseInt(parts[4]);
-        const stroke = parts[5] || null;
-        
-        assignmentPromises.push(
-          fetch('/api/relay-assignments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              relayName,
-              ageCategory,
-              gender,
-              position,
-              stroke,
-              swimmerId,
-              isPreAssigned: true
-            })
-          })
-        );
-      }
-    }
-    
-    try {
-      await Promise.all(assignmentPromises);
-      optimizeMutation.mutate();
-    } catch (error) {
-      setIsOptimizing(false);
-      toast({
-        title: "Assignment failed",
-        description: "Failed to save pre-assignments",
-        variant: "destructive",
-      });
-    }
+    optimizeMutation.mutate();
   };
 
   const getEventKey = (event: string, ageCategory: number, gender: string) => {

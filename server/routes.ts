@@ -377,25 +377,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
       const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
 
-      // Get pre-assignments
-      const eventAssignments = await storage.getEventAssignments();
-      const relayAssignments = await storage.getRelayAssignments();
-      
+      // For now, no pre-assignments - we'll implement this later
       const preAssignments = {
-        individual: eventAssignments.filter(a => a.isPreAssigned).map(a => ({
-          event: a.event,
-          ageCategory: a.ageCategory,
-          gender: a.gender,
-          swimmerId: a.swimmerId
-        })),
-        relay: relayAssignments.filter(a => a.isPreAssigned).map(a => ({
-          relayName: a.relayName,
-          ageCategory: a.ageCategory,
-          gender: a.gender,
-          position: a.position,
-          stroke: a.stroke,
-          swimmerId: a.swimmerId
-        }))
+        individual: [],
+        relay: []
       };
 
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
