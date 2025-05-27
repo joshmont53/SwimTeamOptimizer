@@ -8,7 +8,7 @@ import {
   insertCountyTimeSchema,
   insertEventAssignmentSchema,
   insertRelayAssignmentSchema,
-} from "@db/schema";
+} from "../shared/schema";
 import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
