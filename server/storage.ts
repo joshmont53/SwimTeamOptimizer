@@ -80,7 +80,12 @@ export class MemStorage implements IStorage {
 
   async createSwimmer(insertSwimmer: InsertSwimmer): Promise<Swimmer> {
     const id = this.currentId++;
-    const swimmer: Swimmer = { ...insertSwimmer, id };
+    const swimmer: Swimmer = { 
+      ...insertSwimmer, 
+      id,
+      gender: insertSwimmer.gender ?? null,
+      isAvailable: insertSwimmer.isAvailable ?? true
+    };
     this.swimmers.set(id, swimmer);
     return swimmer;
   }
@@ -109,7 +114,11 @@ export class MemStorage implements IStorage {
 
   async createSwimmerTime(insertTime: InsertSwimmerTime): Promise<SwimmerTime> {
     const id = this.currentId++;
-    const time: SwimmerTime = { ...insertTime, id };
+    const time: SwimmerTime = { 
+      ...insertTime, 
+      id,
+      countyQualify: insertTime.countyQualify ?? null
+    };
     this.swimmerTimes.set(id, time);
     return time;
   }
@@ -141,7 +150,12 @@ export class MemStorage implements IStorage {
 
   async createEventAssignment(insertAssignment: InsertEventAssignment): Promise<EventAssignment> {
     const id = this.currentId++;
-    const assignment: EventAssignment = { ...insertAssignment, id };
+    const assignment: EventAssignment = { 
+      ...insertAssignment, 
+      id,
+      swimmerId: insertAssignment.swimmerId ?? null,
+      isPreAssigned: insertAssignment.isPreAssigned ?? false
+    };
     this.eventAssignments.set(id, assignment);
     return assignment;
   }

@@ -18,7 +18,18 @@ export default function FileUploadSection({ isActive, onFileUploaded }: FileUplo
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await apiRequest('POST', '/api/upload-csv', formData);
+      
+      // Use fetch directly for file uploads instead of apiRequest
+      const response = await fetch('/api/upload-csv', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Upload failed');
+      }
+      
       return response.json();
     },
     onSuccess: (data) => {
