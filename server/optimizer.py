@@ -165,13 +165,17 @@ def main():
 
     # Handle pre-assigned individual events BEFORE optimization
     swimmer_event_count = {}
+    print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments")
+    
     for assignment in pre_assignments.get("individual", []):
-        # Find swimmer by ID (the swimmerId from frontend corresponds to database ID)
+        print(f"Processing assignment: {assignment}")
+        # Find swimmer by ID (the swimmerId from frontend corresponds to ASA number)
         swimmer_name = None
         for time_row in full_list:
             # The swimmer ID should match the ASA number in the CSV
             if str(time_row[2]) == str(assignment["swimmerId"]):  # ASA_No is at index 2 in CSV
                 swimmer_name = f"{time_row[0]} {time_row[1]}"  # First name + Last name
+                print(f"Found swimmer: {swimmer_name} for ASA: {assignment['swimmerId']}")
                 break
         
         if swimmer_name:
@@ -180,17 +184,24 @@ def main():
             age_match = assignment['ageCategory']
             gender_match = "Male" if assignment['gender'] == "M" else "Female"
             
+            print(f"Looking for event: {event_match}, {age_match}, {gender_match}")
+            
             for event in event_list:
                 if (event[0] == event_match and 
                     event[1] == age_match and 
                     event[2] == gender_match and 
                     event[-1] == 'Not allocated'):
                     event[-1] = swimmer_name
+                    print(f"PROTECTED: Assigned {swimmer_name} to {event_match} {age_match} {gender_match}")
                     # Track this assignment
                     if swimmer_name not in swimmer_event_count:
                         swimmer_event_count[swimmer_name] = 0
                     swimmer_event_count[swimmer_name] += 1
                     break
+        else:
+            print(f"ERROR: Could not find swimmer with ASA: {assignment['swimmerId']}")
+            # Debug: show first few ASA numbers in the data
+            print("Available ASA numbers:", [row[2] for row in full_list[:5]])
 
     # Allocate swimmers to events (max 2 per swimmer)
     for time in full_list:

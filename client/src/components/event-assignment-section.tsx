@@ -85,7 +85,7 @@ export default function EventAssignmentSection({
       if (swimmerId) {
         const [event, ageCategory, gender] = eventKey.split('_');
         // Find the swimmer to get their ASA number
-        const swimmer = swimmers.find(s => s.id === parseInt(swimmerId));
+        const swimmer = swimmers.find(s => s.id.toString() === swimmerId);
         if (swimmer) {
           assignmentPromises.push(
             fetch('/api/event-assignments', {

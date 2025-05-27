@@ -41,7 +41,7 @@ export const eventAssignments = pgTable("event_assignments", {
   event: text("event").notNull(),
   ageCategory: integer("age_category").notNull(),
   gender: text("gender").notNull(),
-  swimmerId: integer("swimmer_id"),
+  swimmerId: text("swimmer_id"),
   isPreAssigned: boolean("is_pre_assigned").notNull().default(false),
 });
 
