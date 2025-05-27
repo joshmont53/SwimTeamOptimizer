@@ -361,6 +361,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Run optimization
   app.post("/api/optimize", async (req, res) => {
+    console.log('Optimization endpoint called');
     try {
       // Generate temporary files for the Python script
       const sessionId = Date.now().toString();
