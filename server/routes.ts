@@ -359,31 +359,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test endpoint
+  app.post("/api/test", (req, res) => {
+    console.log('Test endpoint called');
+    res.json({ message: 'Test successful' });
+  });
+
   // Run optimization
   app.post("/api/optimize", async (req, res) => {
     console.log('Optimization endpoint called');
-    try {
-      // Generate temporary files for the Python script
-      const sessionId = Date.now().toString();
-      const tempDir = path.join(process.cwd(), 'temp');
-      
-      if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir);
-      }
-
-      // Use fixed file names in the script directory
-      const scriptDir = path.join(process.cwd(), 'server');
-      const memberPbsPath = path.join(scriptDir, 'member_pbs.csv');
-      const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
-      const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
-
-      // For now, no pre-assignments - we'll implement this later
-      const preAssignments = {
-        individual: [],
-        relay: []
-      };
-
-      fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments));
+    
+    // Return a simple test response first
+    return res.json({
+      individual: [
+        { event: "Test Event", swimmer: "Test Swimmer", time: "1:00.00" }
+      ],
+      relay: [],
+      stats: { qualifyingTimes: 0, averageIndex: 0, relayTeams: 0, totalEvents: 1 }
+    });
 
       // Export swimmer data to CSV
       const swimmers = await storage.getSwimmers();
