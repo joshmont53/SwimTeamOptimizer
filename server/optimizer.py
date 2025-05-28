@@ -168,6 +168,10 @@ def main():
     # Handle pre-assigned individual events BEFORE optimization
     swimmer_event_count = {}
     protected_events = set()  # Tracks pre-assigned events to prevent overwrites
+    # Debug logging to file
+    with open('debug.log', 'w') as debug_file:
+        debug_file.write(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments\n")
+    
     print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments", file=sys.stderr)
     
     for assignment in pre_assignments.get("individual", []):

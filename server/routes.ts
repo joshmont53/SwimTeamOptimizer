@@ -413,6 +413,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(errorOutput);
         }
 
+        // Try to read debug log file
+        try {
+          const debugLogPath = path.join(scriptDir, 'debug.log');
+          if (fs.existsSync(debugLogPath)) {
+            const debugContent = fs.readFileSync(debugLogPath, 'utf8');
+            console.log('PYTHON DEBUG LOG:');
+            console.log(debugContent);
+            fs.unlinkSync(debugLogPath); // Clean up
+          }
+        } catch (e) {
+          console.log('No debug log found');
+        }
+
         // Clean up temp files
         try {
           fs.unlinkSync(memberPbsPath);
