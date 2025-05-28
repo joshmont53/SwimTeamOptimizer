@@ -88,7 +88,10 @@ export default function EventAssignmentSection({
         console.log(`Processing assignment: ${eventKey} -> ${swimmerId}`);
         const [event, ageCategory, gender] = eventKey.split('_');
         // Find the swimmer to get their ASA number
-        const swimmer = swimmers.find(s => s.id.toString() === swimmerId);
+        console.log(`Looking for swimmer ID: ${swimmerId}`);
+        console.log(`Available swimmer IDs:`, swimmers.slice(0, 5).map(s => `${s.id}(${s.firstName} ${s.lastName})`));
+        
+        const swimmer = swimmers.find(s => s.id === parseInt(swimmerId));
         if (swimmer) {
           console.log(`Found swimmer: ${swimmer.firstName} ${swimmer.lastName} (ASA: ${swimmer.asaNo})`);
           assignmentPromises.push(
@@ -106,6 +109,7 @@ export default function EventAssignmentSection({
           );
         } else {
           console.log(`ERROR: Could not find swimmer with ID ${swimmerId}`);
+          console.log(`Total swimmers available: ${swimmers.length}`);
         }
       }
     }
