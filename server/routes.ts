@@ -392,7 +392,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (swimmer) {
           const availabilityStatus = swimmer.isAvailable ? 'true' : 'false';
           console.log(`BACKEND: Swimmer ${swimmer.firstName} ${swimmer.lastName} - isAvailable: ${swimmer.isAvailable} -> CSV: ${availabilityStatus}`);
-          csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds},${availabilityStatus}\n`;
+          
+          // Build CSV row with explicit column mapping
+          const csvRow = [
+            swimmer.firstName,
+            swimmer.lastName,
+            swimmer.asaNo,
+            swimmer.dateOfBirth,
+            time.meet,
+            time.date,
+            time.event,
+            time.time,
+            time.course,
+            swimmer.gender,
+            swimmer.age,
+            '', // County_QT (empty)
+            '', // Count_CT (empty)
+            time.countyQualify || 'No',
+            time.timeInSeconds,
+            availabilityStatus
+          ].join(',');
+          
+          console.log(`BACKEND: CSV row has ${csvRow.split(',').length} columns: ${csvRow}`);
+          csvContent += csvRow + '\n';
         }
       }
       
@@ -437,6 +459,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log('PYTHON STDERR:');
           console.log(errorOutput);
         }
+        
+        console.log(`PYTHON SCRIPT: Exited with code ${code}`);
 
         // Try to read debug log file
         try {
@@ -462,14 +486,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         if (code !== 0) {
           console.error('Python script error:', errorOutput);
+          
+          // Try to parse error output as JSON first (early exit case)
+          try {
+            const errorResult = JSON.parse(output);
+            if (errorResult.error) {
+              console.log('PYTHON: Handled error response:', errorResult.error);
+              return res.json(errorResult); // Return the structured error response
+            }
+          } catch (parseError) {
+            // Not JSON, treat as regular error
+            console.log('PYTHON: Non-JSON error output');
+          }
+          
           return res.status(500).json({ message: 'Optimization failed', error: errorOutput });
         }
 
         try {
           const results = JSON.parse(output);
+          console.log('PYTHON: Optimization completed successfully');
           res.json(results);
         } catch (parseError) {
           console.error('Failed to parse optimization results:', parseError);
+          console.error('Raw output was:', output);
           res.status(500).json({ message: 'Failed to parse optimization results' });
         }
       });
