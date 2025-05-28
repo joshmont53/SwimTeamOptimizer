@@ -90,12 +90,20 @@ def main():
                 # The availability should be the last column
                 availability_value = last_column
                 
-                is_available = availability_value.lower() == 'true' if availability_value != "MISSING" else True
+                # Fix the availability check - ensure we handle the string properly
+                if availability_value and availability_value.strip():
+                    is_available = availability_value.strip().lower() == 'true'
+                else:
+                    is_available = True  # Default to available if missing
+                
+                print(f"PYTHON DEBUG: Availability value: '{availability_value}' -> is_available: {is_available}", file=sys.stderr)
                 if is_available:
-                    # Use correct column for time_in_seconds (should be second-to-last if availability is last)
-                    time_seconds = second_last if len(row) >= 16 else row[14] if len(row) == 15 else row[-2]
+                    # CSV structure: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
+                    #                0           1          2       3             4     5    6      7        8       9       10      11        12       13             14             15
+                    # time_in_seconds is at index 14, availability is at index 15
+                    time_seconds = row[14]  # time_in_seconds column
                     swimmer_list.append([row[0], row[1], row[6], row[9], row[10], time_seconds, row[2]])  # Added ASA number at end
-                    print(f"PYTHON: ✓ Including available swimmer {row[0]} {row[1]}", file=sys.stderr)
+                    print(f"PYTHON: ✓ Including available swimmer {row[0]} {row[1]} (time: {time_seconds})", file=sys.stderr)
                 else:
                     print(f"PYTHON: ✗ EXCLUDING unavailable swimmer {row[0]} {row[1]}", file=sys.stderr)
             else:
