@@ -350,6 +350,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.clearRelayAssignments();
       
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
+      console.log('Pre-assignments saved to file:', preAssignments);
 
       // Export swimmer data to CSV
       const swimmers = await storage.getSwimmers();
