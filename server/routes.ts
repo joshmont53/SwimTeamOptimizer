@@ -375,24 +375,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
       console.log('Pre-assignments saved to file:', preAssignments);
 
-      // Export swimmer data to CSV - ONLY AVAILABLE SWIMMERS
+      // Export swimmer data to CSV - ALL SWIMMERS WITH AVAILABILITY STATUS
       const swimmerTimes = await storage.getSwimmerTimes();
-      const availableSwimmers = allSwimmers.filter(s => s.isAvailable);
       
-      console.log(`AVAILABILITY FILTER: Total swimmers: ${allSwimmers.length}, Available swimmers: ${availableSwimmers.length}`);
+      console.log(`BACKEND: Total swimmers: ${allSwimmers.length}, Total swim times: ${swimmerTimes.length}`);
       
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable\n';
       
       for (const time of swimmerTimes) {
-        const swimmer = availableSwimmers.find(s => s.id === time.swimmerId);
+        const swimmer = allSwimmers.find(s => s.id === time.swimmerId);
         if (swimmer) {
-          console.log(`AVAILABLE SWIMMER DATA: Including ${swimmer.firstName} ${swimmer.lastName} in optimization`);
-          csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds},true\n`;
-        } else {
-          const unavailableSwimmer = allSwimmers.find(s => s.id === time.swimmerId);
-          if (unavailableSwimmer && !unavailableSwimmer.isAvailable) {
-            console.log(`EXCLUDED SWIMMER: ${unavailableSwimmer.firstName} ${unavailableSwimmer.lastName} marked as unavailable - EXCLUDING from optimization`);
-          }
+          const availabilityStatus = swimmer.isAvailable ? 'true' : 'false';
+          console.log(`BACKEND: Swimmer ${swimmer.firstName} ${swimmer.lastName} - isAvailable: ${swimmer.isAvailable} -> CSV: ${availabilityStatus}`);
+          csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds},${availabilityStatus}\n`;
         }
       }
       
