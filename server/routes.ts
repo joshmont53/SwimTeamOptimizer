@@ -375,15 +375,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
       console.log('Pre-assignments saved to file:', preAssignments);
 
-      // Export swimmer data to CSV
+      // Export swimmer data to CSV - ONLY AVAILABLE SWIMMERS
       const swimmerTimes = await storage.getSwimmerTimes();
+      const availableSwimmers = allSwimmers.filter(s => s.isAvailable);
+      
+      console.log(`AVAILABILITY FILTER: Total swimmers: ${allSwimmers.length}, Available swimmers: ${availableSwimmers.length}`);
       
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds\n';
       
       for (const time of swimmerTimes) {
-        const swimmer = allSwimmers.find(s => s.id === time.swimmerId);
+        const swimmer = availableSwimmers.find(s => s.id === time.swimmerId);
         if (swimmer) {
+          console.log(`AVAILABLE SWIMMER DATA: Including ${swimmer.firstName} ${swimmer.lastName} in optimization`);
           csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds}\n`;
+        } else {
+          const unavailableSwimmer = allSwimmers.find(s => s.id === time.swimmerId);
+          if (unavailableSwimmer && !unavailableSwimmer.isAvailable) {
+            console.log(`EXCLUDED SWIMMER: ${unavailableSwimmer.firstName} ${unavailableSwimmer.lastName} marked as unavailable - EXCLUDING from optimization`);
+          }
         }
       }
       

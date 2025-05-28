@@ -91,9 +91,9 @@ export default function EventAssignmentSection({
         const [event, ageCategory, gender] = eventKey.split('_');
         // Find the swimmer to get their ASA number
         console.log(`Looking for swimmer ID: ${swimmerId}`);
-        console.log(`Available swimmer IDs:`, swimmers.slice(0, 5).map(s => `${s.id}(${s.firstName} ${s.lastName})`));
+        console.log(`Available swimmer IDs:`, availableSwimmers.slice(0, 5).map(s => `${s.id}(${s.firstName} ${s.lastName})`));
         
-        const swimmer = swimmers.find(s => s.id === parseInt(swimmerId));
+        const swimmer = availableSwimmers.find(s => s.id === parseInt(swimmerId.toString()));
         if (swimmer) {
           console.log(`Found swimmer: ${swimmer.firstName} ${swimmer.lastName} (ASA: ${swimmer.asaNo})`);
           assignmentPromises.push(
