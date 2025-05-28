@@ -95,6 +95,21 @@ def main():
     print(f"PYTHON: Processed {total_rows_processed} total rows from CSV", file=sys.stderr)
     
     print(f"PYTHON: Final swimmer count after availability filtering: {len(swimmer_list)} swimmers", file=sys.stderr)
+    
+    # Write detailed debug output to file
+    with open('debug_output.txt', 'w') as debug_file:
+        debug_file.write("=== SWIMMER AVAILABILITY DEBUG OUTPUT ===\n\n")
+        debug_file.write(f"Total swimmers processed from CSV: {total_rows_processed}\n")
+        debug_file.write(f"Swimmers included in optimization: {len(swimmer_list)}\n\n")
+        
+        debug_file.write("SWIMMERS INCLUDED IN OPTIMIZATION:\n")
+        for i, swimmer in enumerate(swimmer_list):
+            debug_file.write(f"  {i+1}. {swimmer[0]} {swimmer[1]} (ASA: {swimmer[6]})\n")
+        
+        if len(swimmer_list) == 0:
+            debug_file.write("  >>> NO SWIMMERS INCLUDED - THIS IS THE BUG! <<<\n")
+        
+        debug_file.write(f"\nEvent list contains {len(event_list)} events\n\n")
 
     # Load county times
     county_times = []
@@ -318,6 +333,26 @@ def main():
                     break
     
     print(f"OPTIMIZATION COMPLETE: {optimization_assignments} events auto-assigned, {len(protected_events)} pre-assigned", file=sys.stderr)
+    
+    # Add optimization results to debug file
+    with open('debug_output.txt', 'a') as debug_file:
+        debug_file.write("=== OPTIMIZATION RESULTS ===\n")
+        debug_file.write(f"Events auto-assigned: {optimization_assignments}\n")
+        debug_file.write(f"Events pre-assigned: {len(protected_events)}\n\n")
+        
+        debug_file.write("FINAL EVENT ASSIGNMENTS:\n")
+        assigned_events = [event for event in event_list if event[-1] != 'Not allocated']
+        unassigned_events = [event for event in event_list if event[-1] == 'Not allocated']
+        
+        for i, event in enumerate(assigned_events):
+            debug_file.write(f"  {i+1}. {event[1]}U {event[2]} {event[0]} -> {event[-1]}\n")
+        
+        debug_file.write(f"\nUnassigned events: {len(unassigned_events)}\n")
+        for event in unassigned_events[:5]:  # Show first 5 unassigned
+            debug_file.write(f"  - {event[1]}U {event[2]} {event[0]}\n")
+        
+        if len(assigned_events) == 0:
+            debug_file.write("  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<\n")
 
     # Build relay swimmers
     relay_swimmers = {}
