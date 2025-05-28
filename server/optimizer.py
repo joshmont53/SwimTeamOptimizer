@@ -143,9 +143,11 @@ def main():
 
     # Calculate differences and indices
     for row in full_list:
-        if len(row) > 6:
-            diff = round(float(row[5]) - row[6], 2)
-            index = round(diff / row[6], 3)
+        if len(row) > 7:  # Now we have 8 elements: event, age, gender, first_name, last_name, time, asa_no, qualifying_time
+            swimmer_time = float(row[5])  # swimmer time
+            qualifying_time = row[7]      # qualifying time (appended in previous loop)
+            diff = round(swimmer_time - qualifying_time, 2)
+            index = round(diff / qualifying_time, 3)
             row.append(diff)
             row.append(index)
         else:
