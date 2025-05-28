@@ -407,6 +407,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       python.on('close', async (code) => {
+        // Show Python debugging output
+        if (errorOutput) {
+          console.log('PYTHON DEBUG OUTPUT:');
+          console.log(errorOutput);
+        }
+
         // Clean up temp files
         try {
           fs.unlinkSync(memberPbsPath);
