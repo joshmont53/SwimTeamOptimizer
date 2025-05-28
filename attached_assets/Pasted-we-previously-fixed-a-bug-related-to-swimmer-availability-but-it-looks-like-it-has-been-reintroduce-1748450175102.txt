@@ -1,0 +1,64 @@
+we previously fixed a bug related to swimmer availability, but it looks like it has been reintroduced during the recent development work. Here's what needs to be addressed:
+
+🐛 Bug Description:
+On the second page of the app, where users select which swimmers are available, when I deselect a swimmer (mark them as unavailable), they are still being included in later steps:
+
+They still appear in the list of available swimmers for event assignment
+
+They still appear in the dropdown list for preselecting swimmers
+
+They may even be assigned to events by the optimiser, which they should not be
+
+✅ Expected Behaviour:
+If a user unchecks (deselects) a swimmer on the availability selection page, then:
+
+That swimmer should be excluded entirely from the list of available swimmers used in event selection and optimisation
+
+That swimmer should not appear in any dropdowns when manually preselecting swimmers for events
+
+The optimiser should never assign them to an event
+
+The data passed to the Python script should not include these swimmers at all
+
+🛠️ Task:
+Investigate where the selected swimmer availability is stored (state or backend)
+
+Identify why unavailable swimmers are still leaking through into the next pages
+
+Trace the flow: from selection page → event assignment page → optimiser logic
+
+Fix the filtering logic so that only selected (available) swimmers are carried forward
+
+Apply the fix wherever the swimmer list is being used, including:
+
+Event assignment dropdowns
+
+Data passed to the optimisation script
+
+Final results output
+
+🔁 Test Requirements:
+After applying the fix, perform a full end-to-end test:
+
+Upload a CSV with at least 5 swimmers
+
+Deselect one or two swimmers on the availability page
+
+Proceed through event preselection and optimisation
+
+Confirm the unavailable swimmers:
+
+Do not appear in dropdowns
+
+Are not selected in the optimiser’s output
+
+Are not in the final results at all
+
+Please show visible evidence of this:
+
+A screenshot of the deselected swimmer
+
+A screenshot of the dropdown showing they are absent
+
+A log or comment proving they were filtered from the data before optimisation
+
