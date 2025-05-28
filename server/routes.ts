@@ -375,13 +375,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
       console.log('Pre-assignments saved to file:', preAssignments);
 
-      // Export swimmer data to CSV (using existing variables)
+      // Export swimmer data to CSV
       const swimmerTimes = await storage.getSwimmerTimes();
       
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds\n';
       
       for (const time of swimmerTimes) {
-        const swimmer = availableSwimmers.find(s => s.id === time.swimmerId);
+        const swimmer = allSwimmers.find(s => s.id === time.swimmerId);
         if (swimmer) {
           csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds}\n`;
         }
