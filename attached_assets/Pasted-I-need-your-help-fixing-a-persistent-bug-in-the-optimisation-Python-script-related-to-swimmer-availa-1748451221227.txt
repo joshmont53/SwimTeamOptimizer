@@ -1,0 +1,72 @@
+I need your help fixing a persistent bug in the optimisation Python script related to swimmer availability, without undoing any of the recent fixes made regarding predetermined event selections.
+
+🐛 Bug Summary:
+Even when a swimmer is marked as unavailable on the swimmer selection page, they are still appearing in:
+
+The event preselection dropdowns
+
+The final optimiser’s output
+
+The optimisation logic and results
+
+This should not happen.
+
+⚙️ Important Technical Context:
+The Python script receives a list of swimmers, generated from the uploaded CSV and frontend inputs
+
+There is existing code in the Python script intended to filter out unavailable swimmers
+
+However, this logic is not working as intended
+
+Additionally, the app recently introduced a fix so that predetermined (preselected) swimmers for specific events are always respected and never overwritten — this working fix must remain untouched
+
+✅ Expected Outcome:
+Unavailable swimmers (as selected on the front end) must be fully excluded from:
+
+The data sent to the optimiser
+
+The list of valid swimmers for each event
+
+The optimiser’s assignment logic
+
+The final results output
+
+Predetermined swimmer-event assignments must still take priority and never be overwritten, even if that swimmer is not optimal
+
+📋 What You Need to Do:
+Trace the flow of swimmer data:
+
+Identify where swimmer availability is passed from the front end to the backend/Python script
+
+Confirm the format and location of availability flags (e.g. is it a column in the CSV? JSON metadata?)
+
+Inspect the Python script:
+
+Locate the part where the CSV data is converted into a list of lists
+
+Review the existing filtering logic that attempts to exclude unavailable swimmers
+
+Debug and correct the filtering logic, ensuring that only available swimmers are passed to the optimiser
+
+Preserve logic that handles preselection of swimmers for events — do not remove, override, or undo any of the fixes already implemented in this area
+
+🧪 Testing Requirements:
+Perform and evidence the following test:
+
+Upload a CSV with multiple swimmers
+
+On the swimmer selection screen, deselect 1 or more swimmers
+
+Proceed through to event assignment and run the optimiser
+
+Confirm:
+
+The deselected swimmers do not appear in any dropdowns
+
+The optimiser never selects them in the results
+
+The final output respects swimmer availability and predetermined swimmer-event assignments
+
+Show visible proof — log prints, screenshots, or include a FixVerification.md file showing what changed and that both logics now work together.
+
+Let me know if anything blocks you.

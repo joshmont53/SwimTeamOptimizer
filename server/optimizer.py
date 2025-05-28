@@ -63,17 +63,23 @@ def main():
         print(f"ERROR LOADING PRE-ASSIGNMENTS: {e}", file=sys.stderr)
         pass  # No pre-assignments file or empty
 
-    # Load swimmer data
+    # Load swimmer data - ONLY AVAILABLE SWIMMERS
     swimmer_list = []
     with open(member_pbs_file, newline='') as f:
         reader = csv.reader(f)
         next(reader)  # Skip header
         for row in reader:
-            if len(row) >= 15 and row[8] == 'SC':
-                # FIXED: Include ASA number in correct position
-                # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds
-                #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14
-                swimmer_list.append([row[0], row[1], row[6], row[9], row[10], row[14], row[2]])  # Added ASA number at end
+            if len(row) >= 16 and row[8] == 'SC':
+                # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
+                #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14             15
+                is_available = row[15].lower() == 'true'
+                if is_available:
+                    swimmer_list.append([row[0], row[1], row[6], row[9], row[10], row[14], row[2]])  # Added ASA number at end
+                    print(f"PYTHON: Including available swimmer {row[0]} {row[1]}", file=sys.stderr)
+                else:
+                    print(f"PYTHON: EXCLUDING unavailable swimmer {row[0]} {row[1]}", file=sys.stderr)
+    
+    print(f"PYTHON: Final swimmer count after availability filtering: {len(swimmer_list)} swimmers", file=sys.stderr)
 
     # Load county times
     county_times = []
