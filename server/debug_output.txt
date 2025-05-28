@@ -1198,7 +1198,7 @@ Events auto-assigned: 33
 Events pre-assigned: 1
 
 FINAL EVENT ASSIGNMENTS:
-  1. 11U Male 50m Freestyle -> John Morton
+  1. 11U Male 50m Freestyle -> Jack Einchcomb
   2. 11U Male 50m Backstroke -> Iwan Stone
   3. 11U Male 50m Breaststroke -> Christian Walker
   4. 11U Male 50m Butterfly -> Iwan Stone
@@ -1222,11 +1222,11 @@ FINAL EVENT ASSIGNMENTS:
   22. 15U Female 100m Backstroke -> Ella Head
   23. 15U Female 100m Breaststroke -> Emily Paull
   24. 15U Female 100m Butterfly -> Amy Jones
-  25. 16U Male 100m Freestyle -> Joshua Montgomery
+  25. 16U Male 100m Freestyle -> Oliver Mellor
   26. 16U Male 100m Backstroke -> Max Walton
   27. 16U Male 100m Breaststroke -> Gideon Smith
   28. 16U Male 100m Butterfly -> Joshua Montgomery
-  29. 16U Male 200m Individual Medley -> Ollie Lovick
+  29. 16U Male 200m Individual Medley -> Joshua Montgomery
   30. 16U Female 100m Freestyle -> Lara Charlton
   31. 16U Female 100m Backstroke -> Lara Charlton
   32. 16U Female 100m Breaststroke -> Emma Jones
