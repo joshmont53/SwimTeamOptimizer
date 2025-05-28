@@ -69,7 +69,7 @@ def main():
     with open(member_pbs_file, newline='') as f:
         reader = csv.reader(f)
         header = next(reader)  # Skip header
-        print(f"PYTHON DEBUG: CSV Header: {header}", file=sys.stderr)
+        print(f"PYTHON DEBUG: CSV Header has {len(header)} columns: {header}", file=sys.stderr)
         
         for row in reader:
             total_rows_processed += 1

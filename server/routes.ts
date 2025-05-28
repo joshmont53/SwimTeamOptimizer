@@ -386,39 +386,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`BACKEND: Available swimmers: ${availableCount}, Unavailable swimmers: ${unavailableCount}`);
       
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable\n';
+      console.log(`BACKEND: CSV Header has ${csvContent.split(',').length} columns`);
       
+      let csvRowCount = 0;
       for (const time of swimmerTimes) {
         const swimmer = allSwimmers.find(s => s.id === time.swimmerId);
         if (swimmer) {
+          csvRowCount++;
           const availabilityStatus = swimmer.isAvailable ? 'true' : 'false';
-          console.log(`BACKEND: Swimmer ${swimmer.firstName} ${swimmer.lastName} - isAvailable: ${swimmer.isAvailable} -> CSV: ${availabilityStatus}`);
           
-          // Build CSV row with explicit column mapping
+          // Build CSV row with explicit column mapping - ensuring no undefined values
           const csvRow = [
-            swimmer.firstName,
-            swimmer.lastName,
-            swimmer.asaNo,
-            swimmer.dateOfBirth,
-            time.meet,
-            time.date,
-            time.event,
-            time.time,
-            time.course,
-            swimmer.gender,
-            swimmer.age,
+            swimmer.firstName || '',
+            swimmer.lastName || '',
+            swimmer.asaNo || '',
+            swimmer.dateOfBirth || '',
+            time.meet || '',
+            time.date || '',
+            time.event || '',
+            time.time || '',
+            time.course || '',
+            swimmer.gender || '',
+            swimmer.age || '',
             '', // County_QT (empty)
             '', // Count_CT (empty)
             time.countyQualify || 'No',
-            time.timeInSeconds,
+            time.timeInSeconds || '',
             availabilityStatus
-          ].join(',');
+          ];
           
-          console.log(`BACKEND: CSV row has ${csvRow.split(',').length} columns: ${csvRow}`);
-          csvContent += csvRow + '\n';
+          const csvRowString = csvRow.join(',');
+          
+          if (csvRowCount <= 3) { // Log first 3 rows for debugging
+            console.log(`BACKEND: Row ${csvRowCount} - Swimmer ${swimmer.firstName} ${swimmer.lastName} (Available: ${swimmer.isAvailable})`);
+            console.log(`BACKEND: CSV row has ${csvRow.length} columns: ${csvRowString}`);
+          }
+          
+          csvContent += csvRowString + '\n';
         }
       }
       
+      console.log(`BACKEND: Generated CSV with ${csvRowCount} data rows`);
+      
       fs.writeFileSync(memberPbsPath, csvContent);
+      
+      // Debug: Check what was actually written
+      const writtenContent = fs.readFileSync(memberPbsPath, 'utf8');
+      const lines = writtenContent.split('\n');
+      console.log(`BACKEND: CSV file written with ${lines.length} lines total`);
+      console.log(`BACKEND: Header line: ${lines[0]}`);
+      if (lines.length > 1) {
+        console.log(`BACKEND: First data line: ${lines[1]}`);
+        console.log(`BACKEND: First data line has ${lines[1].split(',').length} columns`);
+      }
 
       // Export county times to CSV
       const countyTimes = await storage.getCountyTimes();
