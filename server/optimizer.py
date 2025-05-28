@@ -174,6 +174,10 @@ def main():
         print(f"Processing assignment: {assignment}", file=sys.stderr)
         # Find swimmer by ASA number (index 6 in full_list)
         swimmer_name = None
+        print(f"Searching for ASA: {assignment['swimmerId']} in {len(full_list)} swimmers", file=sys.stderr)
+        for i, time_row in enumerate(full_list[:5]):  # Show first 5 for debugging
+            print(f"  Swimmer {i}: ASA={time_row[6]}, Name={time_row[3]} {time_row[4]}", file=sys.stderr)
+        
         for time_row in full_list:
             if str(time_row[6]) == str(assignment["swimmerId"]):
                 swimmer_name = f"{time_row[3]} {time_row[4]}"  # First + Last Name
@@ -186,7 +190,11 @@ def main():
             gender_match = "Male" if assignment['gender'] == "M" else "Female"
             
             print(f"Looking for event: {event_match}, {age_match}, {gender_match}", file=sys.stderr)
+            print(f"Available events: {len(event_list)}", file=sys.stderr)
+            for i, event in enumerate(event_list[:5]):  # Show first 5 events
+                print(f"  Event {i}: {event[0]}, {event[1]}, {event[2]}, Status: {event[-1]}", file=sys.stderr)
             
+            event_found = False
             for event in event_list:
                 if (event[0] == event_match and 
                     event[1] == age_match and 
@@ -196,7 +204,11 @@ def main():
                     protected_events.add((event[0], event[1], event[2]))  # Protect this event
                     print(f"PROTECTED: Assigned {swimmer_name} to {event_match} {age_match} {gender_match}", file=sys.stderr)
                     swimmer_event_count[swimmer_name] = swimmer_event_count.get(swimmer_name, 0) + 1
+                    event_found = True
                     break
+            
+            if not event_found:
+                print(f"ERROR: Could not find matching event for {event_match} {age_match} {gender_match}", file=sys.stderr)
         else:
             print(f"ERROR: Could not find swimmer with ASA: {assignment['swimmerId']}", file=sys.stderr)
             print("Available ASA numbers:", [row[6] for row in full_list[:5]], file=sys.stderr)
