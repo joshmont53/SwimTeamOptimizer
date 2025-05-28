@@ -65,24 +65,34 @@ def main():
 
     # Load swimmer data - ONLY AVAILABLE SWIMMERS
     swimmer_list = []
+    total_rows_processed = 0
     with open(member_pbs_file, newline='') as f:
         reader = csv.reader(f)
-        next(reader)  # Skip header
+        header = next(reader)  # Skip header
+        print(f"PYTHON DEBUG: CSV Header: {header}", file=sys.stderr)
+        
         for row in reader:
+            total_rows_processed += 1
+            print(f"PYTHON DEBUG: Row {total_rows_processed}: Length={len(row)}, Course={row[8] if len(row) > 8 else 'N/A'}", file=sys.stderr)
+            
             if len(row) >= 16 and row[8] == 'SC':
                 # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
                 #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14             15
                 
                 # Debug the availability value
                 availability_value = row[15] if len(row) > 15 else "MISSING"
-                print(f"PYTHON DEBUG: Swimmer {row[0]} {row[1]} - availability column value: '{availability_value}'", file=sys.stderr)
+                print(f"PYTHON DEBUG: Swimmer {row[0]} {row[1]} - availability: '{availability_value}'", file=sys.stderr)
                 
-                is_available = row[15].lower() == 'true' if len(row) > 15 else True  # Default to available if column missing
+                is_available = availability_value.lower() == 'true'
                 if is_available:
                     swimmer_list.append([row[0], row[1], row[6], row[9], row[10], row[14], row[2]])  # Added ASA number at end
                     print(f"PYTHON: ✓ Including available swimmer {row[0]} {row[1]}", file=sys.stderr)
                 else:
                     print(f"PYTHON: ✗ EXCLUDING unavailable swimmer {row[0]} {row[1]}", file=sys.stderr)
+            else:
+                print(f"PYTHON DEBUG: Skipping row - Length: {len(row)}, Course: {row[8] if len(row) > 8 else 'N/A'}", file=sys.stderr)
+    
+    print(f"PYTHON: Processed {total_rows_processed} total rows from CSV", file=sys.stderr)
     
     print(f"PYTHON: Final swimmer count after availability filtering: {len(swimmer_list)} swimmers", file=sys.stderr)
 

@@ -380,6 +380,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`BACKEND: Total swimmers: ${allSwimmers.length}, Total swim times: ${swimmerTimes.length}`);
       
+      // Debug swimmer availability states
+      const availableCount = allSwimmers.filter(s => s.isAvailable).length;
+      const unavailableCount = allSwimmers.length - availableCount;
+      console.log(`BACKEND: Available swimmers: ${availableCount}, Unavailable swimmers: ${unavailableCount}`);
+      
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable\n';
       
       for (const time of swimmerTimes) {
