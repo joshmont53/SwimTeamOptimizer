@@ -58,7 +58,9 @@ def main():
     try:
         with open(pre_assignments_file, 'r') as f:
             pre_assignments = json.load(f)
-    except:
+        print(f"LOADED PRE-ASSIGNMENTS: {pre_assignments}")
+    except Exception as e:
+        print(f"ERROR LOADING PRE-ASSIGNMENTS: {e}")
         pass  # No pre-assignments file or empty
 
     # Load swimmer data
@@ -168,9 +170,11 @@ def main():
     # Handle pre-assigned individual events BEFORE optimization
     swimmer_event_count = {}
     protected_events = set()  # Tracks pre-assigned events to prevent overwrites
-    # Debug logging to file
-    with open('debug.log', 'w') as debug_file:
-        debug_file.write(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments\n")
+    print(f"PYTHON: Processing {len(pre_assignments.get('individual', []))} pre-assignments")
+    
+    if len(pre_assignments.get('individual', [])) > 0:
+        first_assignment = pre_assignments['individual'][0]
+        print(f"PYTHON: First assignment is {first_assignment}")
     
     print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments", file=sys.stderr)
     

@@ -408,8 +408,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       python.on('close', async (code) => {
         // Show Python debugging output
+        if (output) {
+          console.log('PYTHON STDOUT:');
+          console.log(output);
+        }
         if (errorOutput) {
-          console.log('PYTHON DEBUG OUTPUT:');
+          console.log('PYTHON STDERR:');
           console.log(errorOutput);
         }
 
