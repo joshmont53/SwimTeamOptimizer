@@ -75,17 +75,26 @@ def main():
             total_rows_processed += 1
             print(f"PYTHON DEBUG: Row {total_rows_processed}: Length={len(row)}, Course={row[8] if len(row) > 8 else 'N/A'}", file=sys.stderr)
             
-            if len(row) >= 16 and row[8] == 'SC':
+            if len(row) >= 15 and row[8] == 'SC':
                 # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
                 #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14             15
                 
-                # Debug the availability value
-                availability_value = row[15] if len(row) > 15 else "MISSING"
-                print(f"PYTHON DEBUG: Swimmer {row[0]} {row[1]} - availability: '{availability_value}'", file=sys.stderr)
+                # Check what's actually in the last column - if it's a time value, there's a backend issue
+                last_column = row[-1] if len(row) > 0 else "EMPTY"
+                second_last = row[-2] if len(row) > 1 else "EMPTY"
                 
-                is_available = availability_value.lower() == 'true'
+                print(f"PYTHON DEBUG: Swimmer {row[0]} {row[1]} - Row length: {len(row)}", file=sys.stderr)
+                print(f"  Last column (index {len(row)-1}): '{last_column}'", file=sys.stderr)
+                print(f"  Second last (index {len(row)-2}): '{second_last}'", file=sys.stderr)
+                
+                # The availability should be the last column
+                availability_value = last_column
+                
+                is_available = availability_value.lower() == 'true' if availability_value != "MISSING" else True
                 if is_available:
-                    swimmer_list.append([row[0], row[1], row[6], row[9], row[10], row[14], row[2]])  # Added ASA number at end
+                    # Use correct column for time_in_seconds (should be second-to-last if availability is last)
+                    time_seconds = second_last if len(row) >= 16 else row[14] if len(row) == 15 else row[-2]
+                    swimmer_list.append([row[0], row[1], row[6], row[9], row[10], time_seconds, row[2]])  # Added ASA number at end
                     print(f"PYTHON: ✓ Including available swimmer {row[0]} {row[1]}", file=sys.stderr)
                 else:
                     print(f"PYTHON: ✗ EXCLUDING unavailable swimmer {row[0]} {row[1]}", file=sys.stderr)
@@ -97,19 +106,22 @@ def main():
     print(f"PYTHON: Final swimmer count after availability filtering: {len(swimmer_list)} swimmers", file=sys.stderr)
     
     # Write detailed debug output to file
-    with open('debug_output.txt', 'w') as debug_file:
-        debug_file.write("=== SWIMMER AVAILABILITY DEBUG OUTPUT ===\n\n")
-        debug_file.write(f"Total swimmers processed from CSV: {total_rows_processed}\n")
-        debug_file.write(f"Swimmers included in optimization: {len(swimmer_list)}\n\n")
-        
-        debug_file.write("SWIMMERS INCLUDED IN OPTIMIZATION:\n")
-        for i, swimmer in enumerate(swimmer_list):
-            debug_file.write(f"  {i+1}. {swimmer[0]} {swimmer[1]} (ASA: {swimmer[6]})\n")
-        
-        if len(swimmer_list) == 0:
-            debug_file.write("  >>> NO SWIMMERS INCLUDED - THIS IS THE BUG! <<<\n")
-        
-        debug_file.write(f"\nEvent list contains {len(event_list)} events\n\n")
+    try:
+        with open('debug_output.txt', 'w') as debug_file:
+            debug_file.write("=== SWIMMER AVAILABILITY DEBUG OUTPUT ===\n\n")
+            debug_file.write(f"Total swimmers processed from CSV: {total_rows_processed}\n")
+            debug_file.write(f"Swimmers included in optimization: {len(swimmer_list)}\n\n")
+            
+            debug_file.write("SWIMMERS INCLUDED IN OPTIMIZATION:\n")
+            for i, swimmer in enumerate(swimmer_list):
+                debug_file.write(f"  {i+1}. {swimmer[0]} {swimmer[1]} (ASA: {swimmer[6]})\n")
+            
+            if len(swimmer_list) == 0:
+                debug_file.write("  >>> NO SWIMMERS INCLUDED - FILTERING BUG DETECTED! <<<\n")
+            
+            debug_file.write(f"\nProceeding to optimization with {len(swimmer_list)} swimmers...\n\n")
+    except Exception as e:
+        print(f"DEBUG FILE ERROR: {e}", file=sys.stderr)
 
     # Load county times
     county_times = []

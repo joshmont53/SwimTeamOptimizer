@@ -1,0 +1,7 @@
+=== SWIMMER AVAILABILITY DEBUG OUTPUT ===
+
+Total swimmers processed from CSV: 1363
+Swimmers included in optimization: 0
+
+SWIMMERS INCLUDED IN OPTIMIZATION:
+  >>> NO SWIMMERS INCLUDED - THIS IS THE BUG! <<<
