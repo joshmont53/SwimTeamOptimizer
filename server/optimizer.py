@@ -70,7 +70,10 @@ def main():
         next(reader)  # Skip header
         for row in reader:
             if len(row) >= 15 and row[8] == 'SC':
-                swimmer_list.append([row[0], row[1], row[6], row[9], row[10], row[14]])
+                # FIXED: Include ASA number in correct position
+                # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds
+                #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14
+                swimmer_list.append([row[0], row[1], row[6], row[9], row[10], row[14], row[2]])  # Added ASA number at end
 
     # Load county times
     county_times = []
@@ -130,7 +133,7 @@ def main():
             if min(int(swimmer[4]), 16) > event[1]:
                 continue
             else:
-                full_list.append([event[0], event[1], event[2], swimmer[0], swimmer[1], float(swimmer[5]), swimmer[2]])
+                full_list.append([event[0], event[1], event[2], swimmer[0], swimmer[1], float(swimmer[5]), swimmer[6]])  # swimmer[6] is now ASA number
 
     # Append qualifying time to each entry
     for i in range(len(full_list)):
@@ -192,13 +195,16 @@ def main():
             row_asa = str(time_row[6]).strip()
             print(f"  Row {i}: ASA='{row_asa}' (type: {type(time_row[6])}), Name={time_row[3]} {time_row[4]}", file=sys.stderr)
         
-        # Improved ASA matching with string cleaning
+        # Fixed ASA matching - ASA number is now correctly at index 6
         for time_row in full_list:
-            row_asa = str(time_row[6]).strip()
-            if target_asa == row_asa:
-                swimmer_name = f"{time_row[3]} {time_row[4]}"  # First + Last Name
-                print(f"SUCCESS: Found swimmer '{swimmer_name}' for ASA '{target_asa}'", file=sys.stderr)
-                break
+            if len(time_row) >= 7:  # Ensure we have enough columns
+                # full_list structure: [event, age, gender, first_name, last_name, time, asa_no]
+                swimmer_asa = str(time_row[6]).strip() if time_row[6] else None
+                
+                if target_asa == swimmer_asa:
+                    swimmer_name = f"{time_row[3]} {time_row[4]}"
+                    print(f"SUCCESS: Found swimmer '{swimmer_name}' for ASA '{target_asa}'", file=sys.stderr)
+                    break
         
         # Fallback: try name-based matching if ASA fails
         if not swimmer_name:
