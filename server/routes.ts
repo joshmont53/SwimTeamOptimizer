@@ -352,7 +352,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }))
       };
       
-      console.log('Pre-assignments to save:', preAssignments);
+      console.log('BACKEND: Pre-assignments created for Python script:', JSON.stringify(preAssignments, null, 2));
+      console.log(`BACKEND: Found ${preAssignments.individual.length} individual pre-assignments`);
+      
+      // Validate swimmer IDs exist in available swimmers
+      const allSwimmers = await storage.getSwimmers();
+      const availableSwimmersForValidation = allSwimmers.filter(s => s.isAvailable);
+      
+      for (const assignment of preAssignments.individual) {
+        const swimmer = availableSwimmersForValidation.find(s => s.asaNo === assignment.swimmerId);
+        if (swimmer) {
+          console.log(`BACKEND: Validated pre-assignment - ${swimmer.firstName} ${swimmer.lastName} (ASA: ${assignment.swimmerId}) -> ${assignment.event} ${assignment.ageCategory} ${assignment.gender}`);
+        } else {
+          console.log(`BACKEND: WARNING - Pre-assignment references unknown swimmer ASA: ${assignment.swimmerId}`);
+        }
+      }
       
       // Clear all assignments - the Python script will regenerate everything
       await storage.clearEventAssignments();
@@ -361,9 +375,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
       console.log('Pre-assignments saved to file:', preAssignments);
 
-      // Export swimmer data to CSV
-      const swimmers = await storage.getSwimmers();
-      const availableSwimmers = swimmers.filter(s => s.isAvailable);
+      // Export swimmer data to CSV (using existing variables)
       const swimmerTimes = await storage.getSwimmerTimes();
       
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds\n';

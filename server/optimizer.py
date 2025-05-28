@@ -182,46 +182,88 @@ def main():
         print(f"Processing assignment: {assignment}", file=sys.stderr)
         # Find swimmer by ASA number (index 6 in full_list)
         swimmer_name = None
-        print(f"Searching for ASA: {assignment['swimmerId']} in {len(full_list)} swimmers", file=sys.stderr)
-        for i, time_row in enumerate(full_list[:5]):  # Show first 5 for debugging
-            print(f"  Swimmer {i}: ASA={time_row[6]}, Name={time_row[3]} {time_row[4]}", file=sys.stderr)
         
+        # Enhanced debugging for ASA number matching
+        target_asa = str(assignment['swimmerId']).strip()
+        print(f"DEBUG: Looking for ASA '{target_asa}' (type: {type(assignment['swimmerId'])}) in {len(full_list)} swimmers", file=sys.stderr)
+        
+        # Show sample of available ASA numbers for debugging
+        for i, time_row in enumerate(full_list[:10]):  # Show first 10 for debugging
+            row_asa = str(time_row[6]).strip()
+            print(f"  Row {i}: ASA='{row_asa}' (type: {type(time_row[6])}), Name={time_row[3]} {time_row[4]}", file=sys.stderr)
+        
+        # Improved ASA matching with string cleaning
         for time_row in full_list:
-            if str(time_row[6]) == str(assignment["swimmerId"]):
+            row_asa = str(time_row[6]).strip()
+            if target_asa == row_asa:
                 swimmer_name = f"{time_row[3]} {time_row[4]}"  # First + Last Name
-                print(f"Found swimmer: {swimmer_name} for ASA: {assignment['swimmerId']}", file=sys.stderr)
+                print(f"SUCCESS: Found swimmer '{swimmer_name}' for ASA '{target_asa}'", file=sys.stderr)
                 break
+        
+        # Fallback: try name-based matching if ASA fails
+        if not swimmer_name:
+            print(f"WARNING: ASA match failed for '{target_asa}', attempting name-based fallback...", file=sys.stderr)
+            # This would require swimmer name in assignment data - skip for now
         
         if swimmer_name:
             event_match = assignment['event']
             age_match = assignment['ageCategory']
-            gender_match = "Male" if assignment['gender'] == "M" else "Female"
             
+            # Enhanced gender conversion with debugging
+            original_gender = assignment['gender']
+            if original_gender in ['M', 'Male']:
+                gender_match = "Male"
+            elif original_gender in ['F', 'Female']:
+                gender_match = "Female"
+            else:
+                print(f"ERROR: Unknown gender format '{original_gender}' in assignment", file=sys.stderr)
+                continue
+            
+            print(f"DEBUG: Gender conversion '{original_gender}' -> '{gender_match}'", file=sys.stderr)
             print(f"Looking for event: {event_match}, {age_match}, {gender_match}", file=sys.stderr)
             print(f"Available events: {len(event_list)}", file=sys.stderr)
             for i, event in enumerate(event_list[:5]):  # Show first 5 events
                 print(f"  Event {i}: {event[0]}, {event[1]}, {event[2]}, Status: {event[-1]}", file=sys.stderr)
             
             event_found = False
+            event_already_assigned = False
+            
+            # Check if event exists and get its current status
             for event in event_list:
                 if (event[0] == event_match and 
                     event[1] == age_match and 
-                    event[2] == gender_match and 
-                    event[-1] == 'Not allocated'):
-                    event[-1] = swimmer_name
-                    protected_events.add((event[0], event[1], event[2]))  # Protect this event
-                    print(f"PROTECTED: Assigned {swimmer_name} to {event_match} {age_match} {gender_match}", file=sys.stderr)
-                    swimmer_event_count[swimmer_name] = swimmer_event_count.get(swimmer_name, 0) + 1
-                    event_found = True
+                    event[2] == gender_match):
+                    
+                    if event[-1] == 'Not allocated':
+                        # Event is available - assign it
+                        event[-1] = swimmer_name
+                        protected_events.add((event[0], event[1], event[2]))  # Protect this event
+                        print(f"SUCCESS: Pre-assigned {swimmer_name} to {event_match} {age_match} {gender_match}", file=sys.stderr)
+                        swimmer_event_count[swimmer_name] = swimmer_event_count.get(swimmer_name, 0) + 1
+                        event_found = True
+                    else:
+                        # Event already has someone assigned
+                        print(f"WARNING: Event {event_match} {age_match} {gender_match} already assigned to {event[-1]}", file=sys.stderr)
+                        event_already_assigned = True
                     break
             
-            if not event_found:
-                print(f"ERROR: Could not find matching event for {event_match} {age_match} {gender_match}", file=sys.stderr)
+            if not event_found and not event_already_assigned:
+                print(f"ERROR: Event not found in event list: {event_match} {age_match} {gender_match}", file=sys.stderr)
+                print(f"Available events matching gender {gender_match}:", file=sys.stderr)
+                for event in event_list[:10]:
+                    if event[2] == gender_match:
+                        print(f"  - {event[0]} {event[1]} {event[2]}", file=sys.stderr)
         else:
             print(f"ERROR: Could not find swimmer with ASA: {assignment['swimmerId']}", file=sys.stderr)
             print("Available ASA numbers:", [row[6] for row in full_list[:5]], file=sys.stderr)
 
+    # Show summary of pre-assignments before optimization
+    print(f"SUMMARY: {len(protected_events)} events are protected from optimization:", file=sys.stderr)
+    for protected in protected_events:
+        print(f"  - {protected[0]} {protected[1]} {protected[2]}", file=sys.stderr)
+
     # Allocate swimmers to events (max 2 per swimmer)
+    optimization_assignments = 0
     for time in full_list:
         swimmer_name = time[-1]
         
@@ -235,15 +277,20 @@ def main():
 
         for event in event_list:
             if event[0] == time[0] and event[1] == time[1] and event[2] == time[2]:
-                # Skip protected events
-                if (event[0], event[1], event[2]) in protected_events:
-                    print(f"Skipping protected event: {event[0]} {event[1]} {event[2]} -> {event[-1]}", file=sys.stderr)
+                # Skip protected events - THIS IS CRITICAL
+                event_key = (event[0], event[1], event[2])
+                if event_key in protected_events:
+                    print(f"PROTECTION: Skipping protected event {event[0]} {event[1]} {event[2]} (assigned to {event[-1]})", file=sys.stderr)
                     continue
                     
                 if event[-1] == 'Not allocated':
                     event[-1] = swimmer_name
                     swimmer_event_count[swimmer_name] = swimmer_event_count.get(swimmer_name, 0) + 1
+                    optimization_assignments += 1
+                    print(f"AUTO-ASSIGNED: {swimmer_name} to {event[0]} {event[1]} {event[2]}", file=sys.stderr)
                     break
+    
+    print(f"OPTIMIZATION COMPLETE: {optimization_assignments} events auto-assigned, {len(protected_events)} pre-assigned", file=sys.stderr)
 
     # Build relay swimmers
     relay_swimmers = {}
