@@ -25,9 +25,10 @@ interface ResultsSectionProps {
       totalEvents: number;
     };
   };
+  onBackToEventAssignment: () => void;
 }
 
-export default function ResultsSection({ results }: ResultsSectionProps) {
+export default function ResultsSection({ results, onBackToEventAssignment }: ResultsSectionProps) {
   const stats = results.stats || {
     qualifyingTimes: results.individual.filter(r => r.status === 'QT').length,
     averageIndex: results.individual.reduce((acc, r) => acc + (r.index || 0), 0) / results.individual.length,
@@ -64,7 +65,7 @@ export default function ResultsSection({ results }: ResultsSectionProps) {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-trophy text-warning mr-3"></i>
-            <h2 className="text-lg font-semibold text-gray-900">Step 4: Optimization Results</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Step 4: Optimisation Results</h2>
           </div>
           <div className="flex items-center space-x-3">
             <span className="text-sm text-gray-600">
@@ -161,7 +162,7 @@ export default function ResultsSection({ results }: ResultsSectionProps) {
         <div className="mt-6 flex justify-between items-center">
           <Button 
             variant="outline"
-            onClick={() => window.history.back()}
+            onClick={onBackToEventAssignment} // Fixed: Now properly navigates back to event assignment step
             className="border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             ← Back to Event Assignment

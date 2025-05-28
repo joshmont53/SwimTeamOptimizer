@@ -36,6 +36,10 @@ export default function Home() {
     setCurrentStep(4);
   };
 
+  const handleBackToEventAssignment = () => {
+    setCurrentStep(3);
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen font-roboto">
       {/* Header */}
@@ -44,7 +48,7 @@ export default function Home() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <i className="fas fa-swimmer text-primary-500 text-2xl mr-3"></i>
-              <h1 className="text-xl font-semibold text-gray-900">Swimming Team Optimizer</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Swimming Team Optimiser</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
@@ -92,7 +96,10 @@ export default function Home() {
 
         {/* Step 4: Results */}
         {currentStep >= 4 && optimizationResults && (
-          <ResultsSection results={optimizationResults} />
+          <ResultsSection 
+            results={optimizationResults} 
+            onBackToEventAssignment={handleBackToEventAssignment}
+          />
         )}
       </main>
 

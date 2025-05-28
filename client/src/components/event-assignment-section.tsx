@@ -50,7 +50,7 @@ export default function EventAssignmentSection({
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Optimization failed');
+        throw new Error(errorData.message || 'Optimisation failed');
       }
       
       return response.json();
@@ -59,15 +59,15 @@ export default function EventAssignmentSection({
       setIsOptimizing(false);
       onOptimizationComplete(results);
       toast({
-        title: "Optimization complete",
-        description: "Team selection has been optimized successfully",
+        title: "Optimisation complete",
+        description: "Team selection has been optimised successfully",
       });
     },
     onError: (error: any) => {
       setIsOptimizing(false);
       toast({
-        title: "Optimization failed",
-        description: error.message || "Failed to run optimization",
+        title: "Optimisation failed",
+        description: error.message || "Failed to run optimisation",
         variant: "destructive",
       });
     }
@@ -330,11 +330,11 @@ export default function EventAssignmentSection({
           >
             {isOptimizing ? (
               <>
-                <i className="fas fa-spinner fa-spin mr-2"></i>Optimizing...
+                <i className="fas fa-spinner fa-spin mr-2"></i>Optimising...
               </>
             ) : (
               <>
-                <i className="fas fa-play mr-2"></i>Run Team Optimization
+                <i className="fas fa-play mr-2"></i>Run Team Optimisation
               </>
             )}
           </Button>
