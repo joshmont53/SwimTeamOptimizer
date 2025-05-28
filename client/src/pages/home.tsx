@@ -40,6 +40,14 @@ export default function Home() {
     setCurrentStep(3);
   };
 
+  const handleBackToFileUpload = () => {
+    setCurrentStep(1);
+  };
+
+  const handleBackToSquadSelection = () => {
+    setCurrentStep(2);
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen font-roboto">
       {/* Header */}
@@ -81,6 +89,7 @@ export default function Home() {
             swimmers={swimmers}
             isActive={currentStep === 2}
             onSquadConfirmed={handleSquadConfirmed}
+            onBackToFileUpload={handleBackToFileUpload}
             refetchSwimmers={refetchSwimmers}
           />
         )}
@@ -91,6 +100,7 @@ export default function Home() {
             swimmers={swimmers}
             isActive={currentStep === 3}
             onOptimizationComplete={handleOptimizationComplete}
+            onBackToSquadSelection={handleBackToSquadSelection}
           />
         )}
 

@@ -12,6 +12,7 @@ interface SquadSelectionSectionProps {
   swimmers: Swimmer[];
   isActive: boolean;
   onSquadConfirmed: () => void;
+  onBackToFileUpload: () => void;
   refetchSwimmers: () => void;
 }
 
@@ -19,6 +20,7 @@ export default function SquadSelectionSection({
   swimmers, 
   isActive, 
   onSquadConfirmed, 
+  onBackToFileUpload,
   refetchSwimmers 
 }: SquadSelectionSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -214,7 +216,7 @@ export default function SquadSelectionSection({
           <div className="flex items-center space-x-3">
             <Button 
               variant="outline"
-              onClick={() => window.location.reload()}
+              onClick={onBackToFileUpload} // Fixed: Now properly navigates back to file upload step
               className="border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               ← Back to Upload

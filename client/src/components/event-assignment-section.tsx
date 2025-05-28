@@ -10,6 +10,7 @@ interface EventAssignmentSectionProps {
   swimmers: Swimmer[];
   isActive: boolean;
   onOptimizationComplete: (results: any) => void;
+  onBackToSquadSelection: () => void;
 }
 
 interface Events {
@@ -28,7 +29,8 @@ interface Events {
 export default function EventAssignmentSection({ 
   swimmers, 
   isActive, 
-  onOptimizationComplete 
+  onOptimizationComplete,
+  onBackToSquadSelection 
 }: EventAssignmentSectionProps) {
   const [eventAssignments, setEventAssignments] = useState<Record<string, number | null>>({});
   const [relayAssignments, setRelayAssignments] = useState<Record<string, number | null>>({});
@@ -318,7 +320,7 @@ export default function EventAssignmentSection({
         <div className="mt-6 flex justify-between items-center">
           <Button 
             variant="outline"
-            onClick={() => window.history.back()}
+            onClick={onBackToSquadSelection} // Fixed: Now properly navigates back to squad selection step
             className="border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             ← Back to Squad Selection
