@@ -75,7 +75,7 @@ def main():
             total_rows_processed += 1
             print(f"PYTHON DEBUG: Row {total_rows_processed}: Length={len(row)}, Course={row[8] if len(row) > 8 else 'N/A'}", file=sys.stderr)
             
-            if len(row) >= 15 and row[8] == 'SC':
+            if len(row) >= 14 and row[8] == 'SC':  # Reduced minimum from 15 to 14 for backwards compatibility
                 # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
                 #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14             15
                 
@@ -87,19 +87,25 @@ def main():
                 print(f"  Last column (index {len(row)-1}): '{last_column}'", file=sys.stderr)
                 print(f"  Second last (index {len(row)-2}): '{second_last}'", file=sys.stderr)
                 
-                # The availability should be the last column (index 15)
-                if len(row) >= 16:  # Ensure we have the availability column
-                    availability_value = row[15]  # Use explicit index instead of row[-1]
+                # Robust availability detection
+                if len(row) >= 16:  # Has explicit availability column
+                    availability_value = row[15]
+                    print(f"PYTHON DEBUG: Using explicit availability column (index 15): '{availability_value}'", file=sys.stderr)
+                elif len(row) == 15:  # Old format without availability column
+                    # If no availability column, assume all swimmers are available by default
+                    availability_value = "true"
+                    print(f"PYTHON DEBUG: No availability column found, defaulting to available", file=sys.stderr)
                 else:
-                    availability_value = last_column  # Fallback to last column
+                    availability_value = "true"  # Default fallback
+                    print(f"PYTHON DEBUG: Unexpected row length {len(row)}, defaulting to available", file=sys.stderr)
                 
-                # Fix the availability check - ensure we handle the string properly
+                # Parse availability value
                 if availability_value and availability_value.strip():
                     is_available = availability_value.strip().lower() == 'true'
                 else:
-                    is_available = True  # Default to available if missing
+                    is_available = True  # Default to available if missing or empty
                 
-                print(f"PYTHON DEBUG: Row has {len(row)} columns, Expected 16. Availability value: '{availability_value}' -> is_available: {is_available}", file=sys.stderr)
+                print(f"PYTHON DEBUG: Final availability decision: '{availability_value}' -> is_available: {is_available}", file=sys.stderr)
                 if is_available:
                     # CSV structure: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
                     #                0           1          2       3             4     5    6      7        8       9       10      11        12       13             14             15

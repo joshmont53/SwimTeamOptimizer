@@ -378,6 +378,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Export swimmer data to CSV - ALL SWIMMERS WITH AVAILABILITY STATUS
       const swimmerTimes = await storage.getSwimmerTimes();
       
+      // First, let's make sure we have some available swimmers
+      console.log(`BACKEND: About to process ${swimmerTimes.length} swimmer times for ${allSwimmers.length} swimmers`);
+      
       console.log(`BACKEND: Total swimmers: ${allSwimmers.length}, Total swim times: ${swimmerTimes.length}`);
       
       // Debug swimmer availability states
@@ -386,7 +389,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`BACKEND: Available swimmers: ${availableCount}, Unavailable swimmers: ${unavailableCount}`);
       
       let csvContent = 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable\n';
-      console.log(`BACKEND: CSV Header has ${csvContent.split(',').length} columns`);
+      console.log(`BACKEND: CSV Header has ${csvContent.trim().split(',').length} columns`);
       
       let csvRowCount = 0;
       for (const time of swimmerTimes) {
