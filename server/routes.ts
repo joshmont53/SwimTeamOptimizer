@@ -299,16 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create event assignment
-  app.post("/api/event-assignments", async (req, res) => {
-    try {
-      const validatedData = insertEventAssignmentSchema.parse(req.body);
-      const assignment = await storage.createEventAssignment(validatedData);
-      res.json(assignment);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to create event assignment" });
-    }
-  });
+
 
   // Create relay assignment
   app.post("/api/relay-assignments", async (req, res) => {
