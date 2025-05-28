@@ -317,6 +317,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/optimize", async (req, res) => {
     console.log('Optimization endpoint called');
     
+    // First, let's check what assignments exist before doing anything
+    const testAssignments = await storage.getEventAssignments();
+    console.log('DEBUG: Current assignments in storage:', testAssignments);
+    
     try {
       // Use fixed file names in the script directory
       const scriptDir = path.join(process.cwd(), 'server');
