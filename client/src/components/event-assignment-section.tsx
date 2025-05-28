@@ -42,7 +42,7 @@ export default function EventAssignmentSection({
 
   const optimizeMutation = useMutation({
     mutationFn: async () => {
-      console.log('Frontend: Starting optimization request');
+      console.log('Frontend: Starting optimisation request');
       const response = await fetch('/api/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
