@@ -169,7 +169,6 @@ def main():
     swimmer_event_count = {}
     protected_events = set()  # Tracks pre-assigned events to prevent overwrites
     print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments", file=sys.stderr)
-    print(f"Pre-assignments data: {pre_assignments}", file=sys.stderr)
     
     for assignment in pre_assignments.get("individual", []):
         print(f"Processing assignment: {assignment}", file=sys.stderr)

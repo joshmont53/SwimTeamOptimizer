@@ -78,15 +78,19 @@ export default function EventAssignmentSection({
   const handleRunOptimization = async () => {
     setIsOptimizing(true);
     
+    console.log("Event assignments to save:", eventAssignments);
+    
     // Save event assignments first
     const assignmentPromises = [];
     
     for (const [eventKey, swimmerId] of Object.entries(eventAssignments)) {
       if (swimmerId) {
+        console.log(`Processing assignment: ${eventKey} -> ${swimmerId}`);
         const [event, ageCategory, gender] = eventKey.split('_');
         // Find the swimmer to get their ASA number
         const swimmer = swimmers.find(s => s.id.toString() === swimmerId);
         if (swimmer) {
+          console.log(`Found swimmer: ${swimmer.firstName} ${swimmer.lastName} (ASA: ${swimmer.asaNo})`);
           assignmentPromises.push(
             fetch('/api/event-assignments', {
               method: 'POST',
@@ -100,9 +104,13 @@ export default function EventAssignmentSection({
               })
             })
           );
+        } else {
+          console.log(`ERROR: Could not find swimmer with ID ${swimmerId}`);
         }
       }
     }
+    
+    console.log(`Saving ${assignmentPromises.length} pre-assignments...`);
     
     try {
       await Promise.all(assignmentPromises);
