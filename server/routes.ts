@@ -225,24 +225,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Event assignments endpoints
   app.post("/api/event-assignments", async (req, res) => {
-    console.log("DEBUG: Assignment endpoint called with body:", req.body);
-    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    console.log("ASSIGNMENT API: Called with body:", JSON.stringify(req.body));
     
     try {
       const validatedData = insertEventAssignmentSchema.parse(req.body);
-      console.log("Validation passed. Data:", JSON.stringify(validatedData, null, 2));
+      console.log("ASSIGNMENT API: Validation passed");
       
       const assignment = await storage.createEventAssignment(validatedData);
-      console.log("Assignment created:", JSON.stringify(assignment, null, 2));
+      console.log("ASSIGNMENT API: Created assignment with ID:", assignment.id);
       
-      // Verify it's actually stored
+      // Immediately verify it's stored
       const allAssignments = await storage.getEventAssignments();
-      console.log("Total assignments in storage:", allAssignments.length);
-      console.log("All assignments:", JSON.stringify(allAssignments, null, 2));
+      console.log("ASSIGNMENT API: Total assignments after save:", allAssignments.length);
       
       res.json(assignment);
     } catch (error) {
-      console.error("ERROR in event assignment:", error);
+      console.error("ASSIGNMENT API ERROR:", error);
       res.status(500).json({ error: "Failed to create event assignment", details: String(error) });
     }
   });
