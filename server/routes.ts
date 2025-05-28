@@ -260,30 +260,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const events = {
         individual: [
+          // 11U Events (50m distances)
           { event: "50m Freestyle", ageCategory: 11, gender: "M" },
           { event: "50m Freestyle", ageCategory: 11, gender: "F" },
+          { event: "50m Backstroke", ageCategory: 11, gender: "M" },
+          { event: "50m Backstroke", ageCategory: 11, gender: "F" },
+          { event: "50m Breaststroke", ageCategory: 11, gender: "M" },
+          { event: "50m Breaststroke", ageCategory: 11, gender: "F" },
+          { event: "50m Butterfly", ageCategory: 11, gender: "M" },
+          { event: "50m Butterfly", ageCategory: 11, gender: "F" },
+          
+          // 13U Events (100m distances) - PREVIOUSLY MISSING
+          { event: "100m Freestyle", ageCategory: 13, gender: "M" },
+          { event: "100m Freestyle", ageCategory: 13, gender: "F" },
+          { event: "100m Backstroke", ageCategory: 13, gender: "M" },
+          { event: "100m Backstroke", ageCategory: 13, gender: "F" },
+          { event: "100m Breaststroke", ageCategory: 13, gender: "M" },
+          { event: "100m Breaststroke", ageCategory: 13, gender: "F" },
+          { event: "100m Butterfly", ageCategory: 13, gender: "M" },
+          { event: "100m Butterfly", ageCategory: 13, gender: "F" },
+          
+          // 15U Events (100m distances) - PREVIOUSLY COMPLETELY MISSING
+          { event: "100m Freestyle", ageCategory: 15, gender: "M" },
+          { event: "100m Freestyle", ageCategory: 15, gender: "F" },
+          { event: "100m Backstroke", ageCategory: 15, gender: "M" },
+          { event: "100m Backstroke", ageCategory: 15, gender: "F" },
+          { event: "100m Breaststroke", ageCategory: 15, gender: "M" },
+          { event: "100m Breaststroke", ageCategory: 15, gender: "F" },
+          { event: "100m Butterfly", ageCategory: 15, gender: "M" },
+          { event: "100m Butterfly", ageCategory: 15, gender: "F" },
+          
+          // 16U Events (100m + 200m IM) - ALREADY CORRECT
           { event: "100m Freestyle", ageCategory: 16, gender: "M" },
           { event: "100m Freestyle", ageCategory: 16, gender: "F" },
-          { event: "50m Backstroke", ageCategory: 13, gender: "M" },
-          { event: "50m Backstroke", ageCategory: 13, gender: "F" },
           { event: "100m Backstroke", ageCategory: 16, gender: "M" },
           { event: "100m Backstroke", ageCategory: 16, gender: "F" },
-          { event: "50m Breaststroke", ageCategory: 13, gender: "M" },
-          { event: "50m Breaststroke", ageCategory: 13, gender: "F" },
           { event: "100m Breaststroke", ageCategory: 16, gender: "M" },
           { event: "100m Breaststroke", ageCategory: 16, gender: "F" },
-          { event: "50m Butterfly", ageCategory: 13, gender: "M" },
-          { event: "50m Butterfly", ageCategory: 13, gender: "F" },
           { event: "100m Butterfly", ageCategory: 16, gender: "M" },
           { event: "100m Butterfly", ageCategory: 16, gender: "F" },
           { event: "200m Individual Medley", ageCategory: 16, gender: "M" },
           { event: "200m Individual Medley", ageCategory: 16, gender: "F" }
         ],
         relay: [
+          // 11U Relays - PREVIOUSLY MISSING
+          { relayName: "4x50m Freestyle", ageCategory: 11, gender: "M" },
+          { relayName: "4x50m Freestyle", ageCategory: 11, gender: "F" },
+          { relayName: "4x50m Medley", ageCategory: 11, gender: "M" },
+          { relayName: "4x50m Medley", ageCategory: 11, gender: "F" },
+          
+          // 13U Relays - ALREADY CORRECT
           { relayName: "4x50m Freestyle", ageCategory: 13, gender: "M" },
           { relayName: "4x50m Freestyle", ageCategory: 13, gender: "F" },
           { relayName: "4x50m Medley", ageCategory: 13, gender: "M" },
           { relayName: "4x50m Medley", ageCategory: 13, gender: "F" },
+          
+          // 15U Relays - PREVIOUSLY MISSING  
+          { relayName: "4x100m Freestyle", ageCategory: 15, gender: "M" },
+          { relayName: "4x100m Freestyle", ageCategory: 15, gender: "F" },
+          { relayName: "4x100m Medley", ageCategory: 15, gender: "M" },
+          { relayName: "4x100m Medley", ageCategory: 15, gender: "F" },
+          
+          // 16U Relays - ALREADY CORRECT
           { relayName: "4x100m Freestyle", ageCategory: 16, gender: "M" },
           { relayName: "4x100m Freestyle", ageCategory: 16, gender: "F" },
           { relayName: "4x100m Medley", ageCategory: 16, gender: "M" },
