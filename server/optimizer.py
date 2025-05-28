@@ -128,7 +128,7 @@ def main():
             if min(int(swimmer[4]), 16) > event[1]:
                 continue
             else:
-                full_list.append([event[0], event[1], event[2], swimmer[0], swimmer[1], float(swimmer[5])])
+                full_list.append([event[0], event[1], event[2], swimmer[0], swimmer[1], float(swimmer[5]), swimmer[2]])
 
     # Append qualifying time to each entry
     for i in range(len(full_list)):
@@ -172,9 +172,9 @@ def main():
         # Find swimmer by ID (the swimmerId from frontend corresponds to ASA number)
         swimmer_name = None
         for time_row in full_list:
-            # The swimmer ID should match the ASA number in the CSV
-            if str(time_row[2]) == str(assignment["swimmerId"]):  # ASA_No is at index 2 in CSV
-                swimmer_name = f"{time_row[0]} {time_row[1]}"  # First name + Last name
+            # The swimmer ID should match the ASA number (now at index 6 in full_list)
+            if str(time_row[6]) == str(assignment["swimmerId"]):  # ASA_No is now at index 6
+                swimmer_name = f"{time_row[3]} {time_row[4]}"  # First name + Last name (adjusted indices)
                 print(f"Found swimmer: {swimmer_name} for ASA: {assignment['swimmerId']}", file=sys.stderr)
                 break
         
