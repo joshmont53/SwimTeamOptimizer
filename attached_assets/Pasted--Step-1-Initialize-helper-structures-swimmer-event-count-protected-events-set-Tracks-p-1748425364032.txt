@@ -1,0 +1,64 @@
+# Step 1: Initialize helper structures
+swimmer_event_count = {}
+protected_events = set()  # Tracks pre-assigned events to prevent overwrites
+
+# Step 2: Handle pre-assigned individual events
+print(f"Processing {len(pre_assignments.get('individual', []))} pre-assignments", file=sys.stderr)
+
+for assignment in pre_assignments.get("individual", []):
+    print(f"Processing assignment: {assignment}", file=sys.stderr)
+
+    # Find swimmer by ASA number (index 6 in full_list)
+    swimmer_name = None
+    for time_row in full_list:
+        if str(time_row[6]) == str(assignment["swimmerId"]):
+            swimmer_name = f"{time_row[3]} {time_row[4]}"  # First + Last Name
+            print(f"Found swimmer: {swimmer_name} for ASA: {assignment['swimmerId']}", file=sys.stderr)
+            break
+
+    if swimmer_name:
+        event_match = assignment['event']
+        age_match = assignment['ageCategory']
+        gender_match = "Male" if assignment['gender'] == "M" else "Female"
+
+        print(f"Looking for event: {event_match}, {age_match}, {gender_match}", file=sys.stderr)
+
+        for event in event_list:
+            if (event[0] == event_match and
+                event[1] == age_match and
+                event[2] == gender_match and
+                event[-1] == 'Not allocated'):
+
+                event[-1] = swimmer_name
+                protected_events.add((event[0], event[1], event[2]))  # Protect this event
+                print(f"PROTECTED: Assigned {swimmer_name} to {event_match} {age_match} {gender_match}", file=sys.stderr)
+
+                swimmer_event_count[swimmer_name] = swimmer_event_count.get(swimmer_name, 0) + 1
+                break
+    else:
+        print(f"ERROR: Could not find swimmer with ASA: {assignment['swimmerId']}", file=sys.stderr)
+        print("Available ASA numbers:", [row[6] for row in full_list[:5]], file=sys.stderr)
+
+# Step 3: Allocate remaining swimmers to events (max 2 per swimmer)
+for time in full_list:
+    swimmer_name = time[-1]
+
+    current_count = swimmer_event_count.get(swimmer_name, 0)
+    allocated_count = sum(1 for event in event_list if event[-1] == swimmer_name)
+    total_count = max(current_count, allocated_count)
+
+    if total_count >= 2:
+        continue
+
+    for event in event_list:
+        if (event[0] == time[0] and
+            event[1] == time[1] and
+            event[2] == time[2]):
+
+            if (event[0], event[1], event[2]) in protected_events:
+                continue  # Skip protected event
+
+            if event[-1] == 'Not allocated':
+                event[-1] = swimmer_name
+                swimmer_event_count[swimmer_name] = swimmer_event_count.get(swimmer_name, 0) + 1
+                break
