@@ -225,7 +225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Event assignments endpoints
   app.post("/api/event-assignments", async (req, res) => {
-    console.log("=== EVENT ASSIGNMENT ENDPOINT HIT ===");
+    console.log("DEBUG: Assignment endpoint called with body:", req.body);
     console.log("Request body:", JSON.stringify(req.body, null, 2));
     
     try {
@@ -317,9 +317,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/optimize", async (req, res) => {
     console.log('Optimization endpoint called');
     
-    // First, let's check what assignments exist before doing anything
+    // Check assignments in storage when optimization starts
     const testAssignments = await storage.getEventAssignments();
-    console.log('DEBUG: Current assignments in storage:', testAssignments);
+    console.log('OPTIMIZE DEBUG: Assignments in storage:', testAssignments.length);
+    if (testAssignments.length > 0) {
+      console.log('OPTIMIZE DEBUG: First assignment:', JSON.stringify(testAssignments[0], null, 2));
+    }
     
     try {
       // Use fixed file names in the script directory
