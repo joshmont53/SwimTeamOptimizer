@@ -4,4 +4,20 @@ Total swimmers processed from CSV: 1363
 Swimmers included in optimization: 0
 
 SWIMMERS INCLUDED IN OPTIMIZATION:
-  >>> NO SWIMMERS INCLUDED - THIS IS THE BUG! <<<
+  >>> NO SWIMMERS INCLUDED - FILTERING BUG DETECTED! <<<
+
+Proceeding to optimization with 0 swimmers...
+
+=== OPTIMIZATION RESULTS ===
+Events auto-assigned: 0
+Events pre-assigned: 0
+
+FINAL EVENT ASSIGNMENTS:
+
+Unassigned events: 34
+  - 11U Male 50m Freestyle
+  - 11U Male 50m Backstroke
+  - 11U Male 50m Breaststroke
+  - 11U Male 50m Butterfly
+  - 11U Female 50m Freestyle
+  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<

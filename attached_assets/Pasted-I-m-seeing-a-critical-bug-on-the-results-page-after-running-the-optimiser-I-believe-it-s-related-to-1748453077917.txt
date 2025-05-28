@@ -1,0 +1,55 @@
+I'm seeing a critical bug on the results page after running the optimiser. I believe it's related to the logic used to filter out unavailable swimmers. Let me explain:
+
+❗ Problem:
+On the final results page, totals like Average Index, Total Events Assigned, etc. all show 0 or NaN.
+
+Here's the HTML element for one of the broken figures:
+
+html
+Copy
+Edit
+<div class="text-2xl font-bold text-blue-700">NaN</div>
+<div class="text-sm text-blue-600">Average Index</div>
+The debug_output.txt doesn't get generated anymore, and optimisation results are empty.
+
+On the frontend (step 3), the dropdown for swimmers correctly excludes unavailable swimmers — that part works.
+
+🔍 Likely Cause:
+It seems that the backend is returning an empty or malformed results object because the logic that filters swimmers (likely in optimizer.py or data_loader.py) is either:
+
+Excluding all swimmers, not just those marked unavailable
+
+Not matching the format required for downstream result calculations
+
+Breaking the JSON structure expected by the results page
+
+✅ What I need:
+Please do the following carefully:
+
+Inspect the backend code — especially around where the CSV is imported, swimmers are filtered by availability, and the results dictionary is generated.
+
+Confirm the structure of the final data returned to the frontend. It must include correct values to populate the results page metrics (average index, event count, etc).
+
+Ensure that only unavailable swimmers are excluded — do not exclude everyone.
+
+Preserve all functionality around predetermined swimmer assignments to events.
+
+Fix any logic that causes NaN or 0 values in the results page. Check that the frontend is receiving real, meaningful numbers.
+
+Run a test yourself to confirm that:
+
+Available swimmers are assigned to events
+
+Predetermined swimmer/event combos are respected
+
+All key figures (like Average Index) appear correctly
+
+No internal server error occurs
+
+Once this is verified, send me the updated debug_output.txt or console log showing:
+
+Number of swimmers included
+
+Their names and availability status
+
+Any event assignments made
