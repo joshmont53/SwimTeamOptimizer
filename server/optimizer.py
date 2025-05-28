@@ -87,8 +87,11 @@ def main():
                 print(f"  Last column (index {len(row)-1}): '{last_column}'", file=sys.stderr)
                 print(f"  Second last (index {len(row)-2}): '{second_last}'", file=sys.stderr)
                 
-                # The availability should be the last column
-                availability_value = last_column
+                # The availability should be the last column (index 15)
+                if len(row) >= 16:  # Ensure we have the availability column
+                    availability_value = row[15]  # Use explicit index instead of row[-1]
+                else:
+                    availability_value = last_column  # Fallback to last column
                 
                 # Fix the availability check - ensure we handle the string properly
                 if availability_value and availability_value.strip():
@@ -96,7 +99,7 @@ def main():
                 else:
                     is_available = True  # Default to available if missing
                 
-                print(f"PYTHON DEBUG: Availability value: '{availability_value}' -> is_available: {is_available}", file=sys.stderr)
+                print(f"PYTHON DEBUG: Row has {len(row)} columns, Expected 16. Availability value: '{availability_value}' -> is_available: {is_available}", file=sys.stderr)
                 if is_available:
                     # CSV structure: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
                     #                0           1          2       3             4     5    6      7        8       9       10      11        12       13             14             15
@@ -112,6 +115,23 @@ def main():
     print(f"PYTHON: Processed {total_rows_processed} total rows from CSV", file=sys.stderr)
     
     print(f"PYTHON: Final swimmer count after availability filtering: {len(swimmer_list)} swimmers", file=sys.stderr)
+    
+    # Early exit if no swimmers are available
+    if len(swimmer_list) == 0:
+        print("ERROR: No available swimmers found after filtering", file=sys.stderr)
+        error_result = {
+            "individual": [],
+            "relay": [],
+            "stats": {
+                "qualifyingTimes": 0,
+                "averageIndex": 0,
+                "relayTeams": 0,
+                "totalEvents": 0
+            },
+            "error": "No available swimmers found for optimization"
+        }
+        print(json.dumps(error_result))
+        sys.exit(1)
     
     # Write detailed debug output to file
     try:
@@ -273,11 +293,14 @@ def main():
             
             # Enhanced gender conversion with debugging
             original_gender = assignment['gender']
-            if original_gender in ['M', 'Male']:
-                gender_match = "Male"
-            elif original_gender in ['F', 'Female']:
-                gender_match = "Female"
-            else:
+            gender_mapping = {
+                'M': 'Male',
+                'F': 'Female', 
+                'Male': 'Male',
+                'Female': 'Female'
+            }
+            gender_match = gender_mapping.get(original_gender)
+            if not gender_match:
                 print(f"ERROR: Unknown gender format '{original_gender}' in assignment", file=sys.stderr)
                 continue
             
