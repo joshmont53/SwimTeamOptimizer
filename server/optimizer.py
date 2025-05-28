@@ -220,6 +220,10 @@ def main():
                 if event[-1] == 'Not allocated':
                     event[-1] = swimmer_name
                     break
+                # If event is already allocated (pre-assigned), skip it
+                elif event[-1] != 'Not allocated':
+                    print(f"Skipping pre-assigned event: {event[0]} {event[1]} {event[2]} -> {event[-1]}", file=sys.stderr)
+                    continue
 
     # Build relay swimmers
     relay_swimmers = {}
