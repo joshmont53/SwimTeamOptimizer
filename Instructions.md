@@ -1,165 +1,192 @@
-# Swimming Team Optimization Bug Analysis & Fix Plan
+# Swimming Club Gala Team Selection - Event List Issue Analysis
 
 ## Problem Summary
-The swimmer availability filtering is broken in the Python optimization backend. The system shows 0 swimmers after filtering, which causes empty results and NaN values in optimization metrics.
+The event assignment section (Step 3) is missing **13U and 15U category events** from the display. Only 11U and 16U events are currently showing, causing incomplete team selection options.
 
 ## Root Cause Analysis
 
-### Primary Issue: CSV Column Index Mismatch
-The Python script expects the availability status in the **last column** (index 15), but the CSV being generated only has **15 columns total** (indices 0-14). This means:
-- The script looks at `row[-1]` which is the `time_in_seconds` column (index 14)
-- Time values like "36.06" are being interpreted as availability status
-- Since "36.06" ≠ "true", all swimmers are marked as unavailable
+### 1. **Primary Issue: Hardcoded Event List in Backend**
+**File:** `server/routes.ts` (lines 258-298)
 
-### Current CSV Structure (from routes.ts):
+**Problem:** The `/api/events` endpoint contains a **hardcoded, incomplete event list** that is missing most 13U and 15U events.
+
+**Current State:**
+- 11U events: ✅ 4 events (50m Freestyle only)
+- 13U events: ❌ **MISSING** - Only has 4 stroke events (50m Backstroke, Breaststroke, Butterfly), missing 50m Freestyle
+- 15U events: ❌ **COMPLETELY MISSING** - Zero events defined
+- 16U events: ✅ 6 events (100m distances + 200m IM)
+
+**Expected vs Actual:**
 ```
-First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds
-0         1          2      3             4     5    6      7        8       9       10      11        12       13             14
-```
+Expected (from attached_assets/gala_optimisation.py):
+- 11U: 50m Freestyle, Backstroke, Breaststroke, Butterfly (M/F) = 8 events
+- 13U: 100m Freestyle, Backstroke, Breaststroke, Butterfly (M/F) = 8 events  
+- 15U: 100m Freestyle, Backstroke, Breaststroke, Butterfly (M/F) = 8 events
+- 16U: 100m + 200m IM (M/F) = 10 events
+Total: 34 individual events
 
-### Expected Structure (from optimizer.py):
-```
-First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
-0         1          2      3             4     5    6      7        8       9       10      11        12       13             14             15
-```
-
-## Secondary Issues Identified
-
-### 1. Missing isAvailable Column in CSV Generation
-In `server/routes.ts`, the CSV header includes `isAvailable` but the data rows are missing this column:
-```typescript
-// Header has isAvailable
-csvContent += 'First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable\n';
-
-// But data rows are missing the availability value
-csvContent += `${swimmer.firstName},${swimmer.lastName},...,${time.timeInSeconds}\n`;
+Actual (in server/routes.ts):
+- 11U: 50m Freestyle only (M/F) = 2 events
+- 13U: 50m Backstroke, Breaststroke, Butterfly only (M/F) = 6 events
+- 15U: NONE = 0 events 
+- 16U: 100m + 200m IM (M/F) = 10 events
+Total: 18 individual events (16 missing!)
 ```
 
-### 2. Gender Format Mismatch in Pre-assignments
-The frontend sends gender as "M"/"F" but Python expects "Male"/"Female":
-- Frontend: `{ gender: "M", ... }`
-- Python: `if event[2] == gender_match:` where event[2] is "Male"/"Female"
+### 2. **Secondary Issue: Relay Events Also Incomplete**
+- 11U relays: ❌ **COMPLETELY MISSING**
+- 13U relays: ✅ Present (4x50m Freestyle & Medley)
+- 15U relays: ❌ **COMPLETELY MISSING** 
+- 16U relays: ✅ Present (4x100m Freestyle & Medley)
 
-### 3. Insufficient Error Handling
-When no swimmers pass the availability filter, the optimization continues with an empty list, causing downstream failures.
-
-## Fix Implementation Plan
-
-### Step 1: Fix CSV Generation in Backend
-**File:** `server/routes.ts`
-**Action:** Add the missing `isAvailable` value to each CSV row
-
-**Before:**
-```typescript
-csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds}\n`;
-```
-
-**After:**
-```typescript
-const availabilityStatus = swimmer.isAvailable ? 'true' : 'false';
-csvContent += `${swimmer.firstName},${swimmer.lastName},${swimmer.asaNo},${swimmer.dateOfBirth},${time.meet},${time.date},${time.event},${time.time},${time.course},${swimmer.gender},${swimmer.age},,,${time.countyQualify || 'No'},${time.timeInSeconds},${availabilityStatus}\n`;
-```
-
-### Step 2: Add Early Exit for Empty Swimmer List
-**File:** `server/optimizer.py`
-**Action:** Add validation after swimmer filtering
-
-```python
-if len(swimmer_list) == 0:
-    print("ERROR: No available swimmers found after filtering", file=sys.stderr)
-    error_result = {
-        "individual": [],
-        "relay": [],
-        "stats": {
-            "qualifyingTimes": 0,
-            "averageIndex": 0,
-            "relayTeams": 0,
-            "totalEvents": 0
-        },
-        "error": "No available swimmers found for optimization"
-    }
-    print(json.dumps(error_result))
-    sys.exit(1)
-```
-
-### Step 3: Fix Gender Format Conversion
-**File:** `server/optimizer.py`
-**Action:** Enhance gender mapping in pre-assignment processing
-
-```python
-# Enhanced gender conversion
-original_gender = assignment['gender']
-gender_mapping = {
-    'M': 'Male',
-    'F': 'Female', 
-    'Male': 'Male',
-    'Female': 'Female'
-}
-gender_match = gender_mapping.get(original_gender)
-if not gender_match:
-    print(f"ERROR: Unknown gender format '{original_gender}'", file=sys.stderr)
-    continue
-```
-
-### Step 4: Improve Error Logging
-**File:** `server/optimizer.py`
-**Action:** Add comprehensive debugging at critical points
-
-```python
-# After CSV parsing
-print(f"DEBUG: Total rows processed: {total_rows_processed}", file=sys.stderr)
-print(f"DEBUG: Available swimmers: {len(swimmer_list)}", file=sys.stderr)
-if len(swimmer_list) > 0:
-    print(f"DEBUG: Sample swimmer: {swimmer_list[0]}", file=sys.stderr)
-
-# During availability check
-print(f"DEBUG: Row length={len(row)}, Last col='{row[-1]}', Available={is_available}", file=sys.stderr)
-```
-
-## Implementation Priority
-
-### High Priority (Must Fix)
-1. **CSV Generation Fix** - Add missing `isAvailable` column
-2. **Early Exit Validation** - Prevent optimization with 0 swimmers
-3. **Enhanced Debugging** - Better error messages
-
-### Medium Priority (Should Fix)
-1. **Gender Format Fix** - Consistent M/F ↔ Male/Female conversion
-2. **ASA Number Validation** - Verify pre-assignment matching
-
-### Low Priority (Nice to Have)
-1. **CSV Structure Documentation** - Clear header comments
-2. **Unit Tests** - Validate filtering logic
-
-## Expected Results After Fix
-
-### Before Fix:
-```
-PYTHON: Final swimmer count after availability filtering: 0 swimmers
-```
-
-### After Fix:
-```
-PYTHON: Final swimmer count after availability filtering: 15 swimmers
-PYTHON: ✓ Including available swimmer John Doe (time: 45.23)
-PYTHON: ✗ EXCLUDING unavailable swimmer Jane Smith
-```
+### 3. **Why This Wasn't Caught Earlier**
+- The Python optimization script (`server/optimizer.py`) has the **correct, complete event list**
+- The frontend filtering logic (`client/src/components/event-assignment-section.tsx`) works perfectly
+- The bug is purely in the **backend API endpoint** that serves the event list to the frontend
 
 ## Files Requiring Changes
 
-1. **`server/routes.ts`** - Fix CSV generation (missing availability column)
-2. **`server/optimizer.py`** - Add early exit validation and gender mapping
-3. **Optional: `client/src/components/event-assignment-section.tsx`** - Ensure consistent gender format
+### Primary Fix Required:
+1. **`server/routes.ts`** - `/api/events` endpoint (lines 261-292)
 
-## Confidence Level: HIGH
+### Files Confirmed Working (No Changes Needed):
+- ✅ `client/src/components/event-assignment-section.tsx` - Frontend filtering logic is correct
+- ✅ `server/optimizer.py` - Has complete event definitions  
+- ✅ `attached_assets/gala_optimisation.py` - Reference implementation with full events
+- ✅ Frontend age/gender filtering logic - Works correctly for swimmers
 
-This analysis shows a clear, fixable bug with a straightforward solution. The issue is not architectural - it's a simple data format mismatch that can be resolved with targeted changes to the CSV generation logic.
+## Step-by-Step Fix Plan
 
-## Risk Assessment: LOW
+### Step 1: Fix Individual Events
+Replace the hardcoded individual events array in `server/routes.ts` with the complete event list:
 
-- **Pre-assignment feature will remain intact** - No changes to core assignment logic
-- **Backward compatibility maintained** - Only adding missing data, not changing existing structure  
-- **Minimal code changes required** - Targeted fixes in specific functions
-- **Easy to test and validate** - Clear before/after behavior expected
+```javascript
+individual: [
+  // 11U Events (50m distances)
+  { event: "50m Freestyle", ageCategory: 11, gender: "M" },
+  { event: "50m Freestyle", ageCategory: 11, gender: "F" },
+  { event: "50m Backstroke", ageCategory: 11, gender: "M" },
+  { event: "50m Backstroke", ageCategory: 11, gender: "F" },
+  { event: "50m Breaststroke", ageCategory: 11, gender: "M" },
+  { event: "50m Breaststroke", ageCategory: 11, gender: "F" },
+  { event: "50m Butterfly", ageCategory: 11, gender: "M" },
+  { event: "50m Butterfly", ageCategory: 11, gender: "F" },
+  
+  // 13U Events (100m distances) - CURRENTLY MISSING
+  { event: "100m Freestyle", ageCategory: 13, gender: "M" },
+  { event: "100m Freestyle", ageCategory: 13, gender: "F" },
+  { event: "100m Backstroke", ageCategory: 13, gender: "M" },
+  { event: "100m Backstroke", ageCategory: 13, gender: "F" },
+  { event: "100m Breaststroke", ageCategory: 13, gender: "M" },
+  { event: "100m Breaststroke", ageCategory: 13, gender: "F" },
+  { event: "100m Butterfly", ageCategory: 13, gender: "M" },
+  { event: "100m Butterfly", ageCategory: 13, gender: "F" },
+  
+  // 15U Events (100m distances) - COMPLETELY MISSING
+  { event: "100m Freestyle", ageCategory: 15, gender: "M" },
+  { event: "100m Freestyle", ageCategory: 15, gender: "F" },
+  { event: "100m Backstroke", ageCategory: 15, gender: "M" },
+  { event: "100m Backstroke", ageCategory: 15, gender: "F" },
+  { event: "100m Breaststroke", ageCategory: 15, gender: "M" },
+  { event: "100m Breaststroke", ageCategory: 15, gender: "F" },
+  { event: "100m Butterfly", ageCategory: 15, gender: "M" },
+  { event: "100m Butterfly", ageCategory: 15, gender: "F" },
+  
+  // 16U Events (100m + 200m IM) - ALREADY CORRECT
+  { event: "100m Freestyle", ageCategory: 16, gender: "M" },
+  { event: "100m Freestyle", ageCategory: 16, gender: "F" },
+  { event: "100m Backstroke", ageCategory: 16, gender: "M" },
+  { event: "100m Backstroke", ageCategory: 16, gender: "F" },
+  { event: "100m Breaststroke", ageCategory: 16, gender: "M" },
+  { event: "100m Breaststroke", ageCategory: 16, gender: "F" },
+  { event: "100m Butterfly", ageCategory: 16, gender: "M" },
+  { event: "100m Butterfly", ageCategory: 16, gender: "F" },
+  { event: "200m Individual Medley", ageCategory: 16, gender: "M" },
+  { event: "200m Individual Medley", ageCategory: 16, gender: "F" }
+]
+```
 
-The bug is definitely solvable and the proposed fixes address all identified issues without breaking existing functionality.
+### Step 2: Fix Relay Events  
+Add missing relay events:
+
+```javascript
+relay: [
+  // 11U Relays - CURRENTLY MISSING
+  { relayName: "4x50m Freestyle", ageCategory: 11, gender: "M" },
+  { relayName: "4x50m Freestyle", ageCategory: 11, gender: "F" },
+  { relayName: "4x50m Medley", ageCategory: 11, gender: "M" },
+  { relayName: "4x50m Medley", ageCategory: 11, gender: "F" },
+  
+  // 13U Relays - ALREADY CORRECT
+  { relayName: "4x50m Freestyle", ageCategory: 13, gender: "M" },
+  { relayName: "4x50m Freestyle", ageCategory: 13, gender: "F" },
+  { relayName: "4x50m Medley", ageCategory: 13, gender: "M" },
+  { relayName: "4x50m Medley", ageCategory: 13, gender: "F" },
+  
+  // 15U Relays - CURRENTLY MISSING  
+  { relayName: "4x100m Freestyle", ageCategory: 15, gender: "M" },
+  { relayName: "4x100m Freestyle", ageCategory: 15, gender: "F" },
+  { relayName: "4x100m Medley", ageCategory: 15, gender: "M" },
+  { relayName: "4x100m Medley", ageCategory: 15, gender: "F" },
+  
+  // 16U Relays - ALREADY CORRECT
+  { relayName: "4x100m Freestyle", ageCategory: 16, gender: "M" },
+  { relayName: "4x100m Freestyle", ageCategory: 16, gender: "F" },
+  { relayName: "4x100m Medley", ageCategory: 16, gender: "M" },
+  { relayName: "4x100m Medley", ageCategory: 16, gender: "F" }
+]
+```
+
+## Validation Plan
+
+### Pre-Fix Validation:
+1. ✅ Confirmed frontend filtering works correctly (checks age ≤ ageCategory)
+2. ✅ Confirmed swimmer availability filtering works  
+3. ✅ Confirmed pre-assignment logic works
+4. ✅ Confirmed Python optimizer has complete event list
+
+### Post-Fix Testing:
+1. **Event Display Test:** All 34 individual + 16 relay events should appear
+2. **Age Filtering Test:** 13-year-old swimmers should appear in 13U, 15U, 16U dropdowns
+3. **Gender Filtering Test:** Male swimmers only in male events, female swimmers only in female events  
+4. **Availability Test:** Only available swimmers in dropdowns
+5. **Pre-assignment Test:** Pre-selected swimmers should be preserved
+
+## Risk Assessment: **LOW RISK**
+
+**Why this fix is safe:**
+- ✅ **No breaking changes** - Only adding missing events
+- ✅ **Frontend ready** - All filtering logic already supports these events
+- ✅ **Backend ready** - Python optimization script already handles these events
+- ✅ **Data ready** - County qualifying times exist for these events
+- ✅ **No recent fixes affected** - This change is purely additive
+
+**Protected functionality:**
+- ✅ Unavailable swimmer filtering will continue working
+- ✅ Pre-assigned swimmers will continue to be respected  
+- ✅ Age and gender restrictions will continue working
+- ✅ Optimization logic will continue working
+
+## Implementation Priority: **CRITICAL**
+
+This is a **single-point-of-failure bug** affecting core functionality. The fix is:
+- **Simple:** Change one hardcoded array
+- **Low-risk:** Purely additive, no breaking changes
+- **High-impact:** Unlocks 16 missing individual events + 8 missing relay events
+- **Immediate:** No dependencies, can be implemented right now
+
+## Success Metrics
+
+**Before Fix:**
+- Individual events shown: 18/34 (53%)
+- Relay events shown: 8/16 (50%)  
+- Total events available: 26/50 (52%)
+
+**After Fix:**
+- Individual events shown: 34/34 (100%) ✅
+- Relay events shown: 16/16 (100%) ✅  
+- Total events available: 50/50 (100%) ✅
+
+---
+
+**Next Steps:** Implement the fix in `server/routes.ts` and verify all 13U and 15U events appear correctly in the frontend event assignment section.
