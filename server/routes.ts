@@ -231,6 +231,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Validated assignment data:", validatedData);
       const assignment = await storage.createEventAssignment(validatedData);
       console.log("Assignment created successfully:", assignment);
+      
+      // Verify it's actually stored
+      const allAssignments = await storage.getEventAssignments();
+      console.log("All assignments after creation:", allAssignments);
+      
       res.json(assignment);
     } catch (error) {
       console.error("Error creating event assignment:", error);
