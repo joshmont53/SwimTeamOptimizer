@@ -324,9 +324,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
       const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
 
-      // Get pre-assignments from storage first, then clear all assignments
+      // Get pre-assignments from storage BEFORE clearing anything
       const eventAssignments = await storage.getEventAssignments();
       const relayAssignments = await storage.getRelayAssignments();
+      
+      console.log('Raw event assignments from storage:', eventAssignments);
       
       const preAssignments = {
         individual: eventAssignments.filter(a => a.isPreAssigned).map(a => ({
@@ -344,6 +346,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           swimmerId: a.swimmerId
         }))
       };
+      
+      console.log('Pre-assignments to save:', preAssignments);
       
       // Clear all assignments - the Python script will regenerate everything
       await storage.clearEventAssignments();
