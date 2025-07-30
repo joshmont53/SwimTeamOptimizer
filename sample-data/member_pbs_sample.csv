@@ -1,0 +1,11 @@
+First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds
+John,Smith,12345,2008-03-15,Club Championships,2024-03-15,50m Freestyle,00:00:28.50,SC,Male,16,00:00:26.20,00:00:26.90,No,28.500000
+Sarah,Johnson,12346,2007-05-22,Regional Meet,2024-04-20,100m Butterfly,00:01:05.23,SC,Female,17,00:01:08.50,00:01:12.00,Yes,65.230000
+Mike,Williams,12347,2008-08-10,County Championships,2024-05-10,200m Freestyle,00:02:15.45,SC,Male,16,00:02:08.00,00:02:18.00,No,135.450000
+Emma,Brown,12348,2009-01-30,Open Meet,2024-02-15,100m Backstroke,00:01:12.67,SC,Female,15,00:01:15.00,00:01:20.00,Yes,72.670000
+Alex,Davis,12349,2008-11-05,School Gala,2024-06-01,50m Breaststroke,00:00:35.12,SC,Male,16,00:00:33.00,00:00:37.00,No,35.120000
+Katie,Wilson,12350,2007-09-18,County Qualifier,2024-03-25,200m Individual Medley,00:02:35.78,SC,Female,17,00:02:30.00,00:02:40.00,No,155.780000
+James,Miller,12351,2009-04-12,Development Meet,2024-05-30,100m Freestyle,00:00:58.90,SC,Male,15,00:00:57.30,00:01:00.00,No,58.900000
+Lucy,Taylor,12352,2008-07-25,Sprint Championships,2024-04-05,50m Butterfly,00:00:32.15,SC,Female,16,00:00:31.10,00:00:34.50,No,32.150000
+Ryan,Anderson,12353,2007-12-08,Regional Finals,2024-06-15,200m Backstroke,00:02:28.34,SC,Male,17,00:02:35.00,00:03:07.00,Yes,148.340000
+Mia,Thomas,12354,2009-06-20,Club Records,2024-01-20,100m Breaststroke,00:01:22.56,SC,Female,15,00:01:25.00,00:01:35.00,Yes,82.560000

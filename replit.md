@@ -1,0 +1,155 @@
+# Swimming Team Optimizer - Replit Project
+
+## Project Overview
+A comprehensive web-based swimming team management system focused on precise swimmer event optimization and intelligent assignment workflows. The application provides a 4-step process for coaches to upload swimmer data, manage squad availability, assign events, and generate optimized team selections using advanced Python algorithms.
+
+## Current Status
+- ✅ Complete 4-step workflow implementation
+- ✅ CSV file upload and processing
+- ✅ Swimmer availability management
+- ✅ Event and relay pre-assignment system  
+- ✅ Python optimization engine integration
+- ✅ Results display with statistics
+- ✅ Modern React/TypeScript frontend
+- ✅ Express backend with proper API endpoints
+- ✅ Ready for GitHub publication
+
+## Key Technologies
+- **Frontend**: React 18, TypeScript, Tailwind CSS, Shadcn/ui components
+- **Backend**: Node.js, Express, TypeScript
+- **Optimization**: Python 3 with advanced algorithm implementation
+- **Data**: In-memory storage with Drizzle ORM schema
+- **Build**: Vite with hot reload development
+
+## Project Architecture
+
+### Frontend Structure
+```
+client/src/
+├── components/          # Reusable UI components
+│   ├── file-upload-section.tsx
+│   ├── squad-selection-section.tsx  
+│   ├── event-assignment-section.tsx
+│   ├── results-section.tsx
+│   └── progress-indicator.tsx
+├── pages/
+│   └── home.tsx        # Main application page
+└── lib/                # Utilities and configuration
+```
+
+### Backend Structure  
+```
+server/
+├── index.ts           # Express server entry point
+├── routes.ts          # API endpoint definitions
+├── storage.ts         # Data persistence layer
+├── optimizer.py       # Python optimization engine
+└── vite.ts           # Development server setup
+```
+
+### Shared Resources
+```
+shared/
+└── schema.ts          # Database schema and TypeScript types
+```
+
+## Application Workflow
+
+### Step 1: File Upload
+- Upload CSV files containing swimmer personal best times
+- Process and validate swimmer data
+- Store swimmer information with availability flags
+- Load county qualifying time standards
+
+### Step 2: Squad Selection
+- Display all uploaded swimmers with filtering capabilities
+- Toggle individual swimmer availability for the competition
+- Search and filter by name, gender, age category
+- Bulk selection operations for efficient management
+
+### Step 3: Event Assignment
+- View all available events by age category and gender
+- Make pre-assignments for key swimmers to specific events
+- Configure relay team positions and assignments
+- Run Python optimization algorithm for remaining events
+
+### Step 4: Results Display
+- Show optimized individual event assignments
+- Display relay team compositions with predicted times
+- Present team statistics and qualifying swimmer counts
+- Export functionality for meet management
+
+## Core Features
+
+### Intelligent Optimization
+- Python-based algorithm considering swimmer availability, personal bests, and county standards
+- Respects pre-assigned events while optimizing remaining slots
+- Generates optimal relay team combinations
+- Calculates team performance indices and qualification statistics
+
+### User Experience
+- Progressive 4-step workflow with visual indicators
+- Real-time data updates and validation
+- Modern, responsive interface design
+- Comprehensive error handling and user feedback
+
+### Data Management
+- CSV import/export capabilities
+- Flexible swimmer availability management
+- Event configuration with age/gender categories
+- Pre-assignment system for strategic planning
+
+## Development Guidelines
+
+### Code Standards
+- Full TypeScript implementation for type safety
+- React functional components with hooks
+- Zod validation for all data inputs
+- Error boundaries and proper exception handling
+
+### API Design
+- RESTful endpoints with proper HTTP status codes
+- Input validation using Zod schemas
+- Consistent JSON response formats
+- Comprehensive error messaging
+
+### Python Integration
+- Subprocess execution for optimization algorithm
+- JSON data exchange between Node.js and Python
+- Proper error handling and timeout management
+- Performance optimization for large datasets
+
+## Recent Changes
+
+### Latest Updates (2025-01-30)
+- ✅ Prepared complete GitHub repository structure
+- ✅ Created comprehensive README with workflow documentation
+- ✅ Added LICENSE, .gitignore, and CONTRIBUTING.md files
+- ✅ Documented complete code flow from upload to results
+- ✅ Ready for GitHub publication and sharing
+
+### Previous Session Fixes
+- Fixed swimmer availability bugs in Python optimization
+- Resolved CSV parsing issues with ASA number matching
+- Improved error handling in optimization workflow
+- Enhanced results display with proper data formatting
+
+## User Preferences
+- Professional, technical documentation preferred
+- Clear step-by-step workflow explanations
+- Comprehensive code flow documentation
+- Ready for public GitHub repository sharing
+
+## Deployment Notes
+- Application runs on port 5000 in development
+- Uses Replit workflow management for server automation  
+- Optimized for Replit deployment with minimal configuration
+- Environment variables managed through Replit secrets
+- Hot reload enabled for efficient development
+
+## Future Enhancements
+- Mobile application for poolside management
+- Integration with swimming federation databases
+- Advanced analytics and performance tracking
+- Multi-meet season planning capabilities
+- Coaching insights and swimmer development metrics

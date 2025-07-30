@@ -1,0 +1,41 @@
+Event,Time,Age Category,Course,Time Type,Gender
+50m Freestyle,00:00:28.50,15,SC,CT,Male
+50m Freestyle,00:00:27.80,15,SC,QT,Male
+50m Freestyle,00:00:32.10,15,SC,CT,Female
+50m Freestyle,00:00:30.50,15,SC,QT,Female
+100m Freestyle,00:01:03.00,15,SC,CT,Male
+100m Freestyle,00:01:00.00,15,SC,QT,Male
+100m Freestyle,00:01:12.00,15,SC,CT,Female
+100m Freestyle,00:01:08.50,15,SC,QT,Female
+200m Freestyle,00:02:18.00,15,SC,CT,Male
+200m Freestyle,00:02:12.00,15,SC,QT,Male
+200m Freestyle,00:02:35.00,15,SC,CT,Female
+200m Freestyle,00:02:28.00,15,SC,QT,Female
+50m Backstroke,00:00:35.00,15,SC,CT,Male
+50m Backstroke,00:00:32.50,15,SC,QT,Male
+50m Backstroke,00:00:38.00,15,SC,CT,Female
+50m Backstroke,00:00:35.20,15,SC,QT,Female
+100m Backstroke,00:01:18.00,15,SC,CT,Male
+100m Backstroke,00:01:13.50,15,SC,QT,Male
+100m Backstroke,00:01:25.00,15,SC,CT,Female
+100m Backstroke,00:01:20.00,15,SC,QT,Female
+50m Breaststroke,00:00:37.00,15,SC,CT,Male
+50m Breaststroke,00:00:34.50,15,SC,QT,Male
+50m Breaststroke,00:00:42.00,15,SC,CT,Female
+50m Breaststroke,00:00:38.50,15,SC,QT,Female
+100m Breaststroke,00:01:25.00,15,SC,CT,Male
+100m Breaststroke,00:01:20.00,15,SC,QT,Male
+100m Breaststroke,00:01:35.00,15,SC,CT,Female
+100m Breaststroke,00:01:28.00,15,SC,QT,Female
+50m Butterfly,00:00:32.00,15,SC,CT,Male
+50m Butterfly,00:00:29.50,15,SC,QT,Male
+50m Butterfly,00:00:34.50,15,SC,CT,Female
+50m Butterfly,00:00:31.10,15,SC,QT,Female
+100m Butterfly,00:01:12.00,15,SC,CT,Male
+100m Butterfly,00:01:08.00,15,SC,QT,Male
+100m Butterfly,00:01:22.00,15,SC,CT,Female
+100m Butterfly,00:01:16.00,15,SC,QT,Female
+200m Individual Medley,00:02:40.00,15,SC,CT,Male
+200m Individual Medley,00:02:32.00,15,SC,QT,Male
+200m Individual Medley,00:02:58.00,15,SC,CT,Female
+200m Individual Medley,00:02:48.00,15,SC,QT,Female
