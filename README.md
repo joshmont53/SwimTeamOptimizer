@@ -277,11 +277,11 @@ POST   /api/optimize             // Run team optimization algorithm
 
 ## Future Enhancements
 
-- [ ] Mobile app for poolside team management
-- [ ] Advanced analytics and performance tracking
-- [ ] Integration with swimming federation databases
-- [ ] Multi-meet season planning and optimization
-- [ ] Coaching insights and swimmer development tracking
+- [ ] Amend the csv file so it can be imported as either csv or xlsx
+- [ ] Amend the format so it can be downloaded straight from swim manager and uploaded
+- [ ] Include more selection on the first page including: session template (arena league, county relays?, custom? (so user selects all the events and age groups + relays)
+- [ ] Convert into a mobile app
+- [ ] Integration with swim rankings api
 
 ## License
 
