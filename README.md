@@ -294,3 +294,16 @@ For questions, bug reports, or feature requests, please open an issue on GitHub 
 ---
 
 Built with ❤️ for swimming coaches and team managers worldwide.
+
+31/07/25 - TO DO:
+
+Go back to the old gala optimization script and work with this.
+On this, we need to:
+- Build in the conversion of LC times to SC
+- Double check the relay team selection
+- change the upload so it reads from member_pbs.csv but this is pulled directly from swim manager. so build all the logic in the python script for converting this into the format that is on the current csv so the user can just download and upload directly, and its like there is no change. This could be done in a seperate script and then added in. Things to really double check is the age part.
+- Talking of age, could we include a button that says 'age now' or 'age at end of year', which determines who swims? Will be different dependent on the competition.
+- Look at gab's old relay selector script and ensure this is being used for the relays, then consider how pre selection could influence/change this. This will need to be explained to the AI agent.
+- Then create a gala 'template'. Currently, we define 'event_list', but we should include some logic at the start of the script to define this. The existing event list is the event list for arena league. we should create some other templates such as 'county relays', but then we could allow the users to custom create a template, selecting all the possible events in a gala (such as the squadrun, 6 x 50m arena league squadrun etc...)
+- Once done, then look to update the script in the replit app.
+- We will need to properly define the changes.
