@@ -153,7 +153,7 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
               Create New Team
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
             <DialogHeader>
               <DialogTitle>Create New Team</DialogTitle>
             </DialogHeader>
@@ -251,12 +251,14 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
                     setShowCreateDialog(false);
                     resetForm();
                   }}
+                  type="button"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleCreateTeam}
                   disabled={!teamName.trim() || !selectedType || createTeamMutation.isPending}
+                  type="button"
                 >
                   {createTeamMutation.isPending ? "Creating..." : "Create Team"}
                 </Button>
