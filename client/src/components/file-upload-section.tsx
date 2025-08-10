@@ -2,13 +2,24 @@ import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import type { Team } from "@shared/schema";
+import { getCompetitionTypeDisplay } from "@shared/constants";
 
 interface FileUploadSectionProps {
   isActive: boolean;
   onFileUploaded: () => void;
+  selectedTeam?: Team;
+  onBackToTeamSelection?: () => void;
 }
 
-export default function FileUploadSection({ isActive, onFileUploaded }: FileUploadSectionProps) {
+export default function FileUploadSection({ 
+  isActive, 
+  onFileUploaded, 
+  selectedTeam,
+  onBackToTeamSelection 
+}: FileUploadSectionProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState<{ swimmerCount: number; recordCount: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,6 +117,30 @@ export default function FileUploadSection({ isActive, onFileUploaded }: FileUplo
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
       <div className="p-6">
+        {/* Team Context Header */}
+        {selectedTeam && (
+          <div className="mb-6">
+            {onBackToTeamSelection && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onBackToTeamSelection}
+                className="mb-3"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Team Selection
+              </Button>
+            )}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900">{selectedTeam.name}</h3>
+              <p className="text-sm text-blue-700">
+                {getCompetitionTypeDisplay(selectedTeam.competitionType as any)}
+                {selectedTeam.maxIndividualEvents && ` • Max ${selectedTeam.maxIndividualEvents} events per swimmer`}
+              </p>
+            </div>
+          </div>
+        )}
+        
         <div className="flex items-center mb-4">
           <i className="fas fa-upload text-primary-500 mr-3"></i>
           <h2 className="text-lg font-semibold text-gray-900">Step 1: Upload Member PBs</h2>

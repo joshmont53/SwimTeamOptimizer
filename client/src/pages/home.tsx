@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Swimmer } from "@shared/schema";
+import { Swimmer, Team } from "@shared/schema";
 import ProgressIndicator from "@/components/progress-indicator";
 import FileUploadSection from "@/components/file-upload-section";
 import SquadSelectionSection from "@/components/squad-selection-section";
 import EventAssignmentSection from "@/components/event-assignment-section";
 import ResultsSection from "@/components/results-section";
+import TeamSelectionSection from "@/components/team-selection-section";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // Start with team selection
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [optimizationResults, setOptimizationResults] = useState<any>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
   const { data: swimmers = [], refetch: refetchSwimmers } = useQuery<Swimmer[]>({
     queryKey: ["/api/swimmers"],
     enabled: currentStep >= 2,
   });
+
+  const handleTeamSelected = (team: Team) => {
+    setSelectedTeam(team);
+    setCurrentStep(1); // Move to file upload
+  };
 
   const handleFileUploaded = () => {
     setCurrentStep(2);
@@ -48,6 +55,11 @@ export default function Home() {
     setCurrentStep(2);
   };
 
+  const handleBackToTeamSelection = () => {
+    setCurrentStep(0);
+    setSelectedTeam(null);
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen font-roboto">
       {/* Header */}
@@ -74,14 +86,25 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Indicator */}
-        <ProgressIndicator currentStep={currentStep} />
+        {/* Progress Indicator - only show for steps 1-4 */}
+        {currentStep > 0 && <ProgressIndicator currentStep={currentStep} />}
+
+        {/* Step 0: Team Selection */}
+        {currentStep === 0 && (
+          <TeamSelectionSection 
+            onTeamSelected={handleTeamSelected}
+          />
+        )}
 
         {/* Step 1: File Upload */}
-        <FileUploadSection 
-          isActive={currentStep === 1}
-          onFileUploaded={handleFileUploaded}
-        />
+        {currentStep === 1 && selectedTeam && (
+          <FileUploadSection 
+            isActive={true}
+            onFileUploaded={handleFileUploaded}
+            selectedTeam={selectedTeam}
+            onBackToTeamSelection={handleBackToTeamSelection}
+          />
+        )}
 
         {/* Step 2: Squad Selection */}
         {currentStep >= 2 && (

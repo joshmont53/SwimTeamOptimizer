@@ -10,7 +10,11 @@ import {
   type RelayAssignment,
   type InsertRelayAssignment,
   type OptimizationResult,
-  type InsertOptimizationResult
+  type InsertOptimizationResult,
+  type Team,
+  type InsertTeam,
+  type TeamEvent,
+  type InsertTeamEvent
 } from "@shared/schema";
 
 export interface IStorage {
@@ -48,6 +52,18 @@ export interface IStorage {
   getOptimizationResults(sessionId: string): Promise<OptimizationResult[]>;
   createOptimizationResult(result: InsertOptimizationResult): Promise<OptimizationResult>;
   clearOptimizationResults(): Promise<void>;
+
+  // Team operations
+  getTeams(): Promise<Team[]>;
+  getTeam(id: number): Promise<Team | undefined>;
+  createTeam(team: InsertTeam): Promise<Team>;
+  updateTeam(id: number, updates: Partial<InsertTeam>): Promise<Team | undefined>;
+  deleteTeam(id: number): Promise<void>;
+
+  // Team events operations
+  getTeamEvents(teamId: number): Promise<TeamEvent[]>;
+  createTeamEvent(event: InsertTeamEvent): Promise<TeamEvent>;
+  clearTeamEvents(teamId: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -57,6 +73,8 @@ export class MemStorage implements IStorage {
   private eventAssignments: Map<number, EventAssignment>;
   private relayAssignments: Map<number, RelayAssignment>;
   private optimizationResults: Map<number, OptimizationResult>;
+  private teams: Map<number, Team>;
+  private teamEvents: Map<number, TeamEvent>;
   private currentId: number;
 
   constructor() {
@@ -66,6 +84,8 @@ export class MemStorage implements IStorage {
     this.eventAssignments = new Map();
     this.relayAssignments = new Map();
     this.optimizationResults = new Map();
+    this.teams = new Map();
+    this.teamEvents = new Map();
     this.currentId = 1;
   }
 
@@ -180,7 +200,13 @@ export class MemStorage implements IStorage {
 
   async createRelayAssignment(insertAssignment: InsertRelayAssignment): Promise<RelayAssignment> {
     const id = this.currentId++;
-    const assignment: RelayAssignment = { ...insertAssignment, id };
+    const assignment: RelayAssignment = { 
+      ...insertAssignment, 
+      id,
+      swimmerId: insertAssignment.swimmerId ?? null,
+      stroke: insertAssignment.stroke ?? null,
+      isPreAssigned: insertAssignment.isPreAssigned ?? false
+    };
     this.relayAssignments.set(id, assignment);
     return assignment;
   }
@@ -205,13 +231,87 @@ export class MemStorage implements IStorage {
 
   async createOptimizationResult(insertResult: InsertOptimizationResult): Promise<OptimizationResult> {
     const id = this.currentId++;
-    const result: OptimizationResult = { ...insertResult, id };
+    const result: OptimizationResult = { 
+      ...insertResult, 
+      id,
+      teamId: insertResult.teamId ?? null,
+      totalTime: insertResult.totalTime ?? null
+    };
     this.optimizationResults.set(id, result);
     return result;
   }
 
   async clearOptimizationResults(): Promise<void> {
     this.optimizationResults.clear();
+  }
+
+  // Team operations
+  async getTeams(): Promise<Team[]> {
+    return Array.from(this.teams.values()).sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+  }
+
+  async getTeam(id: number): Promise<Team | undefined> {
+    return this.teams.get(id);
+  }
+
+  async createTeam(insertTeam: InsertTeam): Promise<Team> {
+    const id = this.currentId++;
+    const now = new Date().toISOString();
+    const team: Team = { 
+      ...insertTeam, 
+      id,
+      createdAt: now,
+      updatedAt: now,
+      isComplete: insertTeam.isComplete ?? false,
+      maxIndividualEvents: insertTeam.maxIndividualEvents ?? null
+    };
+    this.teams.set(id, team);
+    return team;
+  }
+
+  async updateTeam(id: number, updates: Partial<InsertTeam>): Promise<Team | undefined> {
+    const team = this.teams.get(id);
+    if (!team) return undefined;
+    
+    const updated = { 
+      ...team, 
+      ...updates, 
+      updatedAt: new Date().toISOString() 
+    };
+    this.teams.set(id, updated);
+    return updated;
+  }
+
+  async deleteTeam(id: number): Promise<void> {
+    this.teams.delete(id);
+    // Also clean up related team events
+    Array.from(this.teamEvents.values())
+      .filter(event => event.teamId === id)
+      .forEach(event => this.teamEvents.delete(event.id));
+  }
+
+  // Team events operations
+  async getTeamEvents(teamId: number): Promise<TeamEvent[]> {
+    return Array.from(this.teamEvents.values()).filter(event => event.teamId === teamId);
+  }
+
+  async createTeamEvent(insertEvent: InsertTeamEvent): Promise<TeamEvent> {
+    const id = this.currentId++;
+    const event: TeamEvent = { 
+      ...insertEvent, 
+      id,
+      isRelay: insertEvent.isRelay ?? false
+    };
+    this.teamEvents.set(id, event);
+    return event;
+  }
+
+  async clearTeamEvents(teamId: number): Promise<void> {
+    Array.from(this.teamEvents.entries())
+      .filter(([, event]) => event.teamId === teamId)
+      .forEach(([id]) => this.teamEvents.delete(id));
   }
 }
 

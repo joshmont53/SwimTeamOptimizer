@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
 
+// Temporary routing while we implement the new team system
 function Router() {
   return (
     <Switch>

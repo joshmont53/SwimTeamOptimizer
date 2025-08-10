@@ -56,8 +56,28 @@ export const relayAssignments = pgTable("relay_assignments", {
   isPreAssigned: boolean("is_pre_assigned").notNull().default(false),
 });
 
+export const teams = pgTable("teams", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  competitionType: text("competition_type").notNull(), // 'arena_league', 'county_relays', 'custom'
+  maxIndividualEvents: integer("max_individual_events"), // null means no limit
+  isComplete: boolean("is_complete").notNull().default(false),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const teamEvents = pgTable("team_events", {
+  id: serial("id").primaryKey(),
+  teamId: integer("team_id").notNull(),
+  event: text("event").notNull(),
+  ageCategory: integer("age_category").notNull(),
+  gender: text("gender").notNull(),
+  isRelay: boolean("is_relay").notNull().default(false),
+});
+
 export const optimizationResults = pgTable("optimization_results", {
   id: serial("id").primaryKey(),
+  teamId: integer("team_id"), // Link results to a team
   sessionId: text("session_id").notNull(),
   resultType: text("result_type").notNull(), // 'individual' or 'relay'
   event: text("event").notNull(),
@@ -90,6 +110,14 @@ export const insertOptimizationResultSchema = createInsertSchema(optimizationRes
   id: true,
 });
 
+export const insertTeamSchema = createInsertSchema(teams).omit({
+  id: true,
+});
+
+export const insertTeamEventSchema = createInsertSchema(teamEvents).omit({
+  id: true,
+});
+
 export type Swimmer = typeof swimmers.$inferSelect;
 export type InsertSwimmer = z.infer<typeof insertSwimmerSchema>;
 export type SwimmerTime = typeof swimmerTimes.$inferSelect;
@@ -102,3 +130,7 @@ export type RelayAssignment = typeof relayAssignments.$inferSelect;
 export type InsertRelayAssignment = z.infer<typeof insertRelayAssignmentSchema>;
 export type OptimizationResult = typeof optimizationResults.$inferSelect;
 export type InsertOptimizationResult = z.infer<typeof insertOptimizationResultSchema>;
+export type Team = typeof teams.$inferSelect;
+export type InsertTeam = z.infer<typeof insertTeamSchema>;
+export type TeamEvent = typeof teamEvents.$inferSelect;
+export type InsertTeamEvent = z.infer<typeof insertTeamEventSchema>;

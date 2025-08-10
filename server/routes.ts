@@ -580,5 +580,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Team management routes
+  app.get("/api/teams", async (req, res) => {
+    try {
+      const teams = await storage.getTeams();
+      res.json(teams);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch teams" });
+    }
+  });
+
+  app.get("/api/teams/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const team = await storage.getTeam(id);
+      if (!team) {
+        return res.status(404).json({ message: "Team not found" });
+      }
+      res.json(team);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team" });
+    }
+  });
+
+  app.post("/api/teams", async (req, res) => {
+    try {
+      const team = await storage.createTeam(req.body);
+      
+      // Create team events based on competition type
+      if (req.body.competitionType === 'arena_league') {
+        const { ARENA_LEAGUE_CONFIG } = await import("@shared/constants");
+        for (const event of ARENA_LEAGUE_CONFIG.events) {
+          await storage.createTeamEvent({
+            teamId: team.id,
+            event: event.event,
+            ageCategory: event.ageCategory,
+            gender: event.gender,
+            isRelay: event.isRelay
+          });
+        }
+      } else if (req.body.competitionType === 'county_relays') {
+        const { COUNTY_RELAYS_CONFIG } = await import("@shared/constants");
+        for (const event of COUNTY_RELAYS_CONFIG.events) {
+          await storage.createTeamEvent({
+            teamId: team.id,
+            event: event.event,
+            ageCategory: event.ageCategory,
+            gender: event.gender,
+            isRelay: event.isRelay
+          });
+        }
+      }
+      
+      res.json(team);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create team" });
+    }
+  });
+
+  app.patch("/api/teams/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const team = await storage.updateTeam(id, req.body);
+      if (!team) {
+        return res.status(404).json({ message: "Team not found" });
+      }
+      res.json(team);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update team" });
+    }
+  });
+
+  app.delete("/api/teams/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteTeam(id);
+      res.json({ message: "Team deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete team" });
+    }
+  });
+
+  app.get("/api/teams/:id/events", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.id);
+      const events = await storage.getTeamEvents(teamId);
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team events" });
+    }
+  });
+
+  app.post("/api/teams/:id/events", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.id);
+      const event = await storage.createTeamEvent({
+        ...req.body,
+        teamId
+      });
+      res.json(event);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create team event" });
+    }
+  });
+
   return createServer(app);
 }
