@@ -27,11 +27,15 @@ export default function FileUploadSection({
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
+      if (!selectedTeam?.id) {
+        throw new Error('No team selected');
+      }
+      
       const formData = new FormData();
       formData.append('file', file);
       
-      // Use fetch directly for file uploads instead of apiRequest
-      const response = await fetch('/api/upload-csv', {
+      // Use team-specific upload endpoint
+      const response = await fetch(`/api/upload-csv/${selectedTeam.id}`, {
         method: 'POST',
         body: formData,
       });

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const swimmers = pgTable("swimmers", {
   id: serial("id").primaryKey(),
+  teamId: integer("team_id"), // Link swimmers to teams
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   asaNo: text("asa_no").notNull(),
@@ -15,6 +16,7 @@ export const swimmers = pgTable("swimmers", {
 
 export const swimmerTimes = pgTable("swimmer_times", {
   id: serial("id").primaryKey(),
+  teamId: integer("team_id"), // Link swimmer times to teams
   swimmerId: integer("swimmer_id").notNull(),
   event: text("event").notNull(),
   course: text("course").notNull(),
@@ -38,6 +40,7 @@ export const countyTimes = pgTable("county_times", {
 
 export const eventAssignments = pgTable("event_assignments", {
   id: serial("id").primaryKey(),
+  teamId: integer("team_id"), // Link event assignments to teams
   event: text("event").notNull(),
   ageCategory: integer("age_category").notNull(),
   gender: text("gender").notNull(),
@@ -47,6 +50,7 @@ export const eventAssignments = pgTable("event_assignments", {
 
 export const relayAssignments = pgTable("relay_assignments", {
   id: serial("id").primaryKey(),
+  teamId: integer("team_id"), // Link relay assignments to teams
   relayName: text("relay_name").notNull(),
   ageCategory: integer("age_category").notNull(),
   gender: text("gender").notNull(),
@@ -61,7 +65,8 @@ export const teams = pgTable("teams", {
   name: text("name").notNull(),
   competitionType: text("competition_type").notNull(), // 'arena_league', 'county_relays', 'custom'
   maxIndividualEvents: integer("max_individual_events"), // null means no limit
-  isComplete: boolean("is_complete").notNull().default(false),
+  status: text("status").notNull().default("in_progress"), // 'in_progress', 'selected'
+  currentStep: integer("current_step").notNull().default(0), // 0=team_selection, 1=file_upload, 2=squad_selection, 3=event_assignment, 4=results
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });

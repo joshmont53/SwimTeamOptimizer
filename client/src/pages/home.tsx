@@ -15,13 +15,27 @@ export default function Home() {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
   const { data: swimmers = [], refetch: refetchSwimmers } = useQuery<Swimmer[]>({
-    queryKey: ["/api/swimmers"],
-    enabled: currentStep >= 2,
+    queryKey: ["/api/swimmers", selectedTeam?.id],
+    enabled: !!(currentStep >= 2 && selectedTeam?.id),
+    queryFn: async () => {
+      if (!selectedTeam?.id) return [];
+      const response = await fetch(`/api/swimmers/${selectedTeam.id}`);
+      return response.json();
+    },
   });
 
   const handleTeamSelected = (team: Team) => {
     setSelectedTeam(team);
-    setCurrentStep(1); // Move to file upload
+    
+    // Resume from where the team left off based on status and currentStep
+    if (team.status === "selected") {
+      // Team is complete, go directly to results
+      setCurrentStep(4);
+      // TODO: Load previous optimization results
+    } else {
+      // Team is in progress, resume from current step
+      setCurrentStep(team.currentStep || 1);
+    }
   };
 
   const handleFileUploaded = () => {

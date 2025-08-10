@@ -86,13 +86,10 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
   const handleCreateTeam = () => {
     if (!teamName.trim() || !selectedType) return;
 
-    const team: InsertTeam = {
+    const team = {
       name: teamName.trim(),
       competitionType: selectedType,
       maxIndividualEvents,
-      isComplete: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
     createTeamMutation.mutate(team);
@@ -278,8 +275,8 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg truncate">{team.name}</CardTitle>
-                    <Badge variant={team.isComplete ? "default" : "secondary"}>
-                      {team.isComplete ? "Complete" : "In Progress"}
+                    <Badge variant={team.status === "selected" ? "default" : "secondary"}>
+                      {team.status === "selected" ? "Selected" : "In Progress"}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -310,7 +307,7 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
                     onClick={() => onTeamSelected(team)}
                   >
                     <Settings className="mr-2 h-4 w-4" />
-                    {team.isComplete ? "Edit Team" : "Continue Setup"}
+                    {team.status === "selected" ? "View Results" : "Continue Setup"}
                   </Button>
                 </CardContent>
               </Card>

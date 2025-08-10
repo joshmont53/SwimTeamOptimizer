@@ -34,7 +34,10 @@ export default function SquadSelectionSection({
 
   const updateAvailabilityMutation = useMutation({
     mutationFn: async ({ id, isAvailable }: { id: number; isAvailable: boolean }) => {
-      const response = await apiRequest('PATCH', `/api/swimmers/${id}`, { isAvailable });
+      if (!selectedTeam?.id) {
+        throw new Error('No team selected');
+      }
+      const response = await apiRequest('PATCH', `/api/swimmers/${selectedTeam.id}/${id}`, { isAvailable });
       return response.json();
     },
     onSuccess: () => {

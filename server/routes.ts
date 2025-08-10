@@ -61,24 +61,26 @@ function convertTimeToSeconds(timeStr: string): number {
 export async function registerRoutes(app: Express): Promise<Server> {
   const upload = multer({ storage: multer.memoryStorage() });
 
-  // Clear all data
-  app.post("/api/clear", async (req, res) => {
+  // Clear team-specific data
+  app.post("/api/clear/:teamId", async (req, res) => {
     try {
-      await storage.clearSwimmers();
-      await storage.clearSwimmerTimes();
-      await storage.clearCountyTimes();
-      await storage.clearEventAssignments();
-      await storage.clearRelayAssignments();
-      await storage.clearOptimizationResults();
-      res.json({ message: "All data cleared successfully" });
+      const teamId = parseInt(req.params.teamId);
+      await storage.clearSwimmers(teamId);
+      await storage.clearSwimmerTimes(teamId);
+      await storage.clearEventAssignments(teamId);
+      await storage.clearRelayAssignments(teamId);
+      await storage.clearOptimizationResults(teamId);
+      await storage.clearTeamEvents(teamId);
+      res.json({ message: "Team data cleared successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Failed to clear data" });
+      res.status(500).json({ message: "Failed to clear team data" });
     }
   });
 
-  // Upload CSV
-  app.post("/api/upload-csv", upload.single("file"), async (req, res) => {
+  // Upload CSV for a specific team
+  app.post("/api/upload-csv/:teamId", upload.single("file"), async (req, res) => {
     try {
+      const teamId = parseInt(req.params.teamId);
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
@@ -90,9 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Empty CSV file" });
       }
 
-      // Clear existing data
-      await storage.clearSwimmers();
-      await storage.clearSwimmerTimes();
+      // Clear existing team data
+      await storage.clearSwimmers(teamId);
+      await storage.clearSwimmerTimes(teamId);
 
       // Skip header row
       const dataLines = lines.slice(1);
@@ -110,6 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (!swimmers.has(swimmerId)) {
           const swimmer = await storage.createSwimmer({
+            teamId,
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             asaNo: asaNo.trim(),
@@ -126,6 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const timeInSeconds = timeInSecondsStr ? parseFloat(timeInSecondsStr) : convertTimeToSeconds(time);
           
           await storage.createSwimmerTime({
+            teamId,
             swimmerId: swimmer.id,
             event: event.trim(),
             course: course.trim(),
@@ -138,8 +142,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Update team progress
+      await storage.updateTeam(teamId, { 
+        currentStep: 2,  // Move to squad selection step
+      });
+
       const swimmerCount = swimmers.size;
-      const timeCount = await storage.getSwimmerTimes();
+      const timeCount = await storage.getSwimmerTimes(teamId);
       
       res.json({ 
         message: "CSV uploaded successfully", 
@@ -195,10 +204,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get swimmers
-  app.get("/api/swimmers", async (req, res) => {
+  // Get swimmers for a specific team
+  app.get("/api/swimmers/:teamId", async (req, res) => {
     try {
-      const swimmers = await storage.getSwimmers();
+      const teamId = parseInt(req.params.teamId);
+      const swimmers = await storage.getSwimmers(teamId);
       res.json(swimmers);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch swimmers" });
@@ -224,18 +234,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Event assignments endpoints
-  app.post("/api/event-assignments", async (req, res) => {
+  app.post("/api/event-assignments/:teamId", async (req, res) => {
     console.log("ASSIGNMENT API: Called with body:", JSON.stringify(req.body));
     
     try {
-      const validatedData = insertEventAssignmentSchema.parse(req.body);
+      const teamId = parseInt(req.params.teamId);
+      const validatedData = insertEventAssignmentSchema.parse({ ...req.body, teamId });
       console.log("ASSIGNMENT API: Validation passed");
       
       const assignment = await storage.createEventAssignment(validatedData);
       console.log("ASSIGNMENT API: Created assignment with ID:", assignment.id);
       
       // Immediately verify it's stored
-      const allAssignments = await storage.getEventAssignments();
+      const allAssignments = await storage.getEventAssignments(teamId);
       console.log("ASSIGNMENT API: Total assignments after save:", allAssignments.length);
       
       res.json(assignment);
@@ -245,9 +256,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/event-assignments", async (req, res) => {
+  app.get("/api/event-assignments/:teamId", async (req, res) => {
     try {
-      const assignments = await storage.getEventAssignments();
+      const teamId = parseInt(req.params.teamId);
+      const assignments = await storage.getEventAssignments(teamId);
       res.json(assignments);
     } catch (error) {
       console.error("Error getting event assignments:", error);
@@ -349,12 +361,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Run optimization
-  app.post("/api/optimize", async (req, res) => {
-    console.log('Optimization endpoint called');
+  // Run optimization for a specific team
+  app.post("/api/optimize/:teamId", async (req, res) => {
+    const teamId = parseInt(req.params.teamId);
+    console.log(`Optimization endpoint called for team ${teamId}`);
     
     // Check assignments in storage when optimization starts
-    const testAssignments = await storage.getEventAssignments();
+    const testAssignments = await storage.getEventAssignments(teamId);
     console.log('OPTIMIZE DEBUG: Assignments in storage:', testAssignments.length);
     if (testAssignments.length > 0) {
       console.log('OPTIMIZE DEBUG: First assignment:', JSON.stringify(testAssignments[0], null, 2));
@@ -368,8 +381,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
 
       // Get pre-assignments from storage BEFORE clearing anything
-      const eventAssignments = await storage.getEventAssignments();
-      const relayAssignments = await storage.getRelayAssignments();
+      const eventAssignments = await storage.getEventAssignments(teamId);
+      const relayAssignments = await storage.getRelayAssignments(teamId);
       
       console.log('Raw event assignments from storage:', eventAssignments);
       
@@ -394,7 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`BACKEND: Found ${preAssignments.individual.length} individual pre-assignments`);
       
       // Validate swimmer IDs exist in available swimmers
-      const allSwimmers = await storage.getSwimmers();
+      const allSwimmers = await storage.getSwimmers(teamId);
       const availableSwimmersForValidation = allSwimmers.filter(s => s.isAvailable);
       
       for (const assignment of preAssignments.individual) {
@@ -407,14 +420,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Clear all assignments - the Python script will regenerate everything
-      await storage.clearEventAssignments();
-      await storage.clearRelayAssignments();
+      await storage.clearEventAssignments(teamId);
+      await storage.clearRelayAssignments(teamId);
       
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
       console.log('Pre-assignments saved to file:', preAssignments);
 
       // Export swimmer data to CSV - ALL SWIMMERS WITH AVAILABILITY STATUS
-      const swimmerTimes = await storage.getSwimmerTimes();
+      const swimmerTimes = await storage.getSwimmerTimes(teamId);
       
       // First, let's make sure we have some available swimmers
       console.log(`BACKEND: About to process ${swimmerTimes.length} swimmer times for ${allSwimmers.length} swimmers`);
@@ -566,6 +579,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const results = JSON.parse(output);
           console.log('PYTHON: Optimization completed successfully');
+          
+          // Update team status to "selected" and current step to results (4)
+          await storage.updateTeam(teamId, { 
+            status: "selected",
+            currentStep: 4
+          });
+          
           res.json(results);
         } catch (parseError) {
           console.error('Failed to parse optimization results:', parseError);
@@ -605,7 +625,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/teams", async (req, res) => {
     try {
-      const team = await storage.createTeam(req.body);
+      const team = await storage.createTeam({
+        ...req.body,
+        status: "in_progress",
+        currentStep: 1
+      });
       
       // Create team events based on competition type
       if (req.body.competitionType === 'arena_league') {
@@ -681,6 +705,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(event);
     } catch (error) {
       res.status(500).json({ message: "Failed to create team event" });
+    }
+  });
+
+  // Get optimization results for a team
+  app.get("/api/optimization-results/:teamId/:sessionId", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.teamId);
+      const sessionId = req.params.sessionId;
+      const results = await storage.getOptimizationResults(sessionId, teamId);
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch optimization results" });
     }
   });
 

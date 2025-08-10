@@ -48,8 +48,12 @@ export default function EventAssignmentSection({
 
   const optimizeMutation = useMutation({
     mutationFn: async () => {
-      console.log('Frontend: Starting optimisation request');
-      const response = await fetch('/api/optimize', {
+      if (!selectedTeam?.id) {
+        throw new Error('No team selected');
+      }
+      
+      console.log('Frontend: Starting optimisation request for team', selectedTeam.id);
+      const response = await fetch(`/api/optimize/${selectedTeam.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -101,7 +105,7 @@ export default function EventAssignmentSection({
         if (swimmer) {
           console.log(`Found swimmer: ${swimmer.firstName} ${swimmer.lastName} (ASA: ${swimmer.asaNo})`);
           assignmentPromises.push(
-            fetch('/api/event-assignments', {
+            fetch(`/api/event-assignments/${selectedTeam?.id}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

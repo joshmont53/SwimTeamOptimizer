@@ -1227,11 +1227,11 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
 Proceeding to optimization with 1219 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 33
-Events pre-assigned: 1
+Events auto-assigned: 34
+Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
-  1. 11U Male 50m Freestyle -> Jack Einchcomb
+  1. 11U Male 50m Freestyle -> John Morton
   2. 11U Male 50m Backstroke -> Iwan Stone
   3. 11U Male 50m Breaststroke -> Christian Walker
   4. 11U Male 50m Butterfly -> Iwan Stone
