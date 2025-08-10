@@ -38,23 +38,66 @@ export default function Home() {
     }
   };
 
-  const handleFileUploaded = () => {
+  const handleFileUploaded = async () => {
     setCurrentStep(2);
     setLastUpdated(new Date().toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
     }));
+    
+    // Update team's current step in database
+    if (selectedTeam?.id) {
+      try {
+        await fetch(`/api/teams/${selectedTeam.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentStep: 2 })
+        });
+      } catch (error) {
+        console.error('Failed to update team step:', error);
+      }
+    }
+    
     refetchSwimmers();
   };
 
-  const handleSquadConfirmed = () => {
+  const handleSquadConfirmed = async () => {
     setCurrentStep(3);
+    
+    // Update team's current step in database
+    if (selectedTeam?.id) {
+      try {
+        await fetch(`/api/teams/${selectedTeam.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentStep: 3 })
+        });
+      } catch (error) {
+        console.error('Failed to update team step:', error);
+      }
+    }
   };
 
-  const handleOptimizationComplete = (results: any) => {
+  const handleOptimizationComplete = async (results: any) => {
     setOptimizationResults(results);
     setCurrentStep(4);
+    
+    // Update team status to "selected" and step to 4
+    if (selectedTeam?.id) {
+      try {
+        await fetch(`/api/teams/${selectedTeam.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            currentStep: 4,
+            status: 'selected'
+          })
+        });
+      } catch (error) {
+        console.error('Failed to update team step:', error);
+      }
+    }
   };
 
   const handleBackToEventAssignment = () => {

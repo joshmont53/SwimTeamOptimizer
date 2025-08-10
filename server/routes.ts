@@ -8,6 +8,8 @@ import {
   insertCountyTimeSchema,
   insertEventAssignmentSchema,
   insertRelayAssignmentSchema,
+  type InsertSwimmer,
+  type InsertSwimmerTime,
 } from "../shared/schema";
 import path from "path";
 import fs from "fs";
@@ -98,8 +100,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Skip header row
       const dataLines = lines.slice(1);
-      const swimmers = new Map();
+      const swimmersToCreate: InsertSwimmer[] = [];
+      const timesToCreate: InsertSwimmerTime[] = [];
+      const swimmerMap = new Map<string, number>(); // Track swimmer IDs by key
       
+      // First pass: collect unique swimmers
       for (const line of dataLines) {
         const data = parseCSVLine(line);
         if (data.length < 15) continue;
@@ -110,8 +115,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const swimmerId = `${firstName}_${lastName}_${asaNo}`;
         
-        if (!swimmers.has(swimmerId)) {
-          const swimmer = await storage.createSwimmer({
+        if (!swimmerMap.has(swimmerId)) {
+          swimmersToCreate.push({
             teamId,
             firstName: firstName.trim(),
             lastName: lastName.trim(),
@@ -121,16 +126,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
             age: parseInt(age) || 0,
             isAvailable: true
           });
-          swimmers.set(swimmerId, swimmer);
+          swimmerMap.set(swimmerId, swimmersToCreate.length - 1); // Store index for now
         }
+      }
+
+      // Batch create swimmers
+      const createdSwimmers = await storage.createSwimmersBatch(swimmersToCreate);
+      
+      // Update swimmer map with actual IDs
+      createdSwimmers.forEach((swimmer, index) => {
+        const key = `${swimmer.firstName}_${swimmer.lastName}_${swimmer.asaNo}`;
+        swimmerMap.set(key, swimmer.id);
+      });
+
+      // Second pass: collect times
+      for (const line of dataLines) {
+        const data = parseCSVLine(line);
+        if (data.length < 15) continue;
         
-        const swimmer = swimmers.get(swimmerId);
-        if (swimmer && time && time.trim() !== '') {
+        const [firstName, lastName, asaNo, dateOfBirth, meet, date, event, time, course, gender, age, , , countyQualify, timeInSecondsStr] = data;
+        
+        if (!firstName || !lastName || !asaNo || !time || time.trim() === '') continue;
+
+        const swimmerId = `${firstName}_${lastName}_${asaNo}`;
+        const dbSwimmerId = swimmerMap.get(swimmerId);
+        
+        if (dbSwimmerId) {
           const timeInSeconds = timeInSecondsStr ? parseFloat(timeInSecondsStr) : convertTimeToSeconds(time);
           
-          await storage.createSwimmerTime({
+          timesToCreate.push({
             teamId,
-            swimmerId: swimmer.id,
+            swimmerId: dbSwimmerId,
             event: event.trim(),
             course: course.trim(),
             time: time.trim(),
@@ -142,18 +168,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Batch create times
+      await storage.createSwimmerTimesBatch(timesToCreate);
+
       // Update team progress
       await storage.updateTeam(teamId, { 
         currentStep: 2,  // Move to squad selection step
       });
 
-      const swimmerCount = swimmers.size;
-      const timeCount = await storage.getSwimmerTimes(teamId);
+      const swimmerCount = createdSwimmers.length;
+      const timeCount = timesToCreate.length;
       
       res.json({ 
         message: "CSV uploaded successfully", 
-        swimmers: swimmerCount,
-        times: timeCount.length
+        swimmerCount,
+        recordCount: timeCount
       });
     } catch (error) {
       console.error("CSV upload error:", error);

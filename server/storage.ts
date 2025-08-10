@@ -32,6 +32,7 @@ export interface IStorage {
   getSwimmers(teamId?: number): Promise<Swimmer[]>;
   getSwimmer(id: number): Promise<Swimmer | undefined>;
   createSwimmer(swimmer: InsertSwimmer): Promise<Swimmer>;
+  createSwimmersBatch(swimmers: InsertSwimmer[]): Promise<Swimmer[]>;
   updateSwimmer(id: number, updates: Partial<InsertSwimmer>): Promise<Swimmer | undefined>;
   clearSwimmers(teamId?: number): Promise<void>;
 
@@ -39,6 +40,7 @@ export interface IStorage {
   getSwimmerTimes(teamId?: number): Promise<SwimmerTime[]>;
   getSwimmerTimesBySwimmerId(swimmerId: number): Promise<SwimmerTime[]>;
   createSwimmerTime(time: InsertSwimmerTime): Promise<SwimmerTime>;
+  createSwimmerTimesBatch(times: InsertSwimmerTime[]): Promise<SwimmerTime[]>;
   clearSwimmerTimes(teamId?: number): Promise<void>;
 
   // County times operations
@@ -97,6 +99,11 @@ export class DatabaseStorage implements IStorage {
     return swimmer;
   }
 
+  async createSwimmersBatch(insertSwimmers: InsertSwimmer[]): Promise<Swimmer[]> {
+    if (insertSwimmers.length === 0) return [];
+    return await db.insert(swimmers).values(insertSwimmers).returning();
+  }
+
   async updateSwimmer(id: number, updates: Partial<InsertSwimmer>): Promise<Swimmer | undefined> {
     const [swimmer] = await db.update(swimmers).set(updates).where(eq(swimmers.id, id)).returning();
     return swimmer || undefined;
@@ -125,6 +132,11 @@ export class DatabaseStorage implements IStorage {
   async createSwimmerTime(insertTime: InsertSwimmerTime): Promise<SwimmerTime> {
     const [time] = await db.insert(swimmerTimes).values(insertTime).returning();
     return time;
+  }
+
+  async createSwimmerTimesBatch(insertTimes: InsertSwimmerTime[]): Promise<SwimmerTime[]> {
+    if (insertTimes.length === 0) return [];
+    return await db.insert(swimmerTimes).values(insertTimes).returning();
   }
 
   async clearSwimmerTimes(teamId?: number): Promise<void> {
