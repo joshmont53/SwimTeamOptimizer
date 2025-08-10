@@ -58,6 +58,9 @@ export default function Home() {
   const handleBackToTeamSelection = () => {
     setCurrentStep(0);
     setSelectedTeam(null);
+    setOptimizationResults(null);
+    // Force re-fetch of swimmers data by triggering a page refresh
+    refetchSwimmers();
   };
 
   return (
@@ -74,6 +77,15 @@ export default function Home() {
               <span className="text-sm text-gray-600">
                 Last updated: <span>{lastUpdated || "Not updated"}</span>
               </span>
+              {/* Home Navigation - only show when not on team selection */}
+              {currentStep > 0 && (
+                <button 
+                  className="text-blue-600 hover:text-blue-800 px-3 py-1 rounded-md transition-colors border border-blue-600 hover:bg-blue-50"
+                  onClick={handleBackToTeamSelection}
+                >
+                  <i className="fas fa-home mr-1"></i>Home
+                </button>
+              )}
               <button 
                 className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-colors"
                 disabled={!optimizationResults}
@@ -135,6 +147,7 @@ export default function Home() {
             results={optimizationResults} 
             onBackToEventAssignment={handleBackToEventAssignment}
             selectedTeam={selectedTeam || undefined}
+            onBackToHome={handleBackToTeamSelection}
           />
         )}
       </main>

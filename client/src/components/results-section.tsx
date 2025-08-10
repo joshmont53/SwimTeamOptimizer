@@ -30,9 +30,10 @@ interface ResultsSectionProps {
   };
   onBackToEventAssignment: () => void;
   selectedTeam?: Team;
+  onBackToHome?: () => void;
 }
 
-export default function ResultsSection({ results, onBackToEventAssignment, selectedTeam }: ResultsSectionProps) {
+export default function ResultsSection({ results, onBackToEventAssignment, selectedTeam, onBackToHome }: ResultsSectionProps) {
   const stats = results.stats || {
     qualifyingTimes: results.individual.filter(r => r.status === 'QT').length,
     averageIndex: results.individual.reduce((acc, r) => acc + (r.index || 0), 0) / results.individual.length,
@@ -98,6 +99,13 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
               <span className="font-medium text-success">{stats.totalEvents} events</span> • 
               <span className="font-medium">{stats.relayTeams} relays</span>
             </span>
+            <Button 
+              variant="outline" 
+              onClick={onBackToHome || (() => window.location.reload())}
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+            >
+              <i className="fas fa-home mr-2"></i>Back to Home
+            </Button>
             <Button onClick={handleExport} className="bg-primary-500 hover:bg-primary-600 text-white">
               <i className="fas fa-file-export mr-2"></i>Export Team Sheet
             </Button>
