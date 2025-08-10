@@ -2,15 +2,18 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Swimmer } from "@shared/schema";
+import { Swimmer, Team } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft } from "lucide-react";
+import { getCompetitionTypeDisplay } from "@shared/constants";
 
 interface EventAssignmentSectionProps {
   swimmers: Swimmer[];
   isActive: boolean;
   onOptimizationComplete: (results: any) => void;
   onBackToSquadSelection: () => void;
+  selectedTeam?: Team;
 }
 
 interface Events {
@@ -30,7 +33,8 @@ export default function EventAssignmentSection({
   swimmers, 
   isActive, 
   onOptimizationComplete,
-  onBackToSquadSelection 
+  onBackToSquadSelection,
+  selectedTeam
 }: EventAssignmentSectionProps) {
   const [eventAssignments, setEventAssignments] = useState<Record<string, number | null>>({});
   const [relayAssignments, setRelayAssignments] = useState<Record<string, number | null>>({});
@@ -162,6 +166,28 @@ export default function EventAssignmentSection({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
       <div className="p-6">
+        {/* Team Context Header */}
+        {selectedTeam && (
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onBackToSquadSelection}
+              className="mb-3"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Squad Selection
+            </Button>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900">{selectedTeam.name}</h3>
+              <p className="text-sm text-blue-700">
+                {getCompetitionTypeDisplay(selectedTeam.competitionType as any)}
+                {selectedTeam.maxIndividualEvents && ` • Max ${selectedTeam.maxIndividualEvents} events per swimmer`}
+              </p>
+            </div>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-clipboard-list text-primary-500 mr-3"></i>

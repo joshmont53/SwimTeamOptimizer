@@ -114,6 +114,7 @@ export default function Home() {
             onSquadConfirmed={handleSquadConfirmed}
             onBackToFileUpload={handleBackToFileUpload}
             refetchSwimmers={refetchSwimmers}
+            selectedTeam={selectedTeam || undefined}
           />
         )}
 
@@ -124,6 +125,7 @@ export default function Home() {
             isActive={currentStep === 3}
             onOptimizationComplete={handleOptimizationComplete}
             onBackToSquadSelection={handleBackToSquadSelection}
+            selectedTeam={selectedTeam || undefined}
           />
         )}
 
@@ -132,6 +134,7 @@ export default function Home() {
           <ResultsSection 
             results={optimizationResults} 
             onBackToEventAssignment={handleBackToEventAssignment}
+            selectedTeam={selectedTeam || undefined}
           />
         )}
       </main>

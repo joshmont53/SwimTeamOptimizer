@@ -1,4 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import type { Team } from "@shared/schema";
+import { getCompetitionTypeDisplay } from "@shared/constants";
 
 interface ResultsSectionProps {
   results: {
@@ -26,9 +29,10 @@ interface ResultsSectionProps {
     };
   };
   onBackToEventAssignment: () => void;
+  selectedTeam?: Team;
 }
 
-export default function ResultsSection({ results, onBackToEventAssignment }: ResultsSectionProps) {
+export default function ResultsSection({ results, onBackToEventAssignment, selectedTeam }: ResultsSectionProps) {
   const stats = results.stats || {
     qualifyingTimes: results.individual.filter(r => r.status === 'QT').length,
     averageIndex: results.individual.reduce((acc, r) => acc + (r.index || 0), 0) / results.individual.length,
@@ -62,6 +66,28 @@ export default function ResultsSection({ results, onBackToEventAssignment }: Res
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="p-6">
+        {/* Team Context Header */}
+        {selectedTeam && (
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onBackToEventAssignment}
+              className="mb-3"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Event Assignment
+            </Button>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h3 className="font-semibold text-green-900">{selectedTeam.name} - Optimization Complete</h3>
+              <p className="text-sm text-green-700">
+                {getCompetitionTypeDisplay(selectedTeam.competitionType as any)}
+                {selectedTeam.maxIndividualEvents && ` • Max ${selectedTeam.maxIndividualEvents} events per swimmer`}
+              </p>
+            </div>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-trophy text-warning mr-3"></i>

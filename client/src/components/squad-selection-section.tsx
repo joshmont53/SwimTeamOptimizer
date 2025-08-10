@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Swimmer } from "@shared/schema";
+import { Swimmer, Team } from "@shared/schema";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { getCompetitionTypeDisplay } from "@shared/constants";
 
 interface SquadSelectionSectionProps {
   swimmers: Swimmer[];
@@ -14,6 +16,7 @@ interface SquadSelectionSectionProps {
   onSquadConfirmed: () => void;
   onBackToFileUpload: () => void;
   refetchSwimmers: () => void;
+  selectedTeam?: Team;
 }
 
 export default function SquadSelectionSection({ 
@@ -21,7 +24,8 @@ export default function SquadSelectionSection({
   isActive, 
   onSquadConfirmed, 
   onBackToFileUpload,
-  refetchSwimmers 
+  refetchSwimmers,
+  selectedTeam
 }: SquadSelectionSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [genderFilter, setGenderFilter] = useState("all");
@@ -83,6 +87,28 @@ export default function SquadSelectionSection({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
       <div className="p-6">
+        {/* Team Context Header */}
+        {selectedTeam && (
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onBackToFileUpload}
+              className="mb-3"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to File Upload
+            </Button>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900">{selectedTeam.name}</h3>
+              <p className="text-sm text-blue-700">
+                {getCompetitionTypeDisplay(selectedTeam.competitionType as any)}
+                {selectedTeam.maxIndividualEvents && ` • Max ${selectedTeam.maxIndividualEvents} events per swimmer`}
+              </p>
+            </div>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-users text-primary-500 mr-3"></i>
