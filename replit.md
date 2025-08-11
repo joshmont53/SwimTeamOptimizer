@@ -138,6 +138,12 @@ shared/
   - **Solution**: Use age 17 county times as baseline for Open category (age 99) events
   - **Logic**: Open category swimmers are compared against age 17 standards for consistent index-based ranking
   - **Result**: Sam Law Chin Yung (66.27s) now correctly assigned instead of Malcolm Rainier (91.16s)
+- ✅ **COUNTY TIMES DATA FIX**: Added missing Female 50m Freestyle qualifying times
+  - **Problem**: Female swimmers in 50m Freestyle had very large index values due to missing county times
+  - **Root Cause**: County times file missing all Female 50m Freestyle entries (28 missing)
+  - **Location**: `attached_assets/county_times_cleaned.csv` - county qualifying times database
+  - **Solution**: Added complete Female 50m Freestyle times for ages 11-17 (LC/SC, CT/QT)
+  - **Result**: Female swimmers now get proper index-based assignments for 50m Freestyle events
 - ✅ **DISPLAY CONSISTENCY**: Fixed age category display across frontend
   - **Problem**: "99U" showing instead of "Open" in some components
   - **Solution**: Applied consistent age formatting using existing helper functions
