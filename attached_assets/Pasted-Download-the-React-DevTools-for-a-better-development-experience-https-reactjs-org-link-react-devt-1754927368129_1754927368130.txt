@@ -1,0 +1,42 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+2event-assignment-section.tsx:166 Uncaught TypeError: Cannot read properties of undefined (reading 'length')
+    at EventAssignmentSection (event-assignment-section.tsx:166:32)
+    at renderWithHooks (chunk-WERSD76P.js?v=ee21fcd3:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=ee21fcd3:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=ee21fcd3:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=ee21fcd3:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=ee21fcd3:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=ee21fcd3:3733:39)
+    at beginWork$1 (chunk-WERSD76P.js?v=ee21fcd3:19765:15)
+    at performUnitOfWork (chunk-WERSD76P.js?v=ee21fcd3:19198:20)
+    at workLoopSync (chunk-WERSD76P.js?v=ee21fcd3:19137:13)
+chunk-WERSD76P.js?v=ee21fcd3:14032 The above error occurred in the <EventAssignmentSection> component:
+
+    at EventAssignmentSection (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/src/components/event-assignment-section.tsx:26:3)
+    at main
+    at div
+    at Home (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/src/pages/home.tsx:28:41)
+    at Route (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ee21fcd3:323:16)
+    at Switch (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ee21fcd3:379:17)
+    at Router
+    at Provider (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-O46BVKQA.js?v=ee21fcd3:48:15)
+    at TooltipProvider (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=ee21fcd3:59:5)
+    at QueryClientProvider (https://c42aedd8-565c-4427-b690-3219ded9293b-00-8t4j5s2rdbjl.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=ee21fcd3:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-WERSD76P.js?v=ee21fcd3:14032
+Show 1 more frame
+Show less
+chunk-WERSD76P.js?v=ee21fcd3:9129 Uncaught TypeError: Cannot read properties of undefined (reading 'length')
+    at EventAssignmentSection (event-assignment-section.tsx:166:32)
+    at renderWithHooks (chunk-WERSD76P.js?v=ee21fcd3:11548:26)
+    at updateFunctionComponent (chunk-WERSD76P.js?v=ee21fcd3:14582:28)
+    at beginWork (chunk-WERSD76P.js?v=ee21fcd3:15924:22)
+    at beginWork$1 (chunk-WERSD76P.js?v=ee21fcd3:19753:22)
+    at performUnitOfWork (chunk-WERSD76P.js?v=ee21fcd3:19198:20)
+    at workLoopSync (chunk-WERSD76P.js?v=ee21fcd3:19137:13)
+    at renderRootSync (chunk-WERSD76P.js?v=ee21fcd3:19116:15)
+    at recoverFromConcurrentError (chunk-WERSD76P.js?v=ee21fcd3:18736:28)
+    at performSyncWorkOnRoot (chunk-WERSD76P.js?v=ee21fcd3:18879:28)

@@ -161,10 +161,6 @@ export default function EventAssignmentSection({
     });
   };
 
-  const assignedCount = Object.values(eventAssignments).filter(Boolean).length + 
-                       Object.values(relayAssignments).filter(Boolean).length;
-  const totalEvents = (events?.individual.length || 0) + (events?.relay.length || 0) * 4;
-
   if (!isActive) return null;
 
   // Show loading state while events are being fetched
@@ -238,6 +234,11 @@ export default function EventAssignmentSection({
       </div>
     );
   }
+
+  // Calculate counts now that we know events exists
+  const assignedCount = Object.values(eventAssignments).filter(Boolean).length + 
+                       Object.values(relayAssignments).filter(Boolean).length;
+  const totalEvents = (events?.individual.length || 0) + (events?.relay.length || 0) * 4;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
