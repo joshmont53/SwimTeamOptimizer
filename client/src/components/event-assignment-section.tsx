@@ -191,8 +191,9 @@ export default function EventAssignmentSection({
     );
   }
 
-  // Show message if no events are available or events structure is invalid
-  if (!events || !events.individual || !events.relay) {
+  // Show message if no events are available (both individual and relay are empty or missing)
+  if (!events || !Array.isArray(events.individual) || !Array.isArray(events.relay) || 
+      (events.individual.length === 0 && events.relay.length === 0)) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
         <div className="p-6">
