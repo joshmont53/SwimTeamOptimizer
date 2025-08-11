@@ -12,7 +12,18 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from "@/components/ui/dialog";
-import { Plus, Trophy, Users, Target, CheckCircle, Calendar, Settings } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Plus, Trophy, Users, Target, CheckCircle, Calendar, Settings, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Team, InsertTeam } from "@shared/schema";
@@ -36,6 +47,7 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
   const [teamName, setTeamName] = useState("");
   const [selectedType, setSelectedType] = useState<CompetitionType | null>(null);
   const [maxIndividualEvents, setMaxIndividualEvents] = useState<number | null>(null);
+  const [teamToDelete, setTeamToDelete] = useState<Team | null>(null);
 
   const { data: teams = [], isLoading } = useQuery<Team[]>({
     queryKey: ["/api/teams"],
@@ -62,6 +74,29 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
         description: "Please try again",
         variant: "destructive",
       });
+    },
+  });
+
+  const deleteTeamMutation = useMutation({
+    mutationFn: async (teamId: number) => {
+      const response = await apiRequest("DELETE", `/api/teams/${teamId}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      toast({
+        title: "Team deleted successfully",
+        description: "The team and all its data have been removed",
+      });
+      setTeamToDelete(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error deleting team",
+        description: "Please try again",
+        variant: "destructive",
+      });
+      setTeamToDelete(null);
     },
   });
 
@@ -300,15 +335,49 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
                     </div>
                   </div>
 
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => onTeamSelected(team)}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    {team.status === "selected" ? "View Results" : "Continue Setup"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => onTeamSelected(team)}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      {team.status === "selected" ? "View Results" : "Continue Setup"}
+                    </Button>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="px-3"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Team</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{team.name}"? This action cannot be undone. 
+                            All swimmers, times, and event assignments will be permanently removed.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteTeamMutation.mutate(team.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                            disabled={deleteTeamMutation.isPending}
+                          >
+                            {deleteTeamMutation.isPending ? "Deleting..." : "Delete Team"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </CardContent>
               </Card>
             ))}
