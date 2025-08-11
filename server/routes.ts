@@ -14,7 +14,7 @@ import {
 import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
-import { COMPETITION_TYPES, CUSTOM_COMPETITION_CONFIG } from "@shared/constants";
+import { COMPETITION_TYPES, CUSTOM_COMPETITION_CONFIG, type CompetitionType } from "@shared/constants";
 
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
@@ -338,85 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get events
-  app.get("/api/events", async (req, res) => {
-    try {
-      const events = {
-        individual: [
-          // 11U Events (50m distances)
-          { event: "50m Freestyle", ageCategory: 11, gender: "M" },
-          { event: "50m Freestyle", ageCategory: 11, gender: "F" },
-          { event: "50m Backstroke", ageCategory: 11, gender: "M" },
-          { event: "50m Backstroke", ageCategory: 11, gender: "F" },
-          { event: "50m Breaststroke", ageCategory: 11, gender: "M" },
-          { event: "50m Breaststroke", ageCategory: 11, gender: "F" },
-          { event: "50m Butterfly", ageCategory: 11, gender: "M" },
-          { event: "50m Butterfly", ageCategory: 11, gender: "F" },
-          
-          // 13U Events (100m distances) - PREVIOUSLY MISSING
-          { event: "100m Freestyle", ageCategory: 13, gender: "M" },
-          { event: "100m Freestyle", ageCategory: 13, gender: "F" },
-          { event: "100m Backstroke", ageCategory: 13, gender: "M" },
-          { event: "100m Backstroke", ageCategory: 13, gender: "F" },
-          { event: "100m Breaststroke", ageCategory: 13, gender: "M" },
-          { event: "100m Breaststroke", ageCategory: 13, gender: "F" },
-          { event: "100m Butterfly", ageCategory: 13, gender: "M" },
-          { event: "100m Butterfly", ageCategory: 13, gender: "F" },
-          
-          // 15U Events (100m distances) - PREVIOUSLY COMPLETELY MISSING
-          { event: "100m Freestyle", ageCategory: 15, gender: "M" },
-          { event: "100m Freestyle", ageCategory: 15, gender: "F" },
-          { event: "100m Backstroke", ageCategory: 15, gender: "M" },
-          { event: "100m Backstroke", ageCategory: 15, gender: "F" },
-          { event: "100m Breaststroke", ageCategory: 15, gender: "M" },
-          { event: "100m Breaststroke", ageCategory: 15, gender: "F" },
-          { event: "100m Butterfly", ageCategory: 15, gender: "M" },
-          { event: "100m Butterfly", ageCategory: 15, gender: "F" },
-          
-          // 16U Events (100m + 200m IM) - ALREADY CORRECT
-          { event: "100m Freestyle", ageCategory: 16, gender: "M" },
-          { event: "100m Freestyle", ageCategory: 16, gender: "F" },
-          { event: "100m Backstroke", ageCategory: 16, gender: "M" },
-          { event: "100m Backstroke", ageCategory: 16, gender: "F" },
-          { event: "100m Breaststroke", ageCategory: 16, gender: "M" },
-          { event: "100m Breaststroke", ageCategory: 16, gender: "F" },
-          { event: "100m Butterfly", ageCategory: 16, gender: "M" },
-          { event: "100m Butterfly", ageCategory: 16, gender: "F" },
-          { event: "200m Individual Medley", ageCategory: 16, gender: "M" },
-          { event: "200m Individual Medley", ageCategory: 16, gender: "F" }
-        ],
-        relay: [
-          // 11U Relays - PREVIOUSLY MISSING
-          { relayName: "4x50m Freestyle", ageCategory: 11, gender: "M" },
-          { relayName: "4x50m Freestyle", ageCategory: 11, gender: "F" },
-          { relayName: "4x50m Medley", ageCategory: 11, gender: "M" },
-          { relayName: "4x50m Medley", ageCategory: 11, gender: "F" },
-          
-          // 13U Relays - ALREADY CORRECT
-          { relayName: "4x50m Freestyle", ageCategory: 13, gender: "M" },
-          { relayName: "4x50m Freestyle", ageCategory: 13, gender: "F" },
-          { relayName: "4x50m Medley", ageCategory: 13, gender: "M" },
-          { relayName: "4x50m Medley", ageCategory: 13, gender: "F" },
-          
-          // 15U Relays - PREVIOUSLY MISSING  
-          { relayName: "4x100m Freestyle", ageCategory: 15, gender: "M" },
-          { relayName: "4x100m Freestyle", ageCategory: 15, gender: "F" },
-          { relayName: "4x100m Medley", ageCategory: 15, gender: "M" },
-          { relayName: "4x100m Medley", ageCategory: 15, gender: "F" },
-          
-          // 16U Relays - ALREADY CORRECT
-          { relayName: "4x100m Freestyle", ageCategory: 16, gender: "M" },
-          { relayName: "4x100m Freestyle", ageCategory: 16, gender: "F" },
-          { relayName: "4x100m Medley", ageCategory: 16, gender: "M" },
-          { relayName: "4x100m Medley", ageCategory: 16, gender: "F" }
-        ]
-      };
-      
-      res.json(events);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch events" });
-    }
-  });
+
 
 
 
@@ -730,14 +652,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const teamId = parseInt(req.params.teamId);
       const events = await storage.getTeamEvents(teamId);
       
-      // Group events by type for frontend consumption
-      const groupedEvents = {
-        individual: events.filter(e => !e.isRelay),
-        relay: events.filter(e => e.isRelay)
-      };
+      // Convert to the format expected by frontend
+      const individual = events
+        .filter(e => !e.isRelay)
+        .map(e => ({
+          event: e.event,
+          ageCategory: e.ageCategory,
+          gender: e.gender === 'Male' ? 'M' : e.gender === 'Female' ? 'F' : e.gender
+        }));
+        
+      const relay = events
+        .filter(e => e.isRelay)
+        .map(e => ({
+          relayName: e.event,
+          ageCategory: e.ageCategory,
+          gender: e.gender === 'Male' ? 'M' : e.gender === 'Female' ? 'F' : e.gender
+        }));
       
-      res.json(groupedEvents);
+      res.json({ individual, relay });
     } catch (error) {
+      console.error("Error fetching team events:", error);
       res.status(500).json({ message: "Failed to fetch team events" });
     }
   });
@@ -762,7 +696,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         // Use predefined events for Arena League and County Relays
         const { getEventListForCompetition } = await import("@shared/constants");
-        events = getEventListForCompetition(createdTeam.competitionType);
+        events = getEventListForCompetition(createdTeam.competitionType as CompetitionType);
         console.log(`BACKEND: Creating ${createdTeam.competitionType} competition with ${events.length} events`);
       }
       

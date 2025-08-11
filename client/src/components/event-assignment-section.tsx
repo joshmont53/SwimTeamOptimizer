@@ -152,11 +152,11 @@ export default function EventAssignmentSection({
       // Convert M/F to Male/Female to match swimmer data
       const matchGender = gender === 'M' ? 'Male' : gender === 'F' ? 'Female' : gender;
       
-      // For 16U events, include all swimmers of that gender (no age restriction)
-      if (ageCategory === 16) {
+      // For Open events (age category 99), include all swimmers of that gender (no age restriction)
+      if (ageCategory === 99) {
         return swimmer.gender === matchGender;
       }
-      // For other age categories, use normal age restrictions
+      // For XU age categories (11U, 13U, 15U, etc.), include swimmers aged X and under
       return swimmer.gender === matchGender && swimmer.age <= ageCategory;
     });
   };

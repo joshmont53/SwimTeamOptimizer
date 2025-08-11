@@ -498,9 +498,11 @@ def main():
         # Process each relay event for this age/gender combination
         for event_name in event_names:
             if 'freestyle' in event_name.lower() and 'medley' not in event_name.lower():
-                # Freestyle relay
-                freestyle_swimmers = sorted([s for s in group if s.freestyle is not None], key=lambda x: x.freestyle)[:4]
-                if len(freestyle_swimmers) == 4:
+                # Freestyle relay - determine number of swimmers needed
+                swimmers_needed = 6 if '6x' in event_name else 4
+                freestyle_swimmers = sorted([s for s in group if s.freestyle is not None], key=lambda x: x.freestyle)[:swimmers_needed]
+                
+                if len(freestyle_swimmers) == swimmers_needed:
                     total_time = round(sum(s.freestyle for s in freestyle_swimmers), 2)
                     
                     # Format age display: 99 -> Open, others -> XU

@@ -123,8 +123,12 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
 
     const team = {
       name: teamName.trim(),
-      competitionType: selectedType,
+      competitionType: selectedType as string,
       maxIndividualEvents,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: "in_progress" as const,
+      currentStep: 1
     };
 
     createTeamMutation.mutate(team);
