@@ -1227,10 +1227,135 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
 Proceeding to optimization with 1219 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 0
-Events pre-assigned: 0
+Events auto-assigned: 123
+Events pre-assigned: 1
 
 FINAL EVENT ASSIGNMENTS:
+  1. 11U Male 50m Freestyle -> Jack Einchcomb
+  2. 11U Female 50m Freestyle -> Kiana Coley
+  3. 12U Male 50m Freestyle -> John Morton
+  4. 12U Female 50m Freestyle -> Amy Hart
+  5. 13U Male 50m Freestyle -> Sebastian Wilcock
+  6. 13U Female 50m Freestyle -> Amy Hart
+  7. 14U Male 50m Freestyle -> Ted Eales
+  8. 14U Female 50m Freestyle -> Lily Neighbour
+  9. 15U Male 50m Freestyle -> Alexander Gordon
+  10. 15U Female 50m Freestyle -> Francesca Irani
+  11. 16U Male 50m Freestyle -> Daniel Richards
+  12. 16U Female 50m Freestyle -> Rachael Rock
+  13. 99U Male 50m Freestyle -> Matthew Perry
+  14. 99U Female 50m Freestyle -> Rachael Rock
+  15. 11U Male 100m Freestyle -> John Morton
+  16. 11U Female 100m Freestyle -> Olivia Hooper
+  17. 12U Male 100m Freestyle -> Josh Orme
+  18. 12U Female 100m Freestyle -> Lilly Casson
+  19. 13U Male 100m Freestyle -> Tom Clarke
+  20. 13U Female 100m Freestyle -> Jasmine Key
+  21. 14U Male 100m Freestyle -> Zach Hayward
+  22. 14U Female 100m Freestyle -> Eva Stancheva
+  23. 15U Male 100m Freestyle -> Zach Hayward
+  24. 15U Female 100m Freestyle -> Eva Stancheva
+  25. 16U Male 100m Freestyle -> Oliver Mellor
+  26. 16U Female 100m Freestyle -> Sophia Wallis
+  27. 99U Male 100m Freestyle -> Matthew Perry
+  28. 99U Female 100m Freestyle -> Sophia Wallis
+  29. 11U Male 50m Backstroke -> Iwan Stone
+  30. 11U Female 50m Backstroke -> Eva Harvey
+  31. 12U Male 50m Backstroke -> Dexter Herbert
+  32. 12U Female 50m Backstroke -> Ellie Kong
+  33. 13U Male 50m Backstroke -> Sebastian Wilcock
+  34. 13U Female 50m Backstroke -> Vivienne Morton
+  35. 14U Male 50m Backstroke -> James Payne
+  36. 14U Female 50m Backstroke -> Ella Head
+  37. 15U Male 50m Backstroke -> Jason Allen
+  38. 15U Female 50m Backstroke -> Ella Head
+  39. 16U Male 50m Backstroke -> Oliver Mellor
+  40. 16U Female 50m Backstroke -> Emma Jones
+  41. 99U Male 50m Backstroke -> Malcolm Rainier
+  42. 99U Female 50m Backstroke -> Zoe Sadler
+  43. 11U Male 100m Backstroke -> Rudy Aspland
+  44. 11U Female 100m Backstroke -> Lilly Casson
+  45. 12U Male 100m Backstroke -> Dexter Herbert
+  46. 12U Female 100m Backstroke -> Ellie Kong
+  47. 13U Male 100m Backstroke -> Rudy Aspland
+  48. 13U Female 100m Backstroke -> Vivienne Morton
+  49. 14U Male 100m Backstroke -> Edward Goddard
+  50. 14U Female 100m Backstroke -> Hannah Vanstone
+  51. 15U Male 100m Backstroke -> Jason Allen
+  52. 15U Female 100m Backstroke -> Amy Jones
+  53. 16U Male 100m Backstroke -> Max Walton
+  54. 16U Female 100m Backstroke -> Lara Charlton
+  55. 99U Male 100m Backstroke -> Richard Brinck
+  56. 99U Female 100m Backstroke -> Zoe Sadler
+  57. 11U Male 50m Breaststroke -> Christian Walker
+  58. 11U Female 50m Breaststroke -> Olivia Hooper
+  59. 12U Male 50m Breaststroke -> Thomas Pride
+  60. 12U Female 50m Breaststroke -> Abigail van der Westhuizen
+  61. 13U Male 50m Breaststroke -> Evan Ian
+  62. 13U Female 50m Breaststroke -> Abigail van der Westhuizen
+  63. 14U Male 50m Breaststroke -> Finlay Stuart
+  64. 14U Female 50m Breaststroke -> Emily Paull
+  65. 15U Male 50m Breaststroke -> Thomas Warne
+  66. 15U Female 50m Breaststroke -> Cerys Snelling
+  67. 16U Male 50m Breaststroke -> Daniel Richards
+  68. 16U Female 50m Breaststroke -> Ffion Thomas
+  69. 99U Male 50m Breaststroke -> Chris Fawkes
+  70. 99U Female 50m Breaststroke -> Tegan Ward
+  71. 11U Male 100m Breaststroke -> Kristian Gulcz
+  72. 11U Female 100m Breaststroke -> Kylie-Rae Livesey
+  73. 12U Male 100m Breaststroke -> Kaylem Livesey
+  74. 12U Female 100m Breaststroke -> Sophie Warne
+  75. 13U Male 100m Breaststroke -> Evan Ian
+  76. 13U Female 100m Breaststroke -> Lily Riches
+  77. 14U Male 100m Breaststroke -> Ben Orme
+  78. 14U Female 100m Breaststroke -> Emily Paull
+  79. 15U Male 100m Breaststroke -> Thomas Warne
+  80. 15U Female 100m Breaststroke -> Lily Riches
+  81. 16U Male 100m Breaststroke -> Sam Law Chin Yung
+  82. 16U Female 100m Breaststroke -> Ella Worship
+  83. 99U Male 100m Breaststroke -> Malcolm Rainier
+  84. 99U Female 100m Breaststroke -> Tegan Ward
+  85. 11U Male 50m Butterfly -> Iwan Stone
+  86. 11U Female 50m Butterfly -> Eva Harvey
+  87. 12U Male 50m Butterfly -> Thomas Pride
+  88. 12U Female 50m Butterfly -> Sophie Warne
+  89. 13U Male 50m Butterfly -> Josh Orme
+  90. 13U Female 50m Butterfly -> Jasmine Key
+  91. 14U Male 50m Butterfly -> Finlay Stuart
+  92. 14U Female 50m Butterfly -> Hannah Vanstone
+  93. 15U Male 50m Butterfly -> Alexander Gordon
+  94. 15U Female 50m Butterfly -> Iulia Nestor
+  95. 16U Male 50m Butterfly -> Balazs Toth
+  96. 16U Female 50m Butterfly -> Lara Charlton
+  97. 99U Male 50m Butterfly -> Chris Fawkes
+  98. 99U Female 50m Butterfly -> Maya Farmer
+  99. 11U Female 100m Butterfly -> Emma Goddard
+  100. 12U Male 100m Butterfly -> George Stanchev
+  101. 12U Female 100m Butterfly -> Emma Goddard
+  102. 13U Male 100m Butterfly -> George Stanchev
+  103. 13U Female 100m Butterfly -> Laetizia Sandoval
+  104. 14U Male 100m Butterfly -> Edward Goddard
+  105. 14U Female 100m Butterfly -> Iulia Nestor
+  106. 15U Male 100m Butterfly -> Ariya Mirhosseini
+  107. 15U Female 100m Butterfly -> Cerys Snelling
+  108. 16U Male 100m Butterfly -> Balazs Toth
+  109. 16U Female 100m Butterfly -> Ffion Thomas
+  110. 99U Male 100m Butterfly -> Richard Brinck
+  111. 99U Female 100m Butterfly -> Maya Wright
+  112. 11U Male 200m Individual Medley -> Christian Walker
+  113. 11U Female 200m Individual Medley -> Kylie-Rae Livesey
+  114. 12U Male 200m Individual Medley -> Kaylem Livesey
+  115. 12U Female 200m Individual Medley -> Riya Pamma
+  116. 13U Female 200m Individual Medley -> Riya Pamma
+  117. 14U Male 200m Individual Medley -> James Payne
+  118. 14U Female 200m Individual Medley -> Lily Neighbour
+  119. 15U Male 200m Individual Medley -> Ben Orme
+  120. 15U Female 200m Individual Medley -> Amy Jones
+  121. 16U Male 200m Individual Medley -> Sam Law Chin Yung
+  122. 16U Female 200m Individual Medley -> Emma Jones
+  123. 99U Male 200m Individual Medley -> Joshua Montgomery
+  124. 99U Female 200m Individual Medley -> Maya Wright
 
-Unassigned events: 0
-  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
+Unassigned events: 2
+  - 11U Male 100m Butterfly
+  - 13U Male 200m Individual Medley

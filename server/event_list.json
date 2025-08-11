@@ -1,1 +1,632 @@
-[]
+[
+  [
+    "50m Freestyle",
+    11,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    11,
+    "Female"
+  ],
+  [
+    "50m Freestyle",
+    12,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    12,
+    "Female"
+  ],
+  [
+    "50m Freestyle",
+    13,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    13,
+    "Female"
+  ],
+  [
+    "50m Freestyle",
+    14,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    14,
+    "Female"
+  ],
+  [
+    "50m Freestyle",
+    15,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    15,
+    "Female"
+  ],
+  [
+    "50m Freestyle",
+    16,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    16,
+    "Female"
+  ],
+  [
+    "50m Freestyle",
+    99,
+    "Male"
+  ],
+  [
+    "50m Freestyle",
+    99,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    11,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    11,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    12,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    12,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    13,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    13,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    14,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    14,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    15,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    15,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    16,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    16,
+    "Female"
+  ],
+  [
+    "100m Freestyle",
+    99,
+    "Male"
+  ],
+  [
+    "100m Freestyle",
+    99,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    11,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    11,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    12,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    12,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    13,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    13,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    14,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    14,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    15,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    15,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    16,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    16,
+    "Female"
+  ],
+  [
+    "50m Backstroke",
+    99,
+    "Male"
+  ],
+  [
+    "50m Backstroke",
+    99,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    11,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    11,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    12,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    12,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    13,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    13,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    14,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    14,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    15,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    15,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    16,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    16,
+    "Female"
+  ],
+  [
+    "100m Backstroke",
+    99,
+    "Male"
+  ],
+  [
+    "100m Backstroke",
+    99,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    11,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    11,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    12,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    12,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    13,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    13,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    14,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    14,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    15,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    15,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    16,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    16,
+    "Female"
+  ],
+  [
+    "50m Breaststroke",
+    99,
+    "Male"
+  ],
+  [
+    "50m Breaststroke",
+    99,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    11,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    11,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    12,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    12,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    13,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    13,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    14,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    14,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    15,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    15,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    16,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    16,
+    "Female"
+  ],
+  [
+    "100m Breaststroke",
+    99,
+    "Male"
+  ],
+  [
+    "100m Breaststroke",
+    99,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    11,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    11,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    12,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    12,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    13,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    13,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    14,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    14,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    15,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    15,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    16,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    16,
+    "Female"
+  ],
+  [
+    "50m Butterfly",
+    99,
+    "Male"
+  ],
+  [
+    "50m Butterfly",
+    99,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    11,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    11,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    12,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    12,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    13,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    13,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    14,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    14,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    15,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    15,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    16,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    16,
+    "Female"
+  ],
+  [
+    "100m Butterfly",
+    99,
+    "Male"
+  ],
+  [
+    "100m Butterfly",
+    99,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    11,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    11,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    12,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    12,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    13,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    13,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    14,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    14,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    15,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    15,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    16,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    16,
+    "Female"
+  ],
+  [
+    "200m Individual Medley",
+    99,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
+    99,
+    "Female"
+  ]
+]

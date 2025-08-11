@@ -1,7 +1,7 @@
 {
-  "maxIndividualEvents": 3,
-  "competitionType": "custom",
-  "totalEvents": 0,
-  "individualEvents": 0,
+  "maxIndividualEvents": 2,
+  "competitionType": "arena_league",
+  "totalEvents": 126,
+  "individualEvents": 126,
   "relayEvents": 0
 }
