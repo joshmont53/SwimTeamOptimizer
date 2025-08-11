@@ -134,9 +134,10 @@ shared/
   - **Impact**: Fixed swimmer assignments in Open category events
 - ✅ **OPTIMIZATION ALGORITHM FIX**: Fixed performance-based sorting for Open category
   - **Problem**: Swimmers without county qualifying times got `None` index, causing poor sorting
-  - **Location**: `server/optimizer.py` lines 259-270 - index calculation logic  
-  - **Solution**: Use negative time as index for events without qualifying times
-  - **Result**: Fastest swimmers now correctly selected for Open events
+  - **Location**: `server/optimizer.py` lines 248-268 - qualifying time assignment logic  
+  - **Solution**: Use age 17 county times as baseline for Open category (age 99) events
+  - **Logic**: Open category swimmers are compared against age 17 standards for consistent index-based ranking
+  - **Result**: Sam Law Chin Yung (66.27s) now correctly assigned instead of Malcolm Rainier (91.16s)
 - ✅ **DISPLAY CONSISTENCY**: Fixed age category display across frontend
   - **Problem**: "99U" showing instead of "Open" in some components
   - **Solution**: Applied consistent age formatting using existing helper functions

@@ -252,6 +252,17 @@ def main():
             ):
                 full_list[i].append(time[1])
                 break
+        else:
+            # For Open category (age 99), use age 17 county times as baseline
+            if full_list[i][1] == 99:  # Open category
+                for time in county_times:
+                    if (
+                        time[0] == full_list[i][0] and
+                        int(time[2]) == 17 and  # Use age 17 baseline for Open
+                        time[3] == full_list[i][2]
+                    ):
+                        full_list[i].append(time[1])
+                        break
 
     # Calculate differences and indices
     for row in full_list:
@@ -263,11 +274,9 @@ def main():
             row.append(diff)
             row.append(index)
         else:
-            # For events without qualifying times (like Open category), sort by raw time
-            # Use negative time so faster swimmers (lower times) get better (lower) indices
-            swimmer_time = float(row[5]) if len(row) > 5 else 999999
+            # This should rarely happen now since Open category uses age 17 baseline
             row.append(None)  # diff
-            row.append(-swimmer_time)  # Use negative time as index for direct time-based sorting
+            row.append(999999)  # High index for entries without qualifying time
 
     # Sort by index
     full_list.sort(key=lambda x: (x[-1] is None, x[-1]))
