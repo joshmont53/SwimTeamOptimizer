@@ -136,7 +136,7 @@ def main():
             total_rows_processed += 1
             print(f"PYTHON DEBUG: Row {total_rows_processed}: Length={len(row)}, Course={row[8] if len(row) > 8 else 'N/A'}", file=sys.stderr)
             
-            if len(row) >= 14 and row[8] == 'SC':  # Reduced minimum from 15 to 14 for backwards compatibility
+            if len(row) >= 14:  # Include all courses - SC and LC times
                 # CSV: First_Name,Last_Name,ASA_No,Date_of_Birth,Meet,Date,Event,SC_Time,Course,Gender,AgeTime,County_QT,Count_CT,County_Qualify,time_in_seconds,isAvailable
                 #      0         1          2      3             4     5    6      7        8       9       10      11        12       13             14             15
                 
@@ -224,7 +224,7 @@ def main():
         reader = csv.reader(f)
         next(reader)  # Skip header
         for row in reader:
-            if len(row) >= 6 and row[3] == 'SC' and row[4] == 'QT':
+            if len(row) >= 6 and row[4] == 'QT':
                 county_times.append([row[0], convert_to_seconds_with_milliseconds(row[1]), row[2], row[5]])
 
     # Event list is now loaded dynamically from event_list.json file above
