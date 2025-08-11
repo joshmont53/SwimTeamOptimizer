@@ -42,7 +42,7 @@ export default function EventAssignmentSection({
   const { toast } = useToast();
 
   const { data: events, isLoading: eventsLoading, error: eventsError } = useQuery<Events>({
-    queryKey: ["/api/teams", selectedTeam?.id, "events"],
+    queryKey: [`/api/teams/${selectedTeam?.id}/events`],
     enabled: isActive && !!selectedTeam?.id,
   });
 
