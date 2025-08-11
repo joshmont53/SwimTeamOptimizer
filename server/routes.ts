@@ -504,30 +504,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.clearEventAssignments(teamId);
       await storage.clearRelayAssignments(teamId);
       
-      // Generate event list for Python optimizer (individual events only)
-      const individualEvents = teamEvents
-        .filter(e => !e.isRelay)
-        .map(e => [e.event, e.ageCategory, e.gender]);
+      // Generate event list for Python optimizer (ALL events - individual AND relay)
+      const allEvents = teamEvents.map(e => [e.event, e.ageCategory, e.gender]);
       
       // Generate optimization configuration
       const optimizationConfig = {
         maxIndividualEvents: team.maxIndividualEvents || 2,
         competitionType: team.competitionType,
         totalEvents: teamEvents.length,
-        individualEvents: individualEvents.length,
+        individualEvents: teamEvents.filter(e => !e.isRelay).length,
         relayEvents: teamEvents.filter(e => e.isRelay).length
       };
       
-      console.log(`BACKEND: Generated event list with ${individualEvents.length} individual events for ${team.competitionType}`);
+      console.log(`BACKEND: Generated event list with ${allEvents.length} total events (${teamEvents.filter(e => !e.isRelay).length} individual, ${teamEvents.filter(e => e.isRelay).length} relay) for ${team.competitionType}`);
       console.log(`BACKEND: Max individual events per swimmer: ${optimizationConfig.maxIndividualEvents}`);
       
       // Save files for Python optimizer
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
-      fs.writeFileSync(eventListPath, JSON.stringify(individualEvents, null, 2));
+      fs.writeFileSync(eventListPath, JSON.stringify(allEvents, null, 2));
       fs.writeFileSync(configPath, JSON.stringify(optimizationConfig, null, 2));
       
       console.log('Pre-assignments saved to file:', preAssignments);
-      console.log('Event list saved for optimizer:', individualEvents.slice(0, 5), '...');
+      console.log('Event list saved for optimizer:', allEvents.slice(0, 5), '...');
 
       // Export swimmer data to CSV - ALL SWIMMERS WITH AVAILABILITY STATUS
       const swimmerTimes = await storage.getSwimmerTimes(teamId);
