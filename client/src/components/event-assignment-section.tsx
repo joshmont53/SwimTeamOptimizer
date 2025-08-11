@@ -41,7 +41,7 @@ export default function EventAssignmentSection({
   const [isOptimizing, setIsOptimizing] = useState(false);
   const { toast } = useToast();
 
-  const { data: events } = useQuery<Events>({
+  const { data: events, isLoading: eventsLoading, error: eventsError } = useQuery<Events>({
     queryKey: ["/api/teams", selectedTeam?.id, "events"],
     enabled: isActive && !!selectedTeam?.id,
   });
@@ -166,6 +166,78 @@ export default function EventAssignmentSection({
   const totalEvents = (events?.individual.length || 0) + (events?.relay.length || 0) * 4;
 
   if (!isActive) return null;
+
+  // Show loading state while events are being fetched
+  if (eventsLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div className="p-6">
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-3 text-gray-600">Loading events...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if events failed to load
+  if (eventsError) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div className="p-6">
+          <div className="text-center py-8">
+            <div className="text-red-600 mb-2">Failed to load events</div>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no events are available
+  if (!events) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div className="p-6">
+          {/* Team Context Header */}
+          {selectedTeam && (
+            <div className="mb-6">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onBackToSquadSelection}
+                className="mb-3"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Squad Selection
+              </Button>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-900">{selectedTeam.name}</h3>
+                <p className="text-sm text-blue-700">
+                  {getCompetitionTypeDisplay(selectedTeam.competitionType as any)}
+                  {selectedTeam.maxIndividualEvents && ` • Max ${selectedTeam.maxIndividualEvents} events per swimmer`}
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <div className="text-center py-8">
+            <div className="text-gray-600 mb-4">No events available for this competition</div>
+            <Button 
+              onClick={() => {
+                setIsOptimizing(true);
+                optimizeMutation.mutate();
+              }}
+              disabled={isOptimizing}
+            >
+              {isOptimizing ? "Processing..." : "Continue to Results"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
