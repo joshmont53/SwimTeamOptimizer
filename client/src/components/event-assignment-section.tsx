@@ -191,8 +191,8 @@ export default function EventAssignmentSection({
     );
   }
 
-  // Show message if no events are available
-  if (!events) {
+  // Show message if no events are available or events structure is invalid
+  if (!events || !events.individual || !events.relay) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
         <div className="p-6">
@@ -235,10 +235,10 @@ export default function EventAssignmentSection({
     );
   }
 
-  // Calculate counts now that we know events exists
+  // Calculate counts now that we know events exists and is properly loaded
   const assignedCount = Object.values(eventAssignments).filter(Boolean).length + 
                        Object.values(relayAssignments).filter(Boolean).length;
-  const totalEvents = (events?.individual.length || 0) + (events?.relay.length || 0) * 4;
+  const totalEvents = (events?.individual?.length || 0) + (events?.relay?.length || 0) * 4;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
