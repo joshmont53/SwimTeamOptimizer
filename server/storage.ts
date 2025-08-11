@@ -75,6 +75,7 @@ export interface IStorage {
   // Team events operations
   getTeamEvents(teamId: number): Promise<TeamEvent[]>;
   createTeamEvent(event: InsertTeamEvent): Promise<TeamEvent>;
+  createTeamEventsBatch(events: InsertTeamEvent[]): Promise<TeamEvent[]>;
   clearTeamEvents(teamId: number): Promise<void>;
 }
 
@@ -285,6 +286,11 @@ export class DatabaseStorage implements IStorage {
   async createTeamEvent(insertEvent: InsertTeamEvent): Promise<TeamEvent> {
     const [event] = await db.insert(teamEvents).values(insertEvent).returning();
     return event;
+  }
+
+  async createTeamEventsBatch(insertEvents: InsertTeamEvent[]): Promise<TeamEvent[]> {
+    if (insertEvents.length === 0) return [];
+    return await db.insert(teamEvents).values(insertEvents).returning();
   }
 
   async clearTeamEvents(teamId: number): Promise<void> {

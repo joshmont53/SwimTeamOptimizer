@@ -14,6 +14,7 @@ import {
 import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
+import { COMPETITION_TYPES, CUSTOM_COMPETITION_CONFIG } from "@shared/constants";
 
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
@@ -35,6 +36,47 @@ function parseCSVLine(line: string): string[] {
   
   result.push(current.trim());
   return result;
+}
+
+// Generate custom event list from selected events
+function generateCustomEventList(customEvents: {individual: string[], relay: string[]}): any[] {
+  const events = [];
+  
+  // Process individual events
+  for (const eventKey of customEvents.individual) {
+    const eventConfig = CUSTOM_COMPETITION_CONFIG.individualEvents.find(e => e.key === eventKey);
+    if (eventConfig) {
+      for (const ageCategory of eventConfig.ageCategories) {
+        for (const gender of eventConfig.genders) {
+          events.push({
+            event: eventConfig.event,
+            ageCategory,
+            gender,
+            isRelay: false
+          });
+        }
+      }
+    }
+  }
+  
+  // Process relay events
+  for (const relayKey of customEvents.relay) {
+    const relayConfig = CUSTOM_COMPETITION_CONFIG.relayEvents.find(r => r.key === relayKey);
+    if (relayConfig) {
+      for (const ageCategory of relayConfig.ageCategories) {
+        for (const gender of relayConfig.genders) {
+          events.push({
+            event: relayConfig.relayName,
+            ageCategory,
+            gender,
+            isRelay: true
+          });
+        }
+      }
+    }
+  }
+  
+  return events;
 }
 
 function convertTimeToSeconds(timeStr: string): number {
@@ -403,11 +445,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
+      // Get team details and events
+      const team = await storage.getTeam(teamId);
+      if (!team) {
+        return res.status(404).json({ message: "Team not found" });
+      }
+      
+      const teamEvents = await storage.getTeamEvents(teamId);
+      
       // Use fixed file names in the script directory
       const scriptDir = path.join(process.cwd(), 'server');
       const memberPbsPath = path.join(scriptDir, 'member_pbs.csv');
       const countyTimesPath = path.join(scriptDir, 'county_times_cleaned.csv');
       const preAssignmentsPath = path.join(scriptDir, 'pre_assignments.json');
+      const eventListPath = path.join(scriptDir, 'event_list.json');
+      const configPath = path.join(scriptDir, 'optimization_config.json');
 
       // Get pre-assignments from storage BEFORE clearing anything
       const eventAssignments = await storage.getEventAssignments(teamId);
@@ -452,8 +504,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.clearEventAssignments(teamId);
       await storage.clearRelayAssignments(teamId);
       
+      // Generate event list for Python optimizer (individual events only)
+      const individualEvents = teamEvents
+        .filter(e => !e.isRelay)
+        .map(e => [e.event, e.ageCategory, e.gender]);
+      
+      // Generate optimization configuration
+      const optimizationConfig = {
+        maxIndividualEvents: team.maxIndividualEvents || 2,
+        competitionType: team.competitionType,
+        totalEvents: teamEvents.length,
+        individualEvents: individualEvents.length,
+        relayEvents: teamEvents.filter(e => e.isRelay).length
+      };
+      
+      console.log(`BACKEND: Generated event list with ${individualEvents.length} individual events for ${team.competitionType}`);
+      console.log(`BACKEND: Max individual events per swimmer: ${optimizationConfig.maxIndividualEvents}`);
+      
+      // Save files for Python optimizer
       fs.writeFileSync(preAssignmentsPath, JSON.stringify(preAssignments, null, 2));
+      fs.writeFileSync(eventListPath, JSON.stringify(individualEvents, null, 2));
+      fs.writeFileSync(configPath, JSON.stringify(optimizationConfig, null, 2));
+      
       console.log('Pre-assignments saved to file:', preAssignments);
+      console.log('Event list saved for optimizer:', individualEvents.slice(0, 5), '...');
 
       // Export swimmer data to CSV - ALL SWIMMERS WITH AVAILABILITY STATUS
       const swimmerTimes = await storage.getSwimmerTimes(teamId);
@@ -652,42 +726,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get team events
+  app.get("/api/teams/:teamId/events", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.teamId);
+      const events = await storage.getTeamEvents(teamId);
+      
+      // Group events by type for frontend consumption
+      const groupedEvents = {
+        individual: events.filter(e => !e.isRelay),
+        relay: events.filter(e => e.isRelay)
+      };
+      
+      res.json(groupedEvents);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team events" });
+    }
+  });
+
   app.post("/api/teams", async (req, res) => {
     try {
-      const team = await storage.createTeam({
-        ...req.body,
+      // Handle both direct team creation and custom team creation with events
+      const { team, customEvents } = req.body.team ? req.body : { team: req.body, customEvents: null };
+      
+      const createdTeam = await storage.createTeam({
+        ...team,
         status: "in_progress",
         currentStep: 1
       });
       
-      // Create team events based on competition type
-      if (req.body.competitionType === 'arena_league') {
-        const { ARENA_LEAGUE_CONFIG } = await import("@shared/constants");
-        for (const event of ARENA_LEAGUE_CONFIG.events) {
-          await storage.createTeamEvent({
-            teamId: team.id,
-            event: event.event,
-            ageCategory: event.ageCategory,
-            gender: event.gender,
-            isRelay: event.isRelay
-          });
-        }
-      } else if (req.body.competitionType === 'county_relays') {
-        const { COUNTY_RELAYS_CONFIG } = await import("@shared/constants");
-        for (const event of COUNTY_RELAYS_CONFIG.events) {
-          await storage.createTeamEvent({
-            teamId: team.id,
-            event: event.event,
-            ageCategory: event.ageCategory,
-            gender: event.gender,
-            isRelay: event.isRelay
-          });
-        }
+      let events = [];
+      
+      if (createdTeam.competitionType === COMPETITION_TYPES.CUSTOM && customEvents) {
+        // For custom competitions with selected events, generate the event list
+        events = generateCustomEventList(customEvents);
+        console.log(`BACKEND: Creating custom competition with ${events.length} events`);
+      } else {
+        // Use predefined events for Arena League and County Relays
+        const { getEventListForCompetition } = await import("@shared/constants");
+        events = getEventListForCompetition(createdTeam.competitionType);
+        console.log(`BACKEND: Creating ${createdTeam.competitionType} competition with ${events.length} events`);
       }
       
-      res.json(team);
+      if (events.length > 0) {
+        const teamEvents = events.map(event => ({
+          teamId: createdTeam.id,
+          event: event.event,
+          ageCategory: event.ageCategory,
+          gender: event.gender,
+          isRelay: event.isRelay
+        }));
+        
+        await storage.createTeamEventsBatch(teamEvents);
+      }
+      
+      res.json(createdTeam);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create team" });
+      console.error("Team creation error:", error);
+      res.status(500).json({ message: "Failed to create team", error: String(error) });
     }
   });
 

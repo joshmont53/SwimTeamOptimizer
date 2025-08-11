@@ -42,8 +42,8 @@ export default function EventAssignmentSection({
   const { toast } = useToast();
 
   const { data: events } = useQuery<Events>({
-    queryKey: ["/api/events"],
-    enabled: isActive,
+    queryKey: ["/api/teams", selectedTeam?.id, "events"],
+    enabled: isActive && !!selectedTeam?.id,
   });
 
   const optimizeMutation = useMutation({

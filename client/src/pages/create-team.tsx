@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Trophy, Users, Target, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +16,7 @@ import {
   COMPETITION_TYPES, 
   ARENA_LEAGUE_CONFIG, 
   COUNTY_RELAYS_CONFIG,
+  CUSTOM_COMPETITION_CONFIG,
   type CompetitionType 
 } from "@shared/constants";
 import type { InsertTeam } from "@shared/schema";
@@ -27,10 +30,14 @@ export default function CreateTeamPage() {
   const [selectedType, setSelectedType] = useState<CompetitionType | null>(null);
   const [maxIndividualEvents, setMaxIndividualEvents] = useState<number | null>(null);
   const [showCustomConfig, setShowCustomConfig] = useState(false);
+  const [selectedEvents, setSelectedEvents] = useState<{individual: string[], relay: string[]}>({
+    individual: [],
+    relay: []
+  });
 
   const createTeamMutation = useMutation({
-    mutationFn: async (team: InsertTeam) => {
-      const response = await apiRequest("POST", "/api/teams", team);
+    mutationFn: async (data: { team: InsertTeam; customEvents?: {individual: string[], relay: string[]} }) => {
+      const response = await apiRequest("POST", "/api/teams", data);
       return response.json();
     },
     onSuccess: (data) => {
@@ -67,17 +74,34 @@ export default function CreateTeamPage() {
 
   const handleCreateTeam = () => {
     if (!teamName.trim() || !selectedType) return;
+    
+    // For custom competitions, require at least one event to be selected
+    if (selectedType === COMPETITION_TYPES.CUSTOM) {
+      const totalEvents = selectedEvents.individual.length + selectedEvents.relay.length;
+      if (totalEvents === 0) {
+        toast({
+          title: "No events selected",
+          description: "Please select at least one event for your custom competition",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
 
     const team: InsertTeam = {
       name: teamName.trim(),
       competitionType: selectedType,
       maxIndividualEvents,
-      isComplete: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    createTeamMutation.mutate(team);
+    // Include custom events in the mutation if it's a custom competition
+    const mutationData = selectedType === COMPETITION_TYPES.CUSTOM 
+      ? { team, customEvents: selectedEvents }
+      : { team };
+
+    createTeamMutation.mutate(mutationData);
   };
 
   const competitionOptions = [
@@ -226,14 +250,15 @@ export default function CreateTeamPage() {
                     <CardTitle className="text-lg">Custom Configuration</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
+                      {/* Max Individual Events */}
                       <div className="space-y-2">
                         <Label htmlFor="maxEvents">Maximum individual events per swimmer</Label>
                         <div className="flex items-center gap-4">
                           <Input
                             id="maxEvents"
                             type="number"
-                            min="1"
+                            min="0"
                             max="10"
                             value={maxIndividualEvents || ""}
                             onChange={(e) => setMaxIndividualEvents(
@@ -244,17 +269,122 @@ export default function CreateTeamPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setMaxIndividualEvents(null)}
+                            onClick={() => setMaxIndividualEvents(0)}
                           >
-                            No Limit
+                            No Individual Events
                           </Button>
                         </div>
                         <p className="text-sm text-gray-500">
-                          {maxIndividualEvents 
+                          {maxIndividualEvents === 0
+                            ? "No individual events (relay-only competition)"
+                            : maxIndividualEvents 
                             ? `Each swimmer can compete in up to ${maxIndividualEvents} individual events`
                             : "Swimmers can compete in unlimited individual events"
                           }
                         </p>
+                      </div>
+
+                      {/* Event Selection */}
+                      <div className="space-y-4">
+                        <Label>Select Events for This Competition</Label>
+                        <Tabs defaultValue="individual" className="w-full">
+                          <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="individual">Individual Events</TabsTrigger>
+                            <TabsTrigger value="relay">Relay Events</TabsTrigger>
+                          </TabsList>
+                          
+                          <TabsContent value="individual" className="space-y-4">
+                            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Select individual events to include in this competition. Events are organized by stroke and distance.
+                              </p>
+                              
+                              {/* Individual Events Grid */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {CUSTOM_COMPETITION_CONFIG.individualEvents.map((event: any) => (
+                                  <div key={event.key} className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        id={event.key}
+                                        checked={selectedEvents.individual.includes(event.key)}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setSelectedEvents(prev => ({
+                                              ...prev,
+                                              individual: [...prev.individual, event.key]
+                                            }));
+                                          } else {
+                                            setSelectedEvents(prev => ({
+                                              ...prev,
+                                              individual: prev.individual.filter(k => k !== event.key)
+                                            }));
+                                          }
+                                        }}
+                                      />
+                                      <Label 
+                                        htmlFor={event.key}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      >
+                                        {event.event}
+                                      </Label>
+                                    </div>
+                                    <p className="text-xs text-gray-500 ml-6">
+                                      Ages {event.ageCategories.join(", ")} • {event.genders.join(" & ")}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="relay" className="space-y-4">
+                            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Select relay events to include in this competition. Each relay requires 4 swimmers.
+                              </p>
+                              
+                              {/* Relay Events Grid */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {CUSTOM_COMPETITION_CONFIG.relayEvents.map((relay: any) => (
+                                  <div key={relay.key} className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        id={relay.key}
+                                        checked={selectedEvents.relay.includes(relay.key)}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setSelectedEvents(prev => ({
+                                              ...prev,
+                                              relay: [...prev.relay, relay.key]
+                                            }));
+                                          } else {
+                                            setSelectedEvents(prev => ({
+                                              ...prev,
+                                              relay: prev.relay.filter(k => k !== relay.key)
+                                            }));
+                                          }
+                                        }}
+                                      />
+                                      <Label 
+                                        htmlFor={relay.key}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      >
+                                        {relay.relayName}
+                                      </Label>
+                                    </div>
+                                    <p className="text-xs text-gray-500 ml-6">
+                                      Ages {relay.ageCategories.join(", ")} • {relay.genders.join(" & ")}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </TabsContent>
+                        </Tabs>
+                        
+                        <div className="text-sm text-gray-500">
+                          Selected: {selectedEvents.individual.length} individual events, {selectedEvents.relay.length} relay events
+                        </div>
                       </div>
                     </div>
                   </CardContent>

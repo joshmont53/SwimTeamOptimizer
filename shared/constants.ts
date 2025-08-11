@@ -153,35 +153,59 @@ export const ARENA_LEAGUE_CONFIG = {
 // County Relays configuration
 export const COUNTY_RELAYS_CONFIG = {
   name: 'County Relays',
-  maxIndividualEvents: null, // No individual events
+  maxIndividualEvents: 0, // No individual events
   events: [
     // 4x50m Freestyle relays
-    { event: '4x50m Freestyle', ageCategory: 12, gender: 'Male', isRelay: true },
-    { event: '4x50m Freestyle', ageCategory: 12, gender: 'Female', isRelay: true },
-    { event: '4x50m Freestyle', ageCategory: 14, gender: 'Male', isRelay: true },
-    { event: '4x50m Freestyle', ageCategory: 14, gender: 'Female', isRelay: true },
-    { event: '4x50m Freestyle', ageCategory: 16, gender: 'Male', isRelay: true },
-    { event: '4x50m Freestyle', ageCategory: 16, gender: 'Female', isRelay: true },
+    { event: '4 x 50m Freestyle', ageCategory: 12, gender: 'Male', isRelay: true },
+    { event: '4 x 50m Freestyle', ageCategory: 12, gender: 'Female', isRelay: true },
+    { event: '4 x 50m Freestyle', ageCategory: 14, gender: 'Male', isRelay: true },
+    { event: '4 x 50m Freestyle', ageCategory: 14, gender: 'Female', isRelay: true },
+    { event: '4 x 50m Freestyle', ageCategory: 16, gender: 'Male', isRelay: true },
+    { event: '4 x 50m Freestyle', ageCategory: 16, gender: 'Female', isRelay: true },
 
     // 4x100m Freestyle relays - Open age group
-    { event: '4x100m Freestyle', ageCategory: 99, gender: 'Male', isRelay: true },
-    { event: '4x100m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
+    { event: '4 x 100m Freestyle', ageCategory: 99, gender: 'Male', isRelay: true },
+    { event: '4 x 100m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
 
     // 4x200m Freestyle relays - Open age group
-    { event: '4x200m Freestyle', ageCategory: 99, gender: 'Male', isRelay: true },
-    { event: '4x200m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
+    { event: '4 x 200m Freestyle', ageCategory: 99, gender: 'Male', isRelay: true },
+    { event: '4 x 200m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
 
     // 4x50m Medley relays
-    { event: '4x50m Medley', ageCategory: 12, gender: 'Male', isRelay: true },
-    { event: '4x50m Medley', ageCategory: 12, gender: 'Female', isRelay: true },
-    { event: '4x50m Medley', ageCategory: 14, gender: 'Male', isRelay: true },
-    { event: '4x50m Medley', ageCategory: 14, gender: 'Female', isRelay: true },
-    { event: '4x50m Medley', ageCategory: 16, gender: 'Male', isRelay: true },
-    { event: '4x50m Medley', ageCategory: 16, gender: 'Female', isRelay: true },
+    { event: '4 x 50m Medley', ageCategory: 12, gender: 'Male', isRelay: true },
+    { event: '4 x 50m Medley', ageCategory: 12, gender: 'Female', isRelay: true },
+    { event: '4 x 50m Medley', ageCategory: 14, gender: 'Male', isRelay: true },
+    { event: '4 x 50m Medley', ageCategory: 14, gender: 'Female', isRelay: true },
+    { event: '4 x 50m Medley', ageCategory: 16, gender: 'Male', isRelay: true },
+    { event: '4 x 50m Medley', ageCategory: 16, gender: 'Female', isRelay: true },
 
     // 4x100m Medley relays - Open age group
-    { event: '4x100m Medley', ageCategory: 99, gender: 'Male', isRelay: true },
-    { event: '4x100m Medley', ageCategory: 99, gender: 'Female', isRelay: true },
+    { event: '4 x 100m Medley', ageCategory: 99, gender: 'Male', isRelay: true },
+    { event: '4 x 100m Medley', ageCategory: 99, gender: 'Female', isRelay: true },
+  ]
+};
+
+// Custom Competition configuration
+export const CUSTOM_COMPETITION_CONFIG = {
+  name: 'Custom Competition',
+  maxIndividualEvents: null, // User-defined
+  events: [], // Will be populated by user selection
+  individualEvents: [
+    { key: '50m-freestyle', event: '50m Freestyle', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '50m-backstroke', event: '50m Backstroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '50m-breaststroke', event: '50m Breaststroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '50m-butterfly', event: '50m Butterfly', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '100m-freestyle', event: '100m Freestyle', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '100m-backstroke', event: '100m Backstroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '100m-breaststroke', event: '100m Breaststroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '100m-butterfly', event: '100m Butterfly', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+    { key: '200m-im', event: '200m Individual Medley', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
+  ],
+  relayEvents: [
+    { key: '4x50m-freestyle', relayName: '4x50m Freestyle', ageCategories: [12, 14, 16, 99], genders: ['Male', 'Female'] },
+    { key: '4x50m-medley', relayName: '4x50m Medley', ageCategories: [12, 14, 16, 99], genders: ['Male', 'Female'] },
+    { key: '4x100m-freestyle', relayName: '4x100m Freestyle', ageCategories: [99], genders: ['Male', 'Female'] },
+    { key: '4x100m-medley', relayName: '4x100m Medley', ageCategories: [99], genders: ['Male', 'Female'] },
   ]
 };
 
@@ -235,5 +259,33 @@ export function getCompetitionTypeDisplay(type: CompetitionType): string {
       return 'Custom Competition';
     default:
       return type;
+  }
+}
+
+// Helper function to get event list for a competition type
+export function getEventListForCompetition(competitionType: CompetitionType) {
+  switch (competitionType) {
+    case COMPETITION_TYPES.ARENA_LEAGUE:
+      return ARENA_LEAGUE_CONFIG.events;
+    case COMPETITION_TYPES.COUNTY_RELAYS:
+      return COUNTY_RELAYS_CONFIG.events;
+    case COMPETITION_TYPES.CUSTOM:
+      return CUSTOM_COMPETITION_CONFIG.events;
+    default:
+      return ARENA_LEAGUE_CONFIG.events;
+  }
+}
+
+// Helper function to get max individual events for a competition type
+export function getMaxIndividualEventsForCompetition(competitionType: CompetitionType) {
+  switch (competitionType) {
+    case COMPETITION_TYPES.ARENA_LEAGUE:
+      return ARENA_LEAGUE_CONFIG.maxIndividualEvents;
+    case COMPETITION_TYPES.COUNTY_RELAYS:
+      return COUNTY_RELAYS_CONFIG.maxIndividualEvents;
+    case COMPETITION_TYPES.CUSTOM:
+      return CUSTOM_COMPETITION_CONFIG.maxIndividualEvents;
+    default:
+      return ARENA_LEAGUE_CONFIG.maxIndividualEvents;
   }
 }

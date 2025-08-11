@@ -52,6 +52,67 @@ def main():
     member_pbs_file = 'member_pbs.csv'
     county_times_file = 'county_times_cleaned.csv'
     pre_assignments_file = 'pre_assignments.json'
+    event_list_file = 'event_list.json'
+    config_file = 'optimization_config.json'
+
+    # Load optimization configuration
+    optimization_config = {"maxIndividualEvents": 2, "competitionType": "arena_league"}
+    try:
+        with open(config_file, 'r') as f:
+            optimization_config = json.load(f)
+        print(f"LOADED OPTIMIZATION CONFIG: {optimization_config}", file=sys.stderr)
+    except Exception as e:
+        print(f"ERROR LOADING CONFIG: {e}", file=sys.stderr)
+        pass  # Use defaults
+    
+    # Load dynamic event list
+    event_list = []
+    try:
+        with open(event_list_file, 'r') as f:
+            event_list = json.load(f)
+        print(f"LOADED EVENT LIST: {len(event_list)} events", file=sys.stderr)
+        if event_list:
+            print(f"FIRST FEW EVENTS: {event_list[:3]}", file=sys.stderr)
+    except Exception as e:
+        print(f"ERROR LOADING EVENT LIST: {e}", file=sys.stderr)
+        # Fallback to default Arena League events
+        event_list = [
+            ['50m Freestyle', 11, 'Male'],
+            ['50m Backstroke', 11, 'Male'],
+            ['50m Breaststroke', 11, 'Male'],
+            ['50m Butterfly', 11, 'Male'],
+            ['50m Freestyle', 11, 'Female'],
+            ['50m Backstroke', 11, 'Female'],
+            ['50m Breaststroke', 11, 'Female'],
+            ['50m Butterfly', 11, 'Female'],
+            ['100m Freestyle', 13, 'Male'],
+            ['100m Backstroke', 13, 'Male'],
+            ['100m Breaststroke', 13, 'Male'],
+            ['100m Butterfly', 13, 'Male'],
+            ['100m Freestyle', 13, 'Female'],
+            ['100m Backstroke', 13, 'Female'],
+            ['100m Breaststroke', 13, 'Female'],
+            ['100m Butterfly', 13, 'Female'],
+            ['100m Freestyle', 15, 'Male'],
+            ['100m Backstroke', 15, 'Male'],
+            ['100m Breaststroke', 15, 'Male'],
+            ['100m Butterfly', 15, 'Male'],
+            ['100m Freestyle', 15, 'Female'],
+            ['100m Backstroke', 15, 'Female'],
+            ['100m Breaststroke', 15, 'Female'],
+            ['100m Butterfly', 15, 'Female'],
+            ['100m Freestyle', 16, 'Male'],
+            ['100m Backstroke', 16, 'Male'],
+            ['100m Breaststroke', 16, 'Male'],
+            ['100m Butterfly', 16, 'Male'],
+            ['200m Individual Medley', 16, 'Male'],
+            ['100m Freestyle', 16, 'Female'],
+            ['100m Backstroke', 16, 'Female'],
+            ['100m Breaststroke', 16, 'Female'],
+            ['100m Butterfly', 16, 'Female'],
+            ['200m Individual Medley', 16, 'Female']
+        ]
+        print(f"USING FALLBACK EVENT LIST: {len(event_list)} events", file=sys.stderr)
 
     # Load pre-assignments
     pre_assignments = {"individual": [], "relay": []}
@@ -166,43 +227,7 @@ def main():
             if len(row) >= 6 and row[3] == 'SC' and row[4] == 'QT':
                 county_times.append([row[0], convert_to_seconds_with_milliseconds(row[1]), row[2], row[5]])
 
-    # Event list from original script
-    event_list = [
-        ['50m Freestyle', 11, 'Male'],
-        ['50m Backstroke', 11, 'Male'],
-        ['50m Breaststroke', 11, 'Male'],
-        ['50m Butterfly', 11, 'Male'],
-        ['50m Freestyle', 11, 'Female'],
-        ['50m Backstroke', 11, 'Female'],
-        ['50m Breaststroke', 11, 'Female'],
-        ['50m Butterfly', 11, 'Female'],
-        ['100m Freestyle', 13, 'Male'],
-        ['100m Backstroke', 13, 'Male'],
-        ['100m Breaststroke', 13, 'Male'],
-        ['100m Butterfly', 13, 'Male'],
-        ['100m Freestyle', 13, 'Female'],
-        ['100m Backstroke', 13, 'Female'],
-        ['100m Breaststroke', 13, 'Female'],
-        ['100m Butterfly', 13, 'Female'],
-        ['100m Freestyle', 15, 'Male'],
-        ['100m Backstroke', 15, 'Male'],
-        ['100m Breaststroke', 15, 'Male'],
-        ['100m Butterfly', 15, 'Male'],
-        ['100m Freestyle', 15, 'Female'],
-        ['100m Backstroke', 15, 'Female'],
-        ['100m Breaststroke', 15, 'Female'],
-        ['100m Butterfly', 15, 'Female'],
-        ['100m Freestyle', 16, 'Male'],
-        ['100m Backstroke', 16, 'Male'],
-        ['100m Breaststroke', 16, 'Male'],
-        ['100m Butterfly', 16, 'Male'],
-        ['200m Individual Medley', 16, 'Male'],
-        ['100m Freestyle', 16, 'Female'],
-        ['100m Backstroke', 16, 'Female'],
-        ['100m Breaststroke', 16, 'Female'],
-        ['100m Butterfly', 16, 'Female'],
-        ['200m Individual Medley', 16, 'Female']
-    ]
+    # Event list is now loaded dynamically from event_list.json file above
 
     # Build full list with qualifying times
     full_list = []
@@ -363,7 +388,7 @@ def main():
         allocated_count = sum(1 for event in event_list if event[-1] == swimmer_name)
         total_count = max(current_count, allocated_count)
 
-        if total_count >= 2:
+        if total_count >= optimization_config.get("maxIndividualEvents", 2):
             continue
 
         for event in event_list:
