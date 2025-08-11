@@ -191,6 +191,16 @@ export default function EventAssignmentSection({
     );
   }
 
+  // Debug logging to identify the issue
+  console.log('EVENT DEBUG:', {
+    events,
+    hasEvents: !!events,
+    individualIsArray: Array.isArray(events?.individual),
+    relayIsArray: Array.isArray(events?.relay),
+    individualLength: events?.individual?.length,
+    relayLength: events?.relay?.length
+  });
+
   // Show message if no events are available (both individual and relay are empty or missing)
   if (!events || !Array.isArray(events.individual) || !Array.isArray(events.relay) || 
       (events.individual.length === 0 && events.relay.length === 0)) {
