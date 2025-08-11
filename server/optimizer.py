@@ -263,7 +263,11 @@ def main():
             row.append(diff)
             row.append(index)
         else:
-            row.append(None)
+            # For events without qualifying times (like Open category), sort by raw time
+            # Use negative time so faster swimmers (lower times) get better (lower) indices
+            swimmer_time = float(row[5]) if len(row) > 5 else 999999
+            row.append(None)  # diff
+            row.append(-swimmer_time)  # Use negative time as index for direct time-based sorting
 
     # Sort by index
     full_list.sort(key=lambda x: (x[-1] is None, x[-1]))

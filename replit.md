@@ -125,6 +125,23 @@ shared/
 
 ## Recent Changes
 
+### Critical Bug Fix (2025-08-11)
+- ✅ **AGE CALCULATION FIX**: Fixed critical data integrity issue in CSV import
+  - **Problem**: All swimmers had incorrect age 17 regardless of birth date
+  - **Root Cause**: Age parsed from CSV column instead of calculated from date of birth
+  - **Location**: `server/routes.ts` line 168 - CSV upload logic
+  - **Solution**: Added `calculateAgeFromDateOfBirth()` function with proper date parsing
+  - **Impact**: Fixed swimmer assignments in Open category events
+- ✅ **OPTIMIZATION ALGORITHM FIX**: Fixed performance-based sorting for Open category
+  - **Problem**: Swimmers without county qualifying times got `None` index, causing poor sorting
+  - **Location**: `server/optimizer.py` lines 259-270 - index calculation logic  
+  - **Solution**: Use negative time as index for events without qualifying times
+  - **Result**: Fastest swimmers now correctly selected for Open events
+- ✅ **DISPLAY CONSISTENCY**: Fixed age category display across frontend
+  - **Problem**: "99U" showing instead of "Open" in some components
+  - **Solution**: Applied consistent age formatting using existing helper functions
+  - **Files**: `client/src/components/event-assignment-section.tsx`, `server/optimizer.py`
+
 ### Latest Updates (2025-08-10)
 - ✅ Implemented comprehensive team management system
 - ✅ Added team selection/creation interface with modal dialog

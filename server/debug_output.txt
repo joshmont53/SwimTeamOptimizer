@@ -1227,44 +1227,44 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
 Proceeding to optimization with 1219 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 33
-Events pre-assigned: 1
+Events auto-assigned: 34
+Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
-  1. 11U Male 50m Freestyle -> Jack Einchcomb
-  2. 11U Female 50m Freestyle -> Olivia Hooper
-  3. 11U Male 50m Backstroke -> Iwan Stone
-  4. 11U Female 50m Backstroke -> Eva Harvey
+  1. 11U Male 50m Freestyle -> John Morton
+  2. 11U Female 50m Freestyle -> Molly Robson-Rowan
+  3. 11U Male 50m Backstroke -> Rudy Aspland
+  4. 11U Female 50m Backstroke -> Lilly Casson
   5. 11U Male 50m Breaststroke -> Christian Walker
-  6. 11U Female 50m Breaststroke -> Olivia Hooper
-  7. 11U Male 50m Butterfly -> Iwan Stone
-  8. 11U Female 50m Butterfly -> Eva Harvey
+  6. 11U Female 50m Breaststroke -> Riya Pamma
+  7. 11U Male 50m Butterfly -> Rudy Aspland
+  8. 11U Female 50m Butterfly -> Kylie-Rae Livesey
   9. 13U Male 100m Freestyle -> Evan Ian
   10. 13U Female 100m Freestyle -> Lily Riches
   11. 13U Male 100m Backstroke -> Kaylem Livesey
   12. 13U Female 100m Backstroke -> Vivienne Morton
   13. 13U Male 100m Breaststroke -> Evan Ian
   14. 13U Female 100m Breaststroke -> Lily Riches
-  15. 13U Male 100m Butterfly -> Dexter Herbert
+  15. 13U Male 100m Butterfly -> Iwan Stone
   16. 13U Female 100m Butterfly -> Vivienne Morton
   17. 15U Male 100m Freestyle -> Thomas Warne
-  18. 15U Female 100m Freestyle -> Amy Jones
+  18. 15U Female 100m Freestyle -> Ella Head
   19. 15U Male 100m Backstroke -> Finlay Stuart
   20. 15U Female 100m Backstroke -> Ella Head
   21. 15U Male 100m Breaststroke -> Thomas Warne
   22. 15U Female 100m Breaststroke -> Emily Paull
   23. 15U Male 100m Butterfly -> Finlay Stuart
-  24. 15U Female 100m Butterfly -> Amy Jones
-  25. 99U Male 100m Freestyle -> Matthew Perry
-  26. 99U Female 100m Freestyle -> Sophia Wallis
-  27. 99U Male 100m Backstroke -> Richard Brinck
-  28. 99U Female 100m Backstroke -> Sophia Wallis
-  29. 99U Male 100m Breaststroke -> Malcolm Rainier
-  30. 99U Female 100m Breaststroke -> Lara Charlton
-  31. 99U Male 100m Butterfly -> Richard Brinck
-  32. 99U Female 100m Butterfly -> Ffion Thomas
-  33. 99U Male 200m Individual Medley -> Joshua Montgomery
-  34. 99U Female 200m Individual Medley -> Ffion Thomas
+  24. 15U Female 100m Butterfly -> Cerys Snelling
+  25. 99U Male 100m Freestyle -> Evan Lee
+  26. 99U Female 100m Freestyle -> Winnie Uccelli
+  27. 99U Male 100m Backstroke -> Abhay Paruchuri
+  28. 99U Female 100m Backstroke -> Amy Hart
+  29. 99U Male 100m Breaststroke -> Harry Fagan
+  30. 99U Female 100m Breaststroke -> Phoebe Lewis
+  31. 99U Male 100m Butterfly -> George Stanchev
+  32. 99U Female 100m Butterfly -> Phoebe Lewis
+  33. 99U Male 200m Individual Medley -> George Stanchev
+  34. 99U Female 200m Individual Medley -> Amy Hart
 
 Unassigned events: 16
   - 11U Male 4x50m Freestyle

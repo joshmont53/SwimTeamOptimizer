@@ -38,6 +38,33 @@ function parseCSVLine(line: string): string[] {
   return result;
 }
 
+function calculateAgeFromDateOfBirth(dateOfBirth: string): number {
+  try {
+    // Parse date in YYYY-MM-DD format
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    
+    // Check if date is valid
+    if (isNaN(birthDate.getTime())) {
+      console.warn(`Invalid date of birth: ${dateOfBirth}`);
+      return 0;
+    }
+    
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    // Adjust if birthday hasn't occurred this year yet
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return Math.max(0, age); // Ensure non-negative age
+  } catch (error) {
+    console.warn(`Error calculating age from date of birth: ${dateOfBirth}`, error);
+    return 0;
+  }
+}
+
 // Generate custom event list from selected events
 function generateCustomEventList(customEvents: {individual: string[], relay: string[]}): any[] {
   const events = [];
@@ -158,6 +185,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const swimmerId = `${firstName}_${lastName}_${asaNo}`;
         
         if (!swimmerMap.has(swimmerId)) {
+          // Calculate age from date of birth instead of using CSV age column
+          const calculatedAge = calculateAgeFromDateOfBirth(dateOfBirth.trim());
+          
+
+          
           swimmersToCreate.push({
             teamId,
             firstName: firstName.trim(),
@@ -165,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             asaNo: asaNo.trim(),
             dateOfBirth: dateOfBirth.trim(),
             gender: gender.trim(),
-            age: parseInt(age) || 0,
+            age: calculatedAge,
             isAvailable: true
           });
           swimmerMap.set(swimmerId, swimmersToCreate.length - 1); // Store index for now
