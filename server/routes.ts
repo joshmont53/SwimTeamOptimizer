@@ -664,7 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const relay = events
         .filter(e => e.isRelay)
         .map(e => ({
-          relayName: e.event,
+          event: e.event,  // Changed from relayName to event for consistency
           ageCategory: e.ageCategory,
           gender: e.gender === 'Male' ? 'M' : e.gender === 'Female' ? 'F' : e.gender
         }));
