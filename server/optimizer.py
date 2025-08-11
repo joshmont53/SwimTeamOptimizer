@@ -453,77 +453,121 @@ def main():
         elif stroke == "50m Butterfly":
             relay_swimmers[name].butterfly = time
 
-    # Generate relay teams
-    relay_age_groups = [11, 13, 15, 16]
-    relay_genders = ['Male', 'Female']
+    # Generate relay teams from dynamic event list
     freestyle_relay_teams = []
     medley_relay_teams = []
-
-    for age in relay_age_groups:
-        for gender in relay_genders:
+    
+    # Extract relay events from the loaded event list
+    relay_events = [event for event in event_list if len(event) >= 3 and ('relay' in event[0].lower() or 'x' in event[0].lower())]
+    
+    # If no relay events in the dynamic list, fall back to age group iteration for all relays
+    if not relay_events:
+        # Fallback to hardcoded age groups only if no relay events are defined
+        relay_age_groups = [11, 13, 15, 16]
+        relay_genders = ['Male', 'Female']
+        for age in relay_age_groups:
+            for gender in relay_genders:
+                relay_events.extend([
+                    ['4x50m Freestyle Relay', age, gender],
+                    ['4x50m Medley Relay', age, gender]
+                ])
+    
+    # Group relay events by age and gender for processing
+    relay_events_dict = {}
+    for event in relay_events:
+        if len(event) >= 3:
+            key = (event[1], event[2])  # (age, gender)
+            if key not in relay_events_dict:
+                relay_events_dict[key] = []
+            relay_events_dict[key].append(event[0])  # event name
+    
+    print(f"PYTHON: Processing {len(relay_events)} relay events from dynamic list", file=sys.stderr)
+    for event in relay_events[:5]:  # Show first 5
+        print(f"PYTHON: Relay event: {event}", file=sys.stderr)
+    
+    # Process each age/gender combination
+    for (age, gender) in relay_events_dict:
+        event_names = relay_events_dict[(age, gender)]
+        
+        # Use appropriate age filter based on Open events (age 99 means Open, so no age limit)
+        if age == 99:
+            group = [s for s in relay_swimmers.values() if s.gender == gender]
+        else:
             group = [s for s in relay_swimmers.values() if s.age <= age and s.gender == gender]
 
-            # Freestyle relay
-            freestyle_swimmers = sorted([s for s in group if s.freestyle is not None], key=lambda x: x.freestyle)[:4]
-            if len(freestyle_swimmers) == 4:
-                total_time = round(sum(s.freestyle for s in freestyle_swimmers), 2)
-                freestyle_relay_teams.append({
-                    'relay': f'{age}U {gender} 4x50m Freestyle Relay',
-                    'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
-                    'swimmers': [{'name': s.name, 'time': f'{s.freestyle:.2f}s'} for s in freestyle_swimmers]
-                })
+        # Process each relay event for this age/gender combination
+        for event_name in event_names:
+            if 'freestyle' in event_name.lower() and 'medley' not in event_name.lower():
+                # Freestyle relay
+                freestyle_swimmers = sorted([s for s in group if s.freestyle is not None], key=lambda x: x.freestyle)[:4]
+                if len(freestyle_swimmers) == 4:
+                    total_time = round(sum(s.freestyle for s in freestyle_swimmers), 2)
+                    
+                    # Format age display: 99 -> Open, others -> XU
+                    age_display = "Open" if age == 99 else f"{age}U"
+                    
+                    freestyle_relay_teams.append({
+                        'relay': f'{age_display} {gender} {event_name}',
+                        'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
+                        'swimmers': [{'name': s.name, 'time': f'{s.freestyle:.2f}s'} for s in freestyle_swimmers]
+                    })
 
-            # Medley relay
-            possible_teams = []
-            backstrokers = [s for s in group if s.backstroke is not None]
-            breaststrokers = [s for s in group if s.breaststroke is not None]
-            butterflies = [s for s in group if s.butterfly is not None]
-            freestylers = [s for s in group if s.freestyle is not None]
+            elif 'medley' in event_name.lower():
+                # Medley relay
+                possible_teams = []
+                backstrokers = [s for s in group if s.backstroke is not None]
+                breaststrokers = [s for s in group if s.breaststroke is not None]
+                butterflies = [s for s in group if s.butterfly is not None]
+                freestylers = [s for s in group if s.freestyle is not None]
 
-            # Limit combinations to prevent performance issues
-            max_combinations = 1000
-            combination_count = 0
-            
-            for b in backstrokers[:10]:  # Limit to top 10 swimmers per stroke
-                for br in breaststrokers[:10]:
-                    if br.name == b.name:
-                        continue
-                    for fly in butterflies[:10]:
-                        if fly.name in {b.name, br.name}:
+                # Limit combinations to prevent performance issues
+                max_combinations = 1000
+                combination_count = 0
+                
+                for b in backstrokers[:10]:  # Limit to top 10 swimmers per stroke
+                    for br in breaststrokers[:10]:
+                        if br.name == b.name:
                             continue
-                        for free in freestylers[:10]:
-                            if free.name in {b.name, br.name, fly.name}:
+                        for fly in butterflies[:10]:
+                            if fly.name in {b.name, br.name}:
                                 continue
-                            
-                            combination_count += 1
+                            for free in freestylers[:10]:
+                                if free.name in {b.name, br.name, fly.name}:
+                                    continue
+                                
+                                combination_count += 1
+                                if combination_count > max_combinations:
+                                    break
+                                    
+                                total = b.backstroke + br.breaststroke + fly.butterfly + free.freestyle
+                                possible_teams.append({
+                                    'time': round(total, 2),
+                                    'team': [
+                                        {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke:.2f}s'},
+                                        {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke:.2f}s'},
+                                        {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly:.2f}s'},
+                                        {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle:.2f}s'}
+                                    ]
+                                })
                             if combination_count > max_combinations:
                                 break
-                                
-                            total = b.backstroke + br.breaststroke + fly.butterfly + free.freestyle
-                            possible_teams.append({
-                                'time': round(total, 2),
-                                'team': [
-                                    {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke:.2f}s'},
-                                    {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke:.2f}s'},
-                                    {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly:.2f}s'},
-                                    {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle:.2f}s'}
-                                ]
-                            })
                         if combination_count > max_combinations:
                             break
                     if combination_count > max_combinations:
                         break
-                if combination_count > max_combinations:
-                    break
 
-            if possible_teams:
-                best_team = min(possible_teams, key=lambda x: x['time'])
-                total_time = best_team['time']
-                medley_relay_teams.append({
-                    'relay': f'{age}U {gender} 4x50m Medley Relay',
-                    'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
-                    'swimmers': best_team['team']
-                })
+                if possible_teams:
+                    best_team = min(possible_teams, key=lambda x: x['time'])
+                    total_time = best_team['time']
+                    
+                    # Format age display: 99 -> Open, others -> XU
+                    age_display = "Open" if age == 99 else f"{age}U"
+                    
+                    medley_relay_teams.append({
+                        'relay': f'{age_display} {gender} {event_name}',
+                        'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
+                        'swimmers': best_team['team']
+                    })
 
     # Prepare results
     individual_results = []

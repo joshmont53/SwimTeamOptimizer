@@ -1232,5 +1232,10 @@ Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
 
-Unassigned events: 0
+Unassigned events: 18
+  - 12U Male 4 x 50m Freestyle
+  - 12U Female 4 x 50m Freestyle
+  - 14U Male 4 x 50m Freestyle
+  - 14U Female 4 x 50m Freestyle
+  - 16U Male 4 x 50m Freestyle
   >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
