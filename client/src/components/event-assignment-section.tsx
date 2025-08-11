@@ -23,7 +23,7 @@ interface Events {
     gender: string;
   }>;
   relay: Array<{
-    relayName: string;
+    event: string;
     ageCategory: number;
     gender: string;
   }>;
@@ -191,15 +191,7 @@ export default function EventAssignmentSection({
     );
   }
 
-  // Debug logging to identify the issue
-  console.log('EVENT DEBUG:', {
-    events,
-    hasEvents: !!events,
-    individualIsArray: Array.isArray(events?.individual),
-    relayIsArray: Array.isArray(events?.relay),
-    individualLength: events?.individual?.length,
-    relayLength: events?.relay?.length
-  });
+
 
   // Show message if no events are available (both individual and relay are empty or missing)
   if (!events || !Array.isArray(events.individual) || !Array.isArray(events.relay) || 
@@ -362,25 +354,25 @@ export default function EventAssignmentSection({
             <h3 className="text-base font-semibold text-gray-900 mb-4">Relay Events</h3>
             <div className="space-y-3">
               {events?.relay.map((relay) => {
-                const relayPositions = relay.relayName.includes('Medley') 
+                const relayPositions = relay.event.includes('Medley') 
                   ? ['Backstroke', 'Breaststroke', 'Butterfly', 'Freestyle']
                   : ['Swimmer 1', 'Swimmer 2', 'Swimmer 3', 'Swimmer 4'];
                 
                 const hasAssignments = relayPositions.some((_, position) => {
-                  const key = getRelayKey(relay.relayName, relay.ageCategory, relay.gender, position + 1);
+                  const key = getRelayKey(relay.event, relay.ageCategory, relay.gender, position + 1);
                   return relayAssignments[key];
                 });
 
                 return (
                   <div 
-                    key={`${relay.relayName}_${relay.ageCategory}_${relay.gender}`}
+                    key={`${relay.event}_${relay.ageCategory}_${relay.gender}`}
                     className={`border rounded-lg p-4 ${
                       hasAssignments ? 'border-primary-200 bg-primary-50' : 'border-gray-200'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
                       <span className="font-medium text-gray-900">
-                        {relay.ageCategory}U {relay.gender} {relay.relayName}
+                        {relay.ageCategory}U {relay.gender} {relay.event}
                       </span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         hasAssignments 
@@ -392,8 +384,8 @@ export default function EventAssignmentSection({
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {relayPositions.map((label, position) => {
-                        const relayKey = getRelayKey(relay.relayName, relay.ageCategory, relay.gender, position + 1, 
-                          relay.relayName.includes('Medley') ? label : undefined);
+                        const relayKey = getRelayKey(relay.event, relay.ageCategory, relay.gender, position + 1, 
+                          relay.event.includes('Medley') ? label : undefined);
                         const eligibleSwimmers = getEligibleSwimmers('50m Freestyle', relay.ageCategory, relay.gender);
                         
                         return (
