@@ -148,7 +148,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   142. Alexander Heath (ASA: 814494)
   143. Alexander Heath (ASA: 814494)
   144. Alexander Heath (ASA: 814494)
-  145. Maya Farmer (ASA: 950074)
+  145. Alexander Heath (ASA: 814494)
   146. Alexander Heath (ASA: 814494)
   147. Alexander Heath (ASA: 814494)
   148. Alexander Heath (ASA: 814494)
@@ -157,12 +157,12 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   151. Alexander Heath (ASA: 814494)
   152. Alexander Heath (ASA: 814494)
   153. Alexander Heath (ASA: 814494)
-  154. Alexander Heath (ASA: 814494)
+  154. Maya Wright (ASA: 850332)
   155. Maya Wright (ASA: 850332)
   156. Maya Wright (ASA: 850332)
   157. Maya Wright (ASA: 850332)
   158. Maya Wright (ASA: 850332)
-  159. Maya Wright (ASA: 850332)
+  159. Oliver Mellor (ASA: 866400)
   160. Oliver Mellor (ASA: 866400)
   161. Oliver Mellor (ASA: 866400)
   162. Oliver Mellor (ASA: 866400)
@@ -174,7 +174,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   168. Oliver Mellor (ASA: 866400)
   169. Oliver Mellor (ASA: 866400)
   170. Oliver Mellor (ASA: 866400)
-  171. Oliver Mellor (ASA: 866400)
+  171. Balazs Toth (ASA: 916147)
   172. Balazs Toth (ASA: 916147)
   173. Balazs Toth (ASA: 916147)
   174. Balazs Toth (ASA: 916147)
@@ -182,7 +182,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   176. Balazs Toth (ASA: 916147)
   177. Balazs Toth (ASA: 916147)
   178. Balazs Toth (ASA: 916147)
-  179. Balazs Toth (ASA: 916147)
+  179. Maya Farmer (ASA: 950074)
   180. Maya Farmer (ASA: 950074)
   181. Maya Farmer (ASA: 950074)
   182. Maya Farmer (ASA: 950074)
@@ -1232,10 +1232,5 @@ Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
 
-Unassigned events: 18
-  - 12U Male 4 x 50m Freestyle
-  - 12U Female 4 x 50m Freestyle
-  - 14U Male 4 x 50m Freestyle
-  - 14U Female 4 x 50m Freestyle
-  - 16U Male 4 x 50m Freestyle
+Unassigned events: 0
   >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
