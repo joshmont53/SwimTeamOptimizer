@@ -62,6 +62,7 @@ export interface IStorage {
 
   // Optimization results operations (team-specific)
   getOptimizationResults(sessionId: string, teamId?: number): Promise<OptimizationResult[]>;
+  getOptimizationResultsByTeam(teamId: number): Promise<OptimizationResult[]>;
   createOptimizationResult(result: InsertOptimizationResult): Promise<OptimizationResult>;
   clearOptimizationResults(teamId?: number): Promise<void>;
 
@@ -221,6 +222,12 @@ export class DatabaseStorage implements IStorage {
         .where(and(eq(optimizationResults.sessionId, sessionId), eq(optimizationResults.teamId, teamId)));
     }
     return await db.select().from(optimizationResults).where(eq(optimizationResults.sessionId, sessionId));
+  }
+
+  async getOptimizationResultsByTeam(teamId: number): Promise<OptimizationResult[]> {
+    return await db.select().from(optimizationResults)
+      .where(eq(optimizationResults.teamId, teamId))
+      .orderBy(optimizationResults.createdAt);
   }
 
   async createOptimizationResult(insertResult: InsertOptimizationResult): Promise<OptimizationResult> {

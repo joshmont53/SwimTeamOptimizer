@@ -635,6 +635,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const results = JSON.parse(output);
           console.log('PYTHON: Optimization completed successfully');
           
+          // Clear previous optimization results for this team
+          await storage.clearOptimizationResults(teamId);
+          
+          // Generate a session ID for this optimization run
+          const sessionId = `team_${teamId}_${Date.now()}`;
+          
+          // Save individual event results to database
+          for (const individualResult of results.individual) {
+            await storage.createOptimizationResult({
+              teamId,
+              sessionId,
+              resultType: 'individual',
+              event: individualResult.event,
+              swimmers: JSON.stringify({
+                swimmer: individualResult.swimmer,
+                time: individualResult.time,
+                index: individualResult.index,
+                status: individualResult.status
+              }),
+              totalTime: individualResult.time,
+              createdAt: new Date().toISOString()
+            });
+          }
+          
+          // Save relay event results to database
+          for (const relayResult of results.relay) {
+            await storage.createOptimizationResult({
+              teamId,
+              sessionId,
+              resultType: 'relay',
+              event: relayResult.relay,
+              swimmers: JSON.stringify({
+                swimmers: relayResult.swimmers,
+                totalTime: relayResult.totalTime
+              }),
+              totalTime: relayResult.totalTime,
+              createdAt: new Date().toISOString()
+            });
+          }
+          
+          console.log(`BACKEND: Saved ${results.individual.length} individual and ${results.relay.length} relay results to database`);
+          
           // Update team status to "selected" and current step to results (4)
           await storage.updateTeam(teamId, { 
             status: "selected",
@@ -805,6 +847,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const results = await storage.getOptimizationResults(sessionId, teamId);
       res.json(results);
     } catch (error) {
+      res.status(500).json({ message: "Failed to fetch optimization results" });
+    }
+  });
+
+  // Get latest optimization results for a team (without session ID)
+  app.get("/api/teams/:teamId/optimization-results", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.teamId);
+      const results = await storage.getOptimizationResultsByTeam(teamId);
+      
+      // Transform database results back to frontend format
+      const individual = results
+        .filter(r => r.resultType === 'individual')
+        .map(r => {
+          const swimmers = JSON.parse(r.swimmers);
+          return {
+            event: r.event,
+            swimmer: swimmers.swimmer,
+            time: swimmers.time,
+            index: swimmers.index,
+            status: swimmers.status
+          };
+        });
+        
+      const relay = results
+        .filter(r => r.resultType === 'relay')
+        .map(r => {
+          const swimmers = JSON.parse(r.swimmers);
+          return {
+            relay: r.event,
+            totalTime: swimmers.totalTime,
+            swimmers: swimmers.swimmers
+          };
+        });
+        
+      // Calculate stats
+      const stats = {
+        qualifyingTimes: individual.filter(r => r.status === 'QT').length,
+        averageIndex: individual.length > 0 ? individual.reduce((acc, r) => acc + (r.index || 0), 0) / individual.length : 0,
+        relayTeams: relay.length,
+        totalEvents: individual.length + relay.length
+      };
+      
+      res.json({ individual, relay, stats });
+    } catch (error) {
+      console.error("Error fetching team optimization results:", error);
       res.status(500).json({ message: "Failed to fetch optimization results" });
     }
   });

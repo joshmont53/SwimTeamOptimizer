@@ -27,16 +27,32 @@ interface ResultsSectionProps {
       relayTeams: number;
       totalEvents: number;
     };
-  };
+  } | null;
   onBackToEventAssignment: () => void;
   selectedTeam?: Team;
   onBackToHome?: () => void;
 }
 
 export default function ResultsSection({ results, onBackToEventAssignment, selectedTeam, onBackToHome }: ResultsSectionProps) {
+  // Show loading state if results are not available yet
+  if (!results) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-6">
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading optimization results...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const stats = results.stats || {
     qualifyingTimes: results.individual.filter(r => r.status === 'QT').length,
-    averageIndex: results.individual.reduce((acc, r) => acc + (r.index || 0), 0) / results.individual.length,
+    averageIndex: results.individual.length > 0 ? results.individual.reduce((acc, r) => acc + (r.index || 0), 0) / results.individual.length : 0,
     relayTeams: results.relay.length,
     totalEvents: results.individual.length + results.relay.length
   };

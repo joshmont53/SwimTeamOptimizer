@@ -125,6 +125,30 @@ shared/
 
 ## Recent Changes
 
+### Critical "View Results" Bug Fix (2025-08-12)
+- ✅ **OPTIMIZATION RESULTS PERSISTENCE**: Fixed critical bug where "View Results" button showed empty page
+  - **Problem**: Optimization results were never saved to database, only sent to frontend during initial optimization
+  - **Root Cause**: Missing database storage calls in optimization endpoint (`server/routes.ts` lines 634-644)
+  - **Solution**: Added complete save/load optimization results system:
+    - Clear previous results before saving new ones (Option 1: Replace Previous Results)
+    - Save individual and relay results to `optimizationResults` table using `storage.createOptimizationResult()`
+    - Generate unique `sessionId` per optimization run for data tracking
+    - Transform and store results in database-compatible format
+- ✅ **OPTIMIZATION RESULTS LOADING**: Added automatic loading of stored results for completed teams
+  - **New API Endpoint**: `GET /api/teams/:teamId/optimization-results` - retrieves latest results by team ID only
+  - **Storage Method**: `getOptimizationResultsByTeam(teamId)` - bypasses sessionId requirement
+  - **Frontend Integration**: Added React Query for automatic result loading in `TeamWorkflow` component
+  - **Result Transformation**: Convert database format back to frontend-expected format with stats calculation
+- ✅ **USER EXPERIENCE IMPROVEMENTS**: Added proper loading states and error handling
+  - **Loading State**: Shows spinner while fetching stored optimization results
+  - **Automatic Detection**: Uses team status "selected" and `currentStep = 4` to trigger result loading
+  - **Re-optimization Support**: Multiple optimization runs replace previous results (no historical data accumulation)
+  - **Component Integration**: Updated `ResultsSection` to handle null results with proper TypeScript types
+- ✅ **WORKFLOW CONSISTENCY**: Fixed component prop interfaces and data flow
+  - **Fixed TypeScript Errors**: Corrected prop interfaces for FileUploadSection, SquadSelectionSection, EventAssignmentSection
+  - **Data Flow**: Optimization results now persist through page refreshes and team navigation
+  - **Team Context**: Proper team data passing throughout workflow components
+
 ### Critical Bug Fix (2025-08-11)
 - ✅ **AGE CALCULATION FIX**: Fixed critical data integrity issue in CSV import
   - **Problem**: All swimmers had incorrect age 17 regardless of birth date

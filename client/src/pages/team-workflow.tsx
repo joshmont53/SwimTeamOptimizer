@@ -33,6 +33,12 @@ export default function TeamWorkflow() {
     enabled: currentStep >= 2,
   });
 
+  // Fetch optimization results for completed teams
+  const { data: storedResults } = useQuery({
+    queryKey: [`/api/teams/${teamId}/optimization-results`],
+    enabled: !!teamId && team?.status === "selected" && currentStep === 4,
+  });
+
   // If no team ID or team not found, redirect to teams list
   useEffect(() => {
     if (!match || !teamId) {
@@ -43,7 +49,7 @@ export default function TeamWorkflow() {
   // Determine initial step based on team state
   useEffect(() => {
     if (team && swimmers.length > 0) {
-      if (team.isComplete) {
+      if (team.status === "selected") {
         setCurrentStep(4); // Show results if complete
       } else {
         setCurrentStep(3); // Go to event assignment if swimmers exist
@@ -52,6 +58,13 @@ export default function TeamWorkflow() {
       setCurrentStep(1); // Start with file upload
     }
   }, [team, swimmers]);
+
+  // Load stored results when they become available
+  useEffect(() => {
+    if (storedResults && currentStep === 4 && !optimizationResults) {
+      setOptimizationResults(storedResults);
+    }
+  }, [storedResults, currentStep, optimizationResults]);
 
   const handleFileUploaded = () => {
     setCurrentStep(2);
@@ -141,26 +154,30 @@ export default function TeamWorkflow() {
         <div className="max-w-6xl mx-auto">
           {currentStep === 1 && (
             <FileUploadSection 
+              isActive={currentStep === 1}
               onFileUploaded={handleFileUploaded}
-              teamId={teamId}
+              selectedTeam={team}
             />
           )}
 
           {currentStep === 2 && (
             <SquadSelectionSection 
               swimmers={swimmers}
+              isActive={currentStep === 2}
               onSquadConfirmed={handleSquadConfirmed}
               onBackToFileUpload={handleBackToFileUpload}
-              teamId={teamId}
+              refetchSwimmers={refetchSwimmers}
+              selectedTeam={team}
             />
           )}
 
           {currentStep === 3 && (
             <EventAssignmentSection 
               swimmers={swimmers}
+              isActive={currentStep === 3}
               onOptimizationComplete={handleOptimizationComplete}
               onBackToSquadSelection={handleBackToSquadSelection}
-              team={team}
+              selectedTeam={team}
             />
           )}
 
@@ -168,7 +185,7 @@ export default function TeamWorkflow() {
             <ResultsSection 
               results={optimizationResults}
               onBackToEventAssignment={handleBackToEventAssignment}
-              team={team}
+              selectedTeam={team}
             />
           )}
         </div>
