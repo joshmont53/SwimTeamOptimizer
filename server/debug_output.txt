@@ -1371,15 +1371,48 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
 Proceeding to optimization with 1363 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 0
+Events auto-assigned: 34
 Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
+  1. 11U Male 50m Freestyle -> John Morton
+  2. 11U Female 50m Freestyle -> Kylie-Rae Livesey
+  3. 11U Male 50m Backstroke -> Rudy Aspland
+  4. 11U Female 50m Backstroke -> Lilly Casson
+  5. 11U Male 50m Breaststroke -> Kristian Gulcz
+  6. 11U Female 50m Breaststroke -> Miya Cook
+  7. 11U Male 50m Butterfly -> Rudy Aspland
+  8. 11U Female 50m Butterfly -> Kylie-Rae Livesey
+  9. 13U Male 100m Freestyle -> Evan Ian
+  10. 13U Female 100m Freestyle -> Vivienne Morton
+  11. 13U Male 100m Backstroke -> Kaylem Livesey
+  12. 13U Female 100m Backstroke -> Vivienne Morton
+  13. 13U Male 100m Breaststroke -> Evan Ian
+  14. 13U Female 100m Breaststroke -> Lily Riches
+  15. 13U Male 100m Butterfly -> Kaylem Livesey
+  16. 13U Female 100m Butterfly -> Eva Harvey
+  17. 15U Male 100m Freestyle -> Thomas Warne
+  18. 15U Female 100m Freestyle -> Ella Head
+  19. 15U Male 100m Backstroke -> Finlay Stuart
+  20. 15U Female 100m Backstroke -> Ella Head
+  21. 15U Male 100m Breaststroke -> Thomas Warne
+  22. 15U Female 100m Breaststroke -> Emily Paull
+  23. 15U Male 100m Butterfly -> Finlay Stuart
+  24. 15U Female 100m Butterfly -> Cerys Snelling
+  25. 99U Male 100m Freestyle -> Balazs Toth
+  26. 99U Female 100m Freestyle -> Lara Charlton
+  27. 99U Male 100m Backstroke -> Daniel Richards
+  28. 99U Female 100m Backstroke -> Lara Charlton
+  29. 99U Male 100m Breaststroke -> Sam Law Chin Yung
+  30. 99U Female 100m Breaststroke -> Isobel Neighbour
+  31. 99U Male 100m Butterfly -> Balazs Toth
+  32. 99U Female 100m Butterfly -> Ffion Thomas
+  33. 99U Male 200m Individual Medley -> Daniel Richards
+  34. 99U Female 200m Individual Medley -> Emma Jones
 
-Unassigned events: 18
-  - 12U Male 4 x 50m Freestyle
-  - 12U Female 4 x 50m Freestyle
-  - 14U Male 4 x 50m Freestyle
-  - 14U Female 4 x 50m Freestyle
-  - 16U Male 4 x 50m Freestyle
-  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
+Unassigned events: 16
+  - 11U Male 4x50m Freestyle
+  - 11U Female 4x50m Freestyle
+  - 11U Male 4x50m Medley
+  - 11U Female 4x50m Medley
+  - 13U Male 4x50m Freestyle
