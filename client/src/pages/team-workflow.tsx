@@ -214,8 +214,17 @@ export default function TeamWorkflow() {
                 optimizationResults: {optimizationResults ? `${optimizationResults.individual?.length || 0} individual, ${optimizationResults.relay?.length || 0} relay` : 'NULL'}<br/>
                 storedResults: {storedResults ? `${storedResults.individual?.length || 0} individual, ${storedResults.relay?.length || 0} relay` : 'NULL'}<br/>
                 finalResults: {(optimizationResults || storedResults) ? 'HAS DATA' : 'NULL'}<br/>
-                isLoading: {loadingStoredResults ? 'YES' : 'NO'}
+                isLoading: {loadingStoredResults ? 'YES' : 'NO'}<br/>
+                queryEnabled: {(!!teamId && team?.status === "selected") ? 'YES' : 'NO'}<br/>
+                teamId: {teamId}<br/>
+                teamStatus: {team?.status}
               </div>
+              
+              {/* FORCE DISPLAY RESULTS REGARDLESS */}
+              <div style={{backgroundColor: 'green', color: 'white', padding: '10px', margin: '10px'}}>
+                FORCING RESULTS DISPLAY - This should show results even if React state is broken
+              </div>
+              
               <ResultsSection 
                 results={optimizationResults || storedResults}
                 onBackToEventAssignment={handleBackToEventAssignment}
