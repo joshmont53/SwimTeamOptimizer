@@ -34,9 +34,9 @@ export default function TeamWorkflow() {
   });
 
   // Fetch optimization results for completed teams
-  const { data: storedResults } = useQuery({
+  const { data: storedResults, isLoading: loadingStoredResults } = useQuery({
     queryKey: [`/api/teams/${teamId}/optimization-results`],
-    enabled: !!teamId && team?.status === "selected" && currentStep === 4,
+    enabled: !!teamId && team?.status === "selected",
   });
 
   // If no team ID or team not found, redirect to teams list
@@ -59,10 +59,10 @@ export default function TeamWorkflow() {
 
   // Load stored results when they become available
   useEffect(() => {
-    if (storedResults && currentStep === 4 && !optimizationResults) {
+    if (storedResults && !optimizationResults) {
       setOptimizationResults(storedResults);
     }
-  }, [storedResults, currentStep, optimizationResults]);
+  }, [storedResults, optimizationResults]);
 
   const handleFileUploaded = () => {
     setCurrentStep(2);
