@@ -237,7 +237,7 @@ def main():
                 continue
             if swimmer[2] != event[0]:
                 continue
-            if min(int(swimmer[4]), 16) > event[1]:
+            if int(swimmer[4]) > event[1]:
                 continue
             else:
                 full_list.append([event[0], event[1], event[2], swimmer[0], swimmer[1], float(swimmer[5]), swimmer[6]])  # swimmer[6] is now ASA number
@@ -451,7 +451,7 @@ def main():
         except (TypeError, ValueError):
             continue
 
-        age = int(min(int(row[4]), 16))
+        age = int(row[4])
         gender = row[3]
 
         if name not in relay_swimmers:
