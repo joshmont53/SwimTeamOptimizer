@@ -30,7 +30,7 @@ export default function TeamWorkflow() {
 
   const { data: swimmers = [], refetch: refetchSwimmers } = useQuery<Swimmer[]>({
     queryKey: ["/api/swimmers", teamId],
-    enabled: currentStep >= 2 && !!teamId,
+    enabled: !!teamId,
   });
 
   // Fetch optimization results for completed teams
@@ -49,7 +49,7 @@ export default function TeamWorkflow() {
   // Determine initial step based on team state
   useEffect(() => {
     if (team?.status === "selected") {
-      setCurrentStep(4); // Show results if complete
+      setCurrentStep(4); // Show results if complete - highest priority
     } else if (team && swimmers.length > 0) {
       setCurrentStep(3); // Go to event assignment if swimmers exist
     } else if (team) {
@@ -59,12 +59,10 @@ export default function TeamWorkflow() {
 
   // Load stored results when they become available
   useEffect(() => {
-    console.log('Results Effect:', { storedResults, optimizationResults, teamId, teamStatus: team?.status });
-    if (storedResults && !optimizationResults) {
-      console.log('Setting optimization results:', storedResults);
+    if (storedResults) {
       setOptimizationResults(storedResults);
     }
-  }, [storedResults, optimizationResults, teamId, team?.status]);
+  }, [storedResults]);
 
   const handleFileUploaded = () => {
     setCurrentStep(2);
@@ -182,14 +180,11 @@ export default function TeamWorkflow() {
           )}
 
           {currentStep === 4 && (
-            <div>
-              <div>Debug: currentStep={currentStep}, optimizationResults={optimizationResults ? 'HAS DATA' : 'NULL'}, storedResults={storedResults ? 'HAS DATA' : 'NULL'}</div>
-              <ResultsSection 
-                results={optimizationResults}
-                onBackToEventAssignment={handleBackToEventAssignment}
-                selectedTeam={team}
-              />
-            </div>
+            <ResultsSection 
+              results={optimizationResults}
+              onBackToEventAssignment={handleBackToEventAssignment}
+              selectedTeam={team}
+            />
           )}
         </div>
       </div>
