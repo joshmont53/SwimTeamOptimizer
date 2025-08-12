@@ -1,0 +1,120 @@
+I'll propose the exact changes needed to fix the relay distance issue and demonstrate the expected output with real examples from your CSV data.
+
+Proposed Solution: Dynamic Distance Detection
+Key Changes Required:
+Expand RelaySwimmer data capture to include 100m and 200m times
+Add distance detection logic to parse relay event names
+Use appropriate times based on detected distance
+Let me first check what stroke data is available in your CSV for the swimmers mentioned:
+
+
+Executed grep -i "balazs\|daniel.*richards\|chris.*fawkes\|sam.*law" ./temp/member_pbs_1748358612721.csv | grep -E "(100m|200m)" | head -20
+Perfect! Now I have the data to demonstrate the solution. Let me also get Sam's 100m times:
+
+
+Executed grep "Sam,Law Chin Yung" ./temp/member_pbs_1748358612721.csv | grep -E "(100m|200m)" | head -10
+Now I can provide the complete solution with real examples:
+
+Proposed Changes to Fix Relay Distance Issue
+Change 1: Expand RelaySwimmer Class to Store Multiple Distances
+Current Code (lines 460-467):
+
+if stroke == "50m Freestyle":
+    relay_swimmers[name].freestyle = time
+elif stroke == "50m Backstroke":
+    relay_swimmers[name].backstroke = time
+# ... etc
+Proposed Code:
+
+# Store times for all distances
+if "Freestyle" in stroke:
+    if stroke == "50m Freestyle":
+        relay_swimmers[name].freestyle_50 = time
+    elif stroke == "100m Freestyle":
+        relay_swimmers[name].freestyle_100 = time
+    elif stroke == "200m Freestyle":
+        relay_swimmers[name].freestyle_200 = time
+elif "Backstroke" in stroke:
+    if stroke == "50m Backstroke":
+        relay_swimmers[name].backstroke_50 = time
+    elif stroke == "100m Backstroke":
+        relay_swimmers[name].backstroke_100 = time
+    elif stroke == "200m Backstroke":
+        relay_swimmers[name].backstroke_200 = time
+# ... similar for Breaststroke and Butterfly
+Change 2: Add Distance Detection Function
+def extract_relay_distance(event_name):
+    """Extract the distance per leg from relay event name"""
+    import re
+    # Look for patterns like "4 x 100m" or "4x100m"
+    match = re.search(r'(\d+)\s*x\s*(\d+)m', event_name)
+    if match:
+        return int(match.group(2))  # Return the distance (100, 200, etc.)
+    return 50  # Default to 50m if no distance found
+Change 3: Use Appropriate Times Based on Distance
+Current Code (line 516):
+
+freestyle_swimmers = sorted([s for s in group if s.freestyle is not None], key=lambda x: x.freestyle)
+Proposed Code:
+
+# Detect relay distance
+distance = extract_relay_distance(event_name)
+# Select appropriate time attribute based on distance
+if distance == 50:
+    freestyle_swimmers = sorted([s for s in group if hasattr(s, 'freestyle_50') and s.freestyle_50 is not None], 
+                              key=lambda x: x.freestyle_50)
+elif distance == 100:
+    freestyle_swimmers = sorted([s for s in group if hasattr(s, 'freestyle_100') and s.freestyle_100 is not None], 
+                              key=lambda x: x.freestyle_100)
+elif distance == 200:
+    freestyle_swimmers = sorted([s for s in group if hasattr(s, 'freestyle_200') and s.freestyle_200 is not None], 
+                              key=lambda x: x.freestyle_200)
+Expected Output Examples with Your CSV Data:
+Example 1: Open Male 4 x 100m Freestyle Relay
+Current Output (WRONG - using 50m times):
+
+Balazs Toth (23.70s) ← 50m Freestyle time
+Daniel Richards (24.11s) ← 50m Freestyle time
+Chris Fawkes (24.60s) ← 50m Freestyle time
+Sam Law Chin Yung (25.00s) ← 50m Freestyle time
+Expected Output After Fix (CORRECT - using 100m times):
+
+Balazs Toth (52.33s) ← 100m Freestyle time
+Daniel Richards (56.00s) ← 100m Freestyle time
+Chris Fawkes (53.80s) ← 100m Freestyle time
+Sam Law Chin Yung (54.44s) ← 100m Freestyle time
+Example 2: Open Male 4 x 100m Medley Relay
+Current Output (WRONG - using 50m times):
+
+Backstroke: [fastest 50m backstroke swimmer]
+Breaststroke: [fastest 50m breaststroke swimmer]
+Butterfly: [fastest 50m butterfly swimmer]
+Freestyle: [fastest 50m freestyle swimmer]
+Expected Output After Fix (CORRECT - using 100m times):
+
+Backstroke: Daniel Richards (66.80s) ← 100m Backstroke time
+Breaststroke: Sam Law Chin Yung (66.27s) ← 100m Breaststroke time
+Butterfly: Balazs Toth (59.38s) ← 100m Butterfly time
+Freestyle: Balazs Toth (52.33s) ← 100m Freestyle time
+Verification of Data Available:
+From your CSV, I can confirm these swimmers have the required 100m times:
+
+100m Freestyle Times:
+
+Balazs Toth: 52.33s
+Daniel Richards: 56.00s
+Chris Fawkes: 53.80s
+Sam Law Chin Yung: 54.44s
+100m Stroke Times (for Medley):
+
+Daniel Richards: 100m Backstroke (66.80s), 100m Breaststroke (66.56s), 100m Butterfly (70.74s)
+Balazs Toth: 100m Backstroke (75.01s), 100m Breaststroke (87.50s), 100m Butterfly (59.38s)
+Sam Law Chin Yung: 100m Backstroke (68.41s), 100m Breaststroke (66.27s), 100m Butterfly (60.32s)
+Additional Benefits:
+4 x 200m events would use 200m times when available
+4 x 50m events would continue to work as before
+Fallback logic could use shorter distances if longer ones aren't available
+Same logic applies to both genders and all age groups
+This solution would ensure that relay teams are selected using times from the appropriate distance, making the selections much more accurate and realistic for competitive swimming.
+
+Would you like me to implement these changes?
