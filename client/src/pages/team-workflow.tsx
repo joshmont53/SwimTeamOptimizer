@@ -34,9 +34,21 @@ export default function TeamWorkflow() {
   });
 
   // Fetch optimization results for completed teams
-  const { data: storedResults, isLoading: loadingStoredResults } = useQuery({
+  const { data: storedResults, isLoading: loadingStoredResults, error: queryError } = useQuery({
     queryKey: [`/api/teams/${teamId}/optimization-results`],
     enabled: !!teamId && team?.status === "selected",
+  });
+
+  // Debug logging
+  console.log('TEAM WORKFLOW DEBUG:', {
+    teamId,
+    teamStatus: team?.status,
+    currentStep,
+    queryEnabled: !!teamId && team?.status === "selected",
+    storedResults: storedResults ? `Has ${storedResults.individual?.length || 0} individual + ${storedResults.relay?.length || 0} relay` : 'NULL',
+    optimizationResults: optimizationResults ? `Has ${optimizationResults.individual?.length || 0} individual + ${optimizationResults.relay?.length || 0} relay` : 'NULL',
+    isLoading: loadingStoredResults,
+    queryError
   });
 
   // If no team ID or team not found, redirect to teams list
@@ -180,11 +192,21 @@ export default function TeamWorkflow() {
           )}
 
           {currentStep === 4 && (
-            <ResultsSection 
-              results={optimizationResults || storedResults}
-              onBackToEventAssignment={handleBackToEventAssignment}
-              selectedTeam={team}
-            />
+            <div>
+              <div style={{backgroundColor: 'yellow', padding: '10px', margin: '10px', border: '2px solid red'}}>
+                DEBUG INFO:<br/>
+                currentStep: {currentStep}<br/>
+                optimizationResults: {optimizationResults ? `${optimizationResults.individual?.length || 0} individual, ${optimizationResults.relay?.length || 0} relay` : 'NULL'}<br/>
+                storedResults: {storedResults ? `${storedResults.individual?.length || 0} individual, ${storedResults.relay?.length || 0} relay` : 'NULL'}<br/>
+                finalResults: {(optimizationResults || storedResults) ? 'HAS DATA' : 'NULL'}<br/>
+                isLoading: {loadingStoredResults ? 'YES' : 'NO'}
+              </div>
+              <ResultsSection 
+                results={optimizationResults || storedResults}
+                onBackToEventAssignment={handleBackToEventAssignment}
+                selectedTeam={team}
+              />
+            </div>
           )}
         </div>
       </div>
