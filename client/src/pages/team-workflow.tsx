@@ -181,7 +181,7 @@ export default function TeamWorkflow() {
 
           {currentStep === 4 && (
             <ResultsSection 
-              results={optimizationResults}
+              results={optimizationResults || storedResults}
               onBackToEventAssignment={handleBackToEventAssignment}
               selectedTeam={team}
             />
