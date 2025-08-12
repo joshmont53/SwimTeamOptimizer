@@ -60,12 +60,23 @@ export default function TeamWorkflow() {
 
   // Determine initial step based on team state
   useEffect(() => {
+    console.log('STEP EFFECT RUNNING:', { 
+      teamStatus: team?.status, 
+      swimmerCount: swimmers.length, 
+      teamExists: !!team 
+    });
+    
     if (team?.status === "selected") {
+      console.log('SETTING STEP TO 4 - TEAM IS SELECTED');
       setCurrentStep(4); // Show results if complete - highest priority
     } else if (team && swimmers.length > 0) {
+      console.log('SETTING STEP TO 3 - TEAM HAS SWIMMERS');
       setCurrentStep(3); // Go to event assignment if swimmers exist
     } else if (team) {
+      console.log('SETTING STEP TO 1 - TEAM EXISTS BUT NO SWIMMERS');
       setCurrentStep(1); // Start with file upload
+    } else {
+      console.log('NO ACTION - NO TEAM DATA YET');
     }
   }, [team, swimmers]);
 
@@ -162,6 +173,10 @@ export default function TeamWorkflow() {
 
         {/* Step Content */}
         <div className="max-w-6xl mx-auto">
+          <div style={{backgroundColor: 'red', color: 'white', padding: '20px', margin: '10px', fontSize: '18px', fontWeight: 'bold'}}>
+            CRITICAL DEBUG: currentStep = {currentStep}, team status = {team?.status}, swimmers count = {swimmers.length}
+          </div>
+          
           {currentStep === 1 && (
             <FileUploadSection 
               isActive={currentStep === 1}
