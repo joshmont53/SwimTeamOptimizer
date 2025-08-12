@@ -59,10 +59,12 @@ export default function TeamWorkflow() {
 
   // Load stored results when they become available
   useEffect(() => {
+    console.log('Results Effect:', { storedResults, optimizationResults, teamId, teamStatus: team?.status });
     if (storedResults && !optimizationResults) {
+      console.log('Setting optimization results:', storedResults);
       setOptimizationResults(storedResults);
     }
-  }, [storedResults, optimizationResults]);
+  }, [storedResults, optimizationResults, teamId, team?.status]);
 
   const handleFileUploaded = () => {
     setCurrentStep(2);
@@ -180,11 +182,14 @@ export default function TeamWorkflow() {
           )}
 
           {currentStep === 4 && (
-            <ResultsSection 
-              results={optimizationResults}
-              onBackToEventAssignment={handleBackToEventAssignment}
-              selectedTeam={team}
-            />
+            <div>
+              <div>Debug: currentStep={currentStep}, optimizationResults={optimizationResults ? 'HAS DATA' : 'NULL'}, storedResults={storedResults ? 'HAS DATA' : 'NULL'}</div>
+              <ResultsSection 
+                results={optimizationResults}
+                onBackToEventAssignment={handleBackToEventAssignment}
+                selectedTeam={team}
+              />
+            </div>
           )}
         </div>
       </div>
