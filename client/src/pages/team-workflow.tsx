@@ -29,8 +29,8 @@ export default function TeamWorkflow() {
   });
 
   const { data: swimmers = [], refetch: refetchSwimmers } = useQuery<Swimmer[]>({
-    queryKey: ["/api/swimmers"],
-    enabled: currentStep >= 2,
+    queryKey: ["/api/swimmers", teamId],
+    enabled: currentStep >= 2 && !!teamId,
   });
 
   // Fetch optimization results for completed teams
@@ -48,12 +48,10 @@ export default function TeamWorkflow() {
 
   // Determine initial step based on team state
   useEffect(() => {
-    if (team && swimmers.length > 0) {
-      if (team.status === "selected") {
-        setCurrentStep(4); // Show results if complete
-      } else {
-        setCurrentStep(3); // Go to event assignment if swimmers exist
-      }
+    if (team?.status === "selected") {
+      setCurrentStep(4); // Show results if complete
+    } else if (team && swimmers.length > 0) {
+      setCurrentStep(3); // Go to event assignment if swimmers exist
     } else if (team) {
       setCurrentStep(1); // Start with file upload
     }
