@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getCompetitionTypeDisplay } from "@shared/constants";
+import { calculateCompetitionAge } from "@/lib/utils";
 
 interface SquadSelectionSectionProps {
   swimmers: Swimmer[];
@@ -60,11 +61,13 @@ export default function SquadSelectionSection({
       
       const matchesGender = genderFilter === "all" || swimmer.gender === genderFilter;
       
+      // Use competition age for filtering
+      const competitionAge = calculateCompetitionAge(swimmer.dateOfBirth);
       const matchesAge = ageFilter === "all" || 
-        (ageFilter === "11-12" && swimmer.age >= 11 && swimmer.age <= 12) ||
-        (ageFilter === "13-14" && swimmer.age >= 13 && swimmer.age <= 14) ||
-        (ageFilter === "15-16" && swimmer.age >= 15 && swimmer.age <= 16) ||
-        (ageFilter === "17+" && swimmer.age >= 17);
+        (ageFilter === "11-12" && competitionAge >= 11 && competitionAge <= 12) ||
+        (ageFilter === "13-14" && competitionAge >= 13 && competitionAge <= 14) ||
+        (ageFilter === "15-16" && competitionAge >= 15 && competitionAge <= 16) ||
+        (ageFilter === "17+" && competitionAge >= 17);
       
       return matchesSearch && matchesGender && matchesAge;
     });
@@ -187,7 +190,7 @@ export default function SquadSelectionSection({
                   />
                 </th>
                 <th className="text-left py-3 px-4 font-medium text-gray-700">Swimmer</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Age</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Age (Competition)</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-700">Gender</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
               </tr>
@@ -210,7 +213,7 @@ export default function SquadSelectionSection({
                     </div>
                   </td>
                   <td className={`py-3 px-4 ${swimmer.isAvailable ? 'text-gray-700' : 'text-gray-500'}`}>
-                    {swimmer.age}
+                    {calculateCompetitionAge(swimmer.dateOfBirth)}
                   </td>
                   <td className="py-3 px-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
