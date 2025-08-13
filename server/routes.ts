@@ -42,7 +42,8 @@ function calculateAgeFromDateOfBirth(dateOfBirth: string): number {
   try {
     // Parse date in YYYY-MM-DD format
     const birthDate = new Date(dateOfBirth);
-    const today = new Date();
+    // Calculate age as of December 31st, 2025 for 2025/26 swimming season
+    const referenceDate = new Date(2025, 11, 31); // December 31st, 2025
     
     // Check if date is valid
     if (isNaN(birthDate.getTime())) {
@@ -50,11 +51,11 @@ function calculateAgeFromDateOfBirth(dateOfBirth: string): number {
       return 0;
     }
     
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
+    let age = referenceDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
     
-    // Adjust if birthday hasn't occurred this year yet
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    // Adjust if birthday hasn't occurred by December 31st, 2025
+    if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
       age--;
     }
     
