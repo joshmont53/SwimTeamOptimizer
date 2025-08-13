@@ -78,7 +78,7 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
     
     // Add relay events
     results.relay.forEach(result => {
-      const swimmers = result.swimmers.map(s => `${s.name} (${s.time})`).join('; ');
+      const swimmers = result.swimmers.map(s => `${s.name} (${formatSwimmingTime(s.time)})`).join('; ');
       worksheetData.push([
         "Relay",
         result.relay,
@@ -219,7 +219,7 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
                     {result.swimmers.map((swimmer, swimmerIndex) => (
                       <div key={swimmerIndex} className="text-gray-600">
                         {swimmer.stroke ? `${swimmer.stroke}: ` : `${swimmerIndex + 1}. `}
-                        {swimmer.name} ({swimmer.time})
+                        {swimmer.name} ({formatSwimmingTime(swimmer.time)})
                       </div>
                     ))}
                   </div>
