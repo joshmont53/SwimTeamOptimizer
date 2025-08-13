@@ -318,7 +318,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update swimmer availability
+  // Update swimmer availability by team and swimmer ID
+  app.patch("/api/swimmers/:teamId/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const teamId = parseInt(req.params.teamId);
+      const { isAvailable } = req.body;
+      
+      const swimmer = await storage.updateSwimmer(id, { isAvailable });
+      
+      if (!swimmer) {
+        return res.status(404).json({ message: "Swimmer not found" });
+      }
+      
+      res.json(swimmer);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update swimmer" });
+    }
+  });
+
+  // Update swimmer availability (legacy route for backwards compatibility)
   app.patch("/api/swimmers/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
