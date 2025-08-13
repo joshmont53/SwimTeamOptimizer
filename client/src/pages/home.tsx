@@ -143,12 +143,7 @@ export default function Home() {
                   <i className="fas fa-home mr-1"></i>Home
                 </button>
               )}
-              <button 
-                className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-colors"
-                disabled={!optimizationResults}
-              >
-                <i className="fas fa-download mr-2"></i>Export Results
-              </button>
+
             </div>
           </div>
         </div>

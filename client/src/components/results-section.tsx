@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import type { Team } from "@shared/schema";
 import { getCompetitionTypeDisplay } from "@shared/constants";
+import * as XLSX from 'xlsx';
 
 interface ResultsSectionProps {
   results: {
@@ -58,26 +59,45 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
   };
 
   const handleExport = () => {
-    // Create CSV content
-    let csvContent = "Event Type,Event,Swimmer(s),Time,Status\n";
+    // Create worksheet data
+    const worksheetData = [
+      ["Event Type", "Event", "Swimmer(s)", "Time", "Status"]
+    ];
     
+    // Add individual events
     results.individual.forEach(result => {
-      csvContent += `Individual,"${result.event}","${result.swimmer}","${result.time}","${result.status || 'N/A'}"\n`;
+      worksheetData.push([
+        "Individual",
+        result.event,
+        result.swimmer,
+        result.time,
+        result.status || 'N/A'
+      ]);
     });
     
+    // Add relay events
     results.relay.forEach(result => {
       const swimmers = result.swimmers.map(s => `${s.name} (${s.time})`).join('; ');
-      csvContent += `Relay,"${result.relay}","${swimmers}","${result.totalTime}","Team"\n`;
+      worksheetData.push([
+        "Relay",
+        result.relay,
+        swimmers,
+        result.totalTime,
+        "Team"
+      ]);
     });
 
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Team Selection");
+
+    // Generate filename using team name
+    const teamName = selectedTeam?.name || 'team_selection';
+    const filename = `${teamName}.xlsx`;
+
     // Download file
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `team_selection_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    XLSX.writeFile(workbook, filename);
   };
 
   return (
