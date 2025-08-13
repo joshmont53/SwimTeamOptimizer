@@ -125,6 +125,16 @@ shared/
 
 ## Recent Changes
 
+### Squad Assignment Bug Fix (2025-08-13)
+- ✅ **SWIMMER AVAILABILITY TOGGLE FIX**: Fixed critical API route mismatch preventing swimmer deselection
+  - **Problem**: Frontend calls `/api/swimmers/{teamId}/{id}` but backend only had `/api/swimmers/{id}` route
+  - **Error**: "Unexpected token '<'" JSON parsing error - API calls returned HTML instead of JSON
+  - **Root Cause**: Route mismatch caused requests to fall through to Vite development server
+  - **Solution**: Added new route `/api/swimmers/:teamId/:id` in `server/routes.ts` (lines 324-341)
+  - **Backward Compatibility**: Kept original `/api/swimmers/:id` route as legacy endpoint
+  - **Testing**: Confirmed Sam Law Chin Yung can be deselected and excluded from optimization
+  - **Impact**: Users can now properly toggle swimmer availability without errors
+
 ### Critical "View Results" Bug Fix (2025-08-12)
 - ✅ **OPTIMIZATION RESULTS PERSISTENCE**: Fixed critical bug where "View Results" button showed empty page
   - **Problem**: Optimization results were never saved to database, only sent to frontend during initial optimization
