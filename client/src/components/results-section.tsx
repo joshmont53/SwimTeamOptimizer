@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import type { Team } from "@shared/schema";
 import { getCompetitionTypeDisplay } from "@shared/constants";
+import { formatSwimmingTime } from "@/lib/utils";
 import * as XLSX from 'xlsx';
 
 interface ResultsSectionProps {
@@ -70,7 +71,7 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
         "Individual",
         result.event,
         result.swimmer,
-        result.time,
+        formatSwimmingTime(result.time),
         result.status || 'N/A'
       ]);
     });
@@ -181,7 +182,7 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
                       <div className="text-sm text-gray-600">{result.swimmer}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium text-gray-900">{result.time}</div>
+                      <div className="font-medium text-gray-900">{formatSwimmingTime(result.time)}</div>
                       <div className="text-xs">
                         {result.index && (
                           <span className="text-success font-medium">{result.index.toFixed(3)}</span>
