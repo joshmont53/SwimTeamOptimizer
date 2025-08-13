@@ -125,6 +125,20 @@ shared/
 
 ## Recent Changes
 
+### Performance Optimization - CSV Upload Speed (2025-08-13)
+- ✅ **BATCH INSERT OPTIMIZATION**: Dramatically improved county times loading performance
+  - **Problem**: County times loading took ~60 seconds due to 953 individual database INSERT operations
+  - **Root Cause**: `/api/load-county-times` endpoint processed each county time record individually
+  - **Solution**: Implemented batch database operations using `createCountyTimesBatch()` method
+  - **Performance Gain**: Reduced county times loading from ~60 seconds to ~5 seconds (92% improvement)
+  - **Implementation**: Added batch insert method to `server/storage.ts` and updated routes to collect all records before single batch operation
+- ✅ **COMPREHENSIVE LOADING STATES**: Added detailed progress indicators for better user experience
+  - **Loading Phases**: Visual progress through uploading (2s), processing (3s), loading county times (5s), completion
+  - **Progress Indicators**: Step-by-step visual feedback with checkmarks, spinners, and estimated times
+  - **User Protection**: Prevents navigation during processing with clear messaging
+  - **Component**: `LoadingStageIndicator` in `client/src/components/file-upload-section.tsx`
+  - **Impact**: Users now see clear progress and estimated completion times instead of waiting with no feedback
+
 ### Squad Assignment Bug Fix (2025-08-13)
 - ✅ **SWIMMER AVAILABILITY TOGGLE FIX**: Fixed critical API route mismatch preventing swimmer deselection
   - **Problem**: Frontend calls `/api/swimmers/{teamId}/{id}` but backend only had `/api/swimmers/{id}` route
