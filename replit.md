@@ -125,6 +125,15 @@ shared/
 
 ## Recent Changes
 
+### Time Display Enhancement (2025-08-13)
+- ✅ **TIME FORMAT STANDARDIZATION**: Enhanced user experience with consistent mm:ss.mm time display
+  - **Problem**: Individual event times displayed in technical seconds format (75.34s) while relays showed user-friendly mm:ss.mm format
+  - **Solution**: Created frontend-only `formatSwimmingTime()` utility function using same logic as relay formatting
+  - **Implementation**: Added to `client/src/lib/utils.ts` and applied to `results-section.tsx`
+  - **Coverage**: Individual events, relay swimmer times, and Excel export all now use mm:ss.mm format
+  - **Zero Risk**: No backend changes - optimization logic completely untouched, times still processed as decimal seconds internally
+  - **Result**: Professional, consistent time display (e.g., "75.34s" → "01:15.34") matching relay format throughout results page
+
 ### Performance Optimization - CSV Upload Speed (2025-08-13)
 - ✅ **BATCH INSERT OPTIMIZATION**: Dramatically improved county times loading performance
   - **Problem**: County times loading took ~60 seconds due to 953 individual database INSERT operations
