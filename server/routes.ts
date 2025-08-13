@@ -280,6 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Skip header row
       const dataLines = lines.slice(1);
+      const countyTimesToCreate = [];
       
       for (const line of dataLines) {
         const data = parseCSVLine(line);
@@ -288,7 +289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           const timeInSeconds = convertTimeToSeconds(time);
           
-          await storage.createCountyTime({
+          countyTimesToCreate.push({
             event: event.trim(),
             time: time.trim(),
             ageCategory: parseInt(ageCategory),
@@ -300,7 +301,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      res.json({ message: "County times loaded successfully" });
+      // Batch create all county times
+      await storage.createCountyTimesBatch(countyTimesToCreate);
+
+      res.json({ 
+        message: "County times loaded successfully",
+        recordCount: countyTimesToCreate.length
+      });
     } catch (error) {
       console.error("County times loading error:", error);
       res.status(500).json({ message: "Failed to load county times" });

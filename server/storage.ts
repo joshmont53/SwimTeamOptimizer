@@ -159,6 +159,11 @@ export class DatabaseStorage implements IStorage {
     return time;
   }
 
+  async createCountyTimesBatch(insertTimes: InsertCountyTime[]): Promise<CountyTime[]> {
+    if (insertTimes.length === 0) return [];
+    return await db.insert(countyTimes).values(insertTimes).returning();
+  }
+
   async clearCountyTimes(): Promise<void> {
     await db.delete(countyTimes);
   }
