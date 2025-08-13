@@ -543,7 +543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             time.time || '',
             time.course || '',
             swimmer.gender || '',
-            swimmer.age || '',
+            calculateAgeFromDateOfBirth(swimmer.dateOfBirth) || '',
             '', // County_QT (empty)
             '', // Count_CT (empty)
             time.countyQualify || 'No',

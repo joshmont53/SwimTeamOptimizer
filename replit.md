@@ -38,6 +38,7 @@ The application implements a 4-step workflow:
 -   Subprocess execution for Python optimization, with JSON data exchange and robust error/timeout management.
 -   Age calculation uses swimming competition standards (age as of December 31st, 2025) for 2025/26 season.
 -   Frontend displays real-time competition ages in Squad Selection without requiring CSV re-upload.
+-   Optimization engine uses real-time competition age calculation ensuring proper event eligibility.
 -   Time display standardized to mm:ss.mm format across the frontend.
 -   Persistent storage of optimization results to database.
 
