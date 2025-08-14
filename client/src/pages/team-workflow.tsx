@@ -24,7 +24,7 @@ export default function TeamWorkflow() {
 
   // Fetch team data
   const { data: team } = useQuery<Team>({
-    queryKey: ["/api/teams", teamId],
+    queryKey: [`/api/teams/${teamId}`],
     enabled: !!teamId,
   });
 
@@ -44,12 +44,15 @@ export default function TeamWorkflow() {
   console.log('TEAM WORKFLOW DEBUG:', {
     teamId,
     teamStatus: team?.status,
+    teamStatusType: typeof team?.status,
+    teamStatusEquals: team?.status === "selected",
     currentStep,
     queryEnabled: !!teamId && team?.status === "selected",
     storedResults: storedResults ? `Has ${storedResults.individual?.length || 0} individual + ${storedResults.relay?.length || 0} relay` : 'NULL',
     optimizationResults: optimizationResults ? `Has ${optimizationResults.individual?.length || 0} individual + ${optimizationResults.relay?.length || 0} relay` : 'NULL',
     isLoading: loadingStoredResults,
-    queryError
+    queryError,
+    fullTeamObject: team
   });
 
   // If no team ID or team not found, redirect to teams list
