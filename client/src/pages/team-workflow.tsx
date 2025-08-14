@@ -40,20 +40,7 @@ export default function TeamWorkflow() {
     retry: 1, // Don't retry on 404 for teams without results
   });
 
-  // Debug logging
-  console.log('TEAM WORKFLOW DEBUG:', {
-    teamId,
-    teamStatus: team?.status,
-    teamStatusType: typeof team?.status,
-    teamStatusEquals: team?.status === "selected",
-    currentStep,
-    queryEnabled: !!teamId && team?.status === "selected",
-    storedResults: storedResults ? `Has ${storedResults.individual?.length || 0} individual + ${storedResults.relay?.length || 0} relay` : 'NULL',
-    optimizationResults: optimizationResults ? `Has ${optimizationResults.individual?.length || 0} individual + ${optimizationResults.relay?.length || 0} relay` : 'NULL',
-    isLoading: loadingStoredResults,
-    queryError,
-    fullTeamObject: team
-  });
+
 
   // If no team ID or team not found, redirect to teams list
   useEffect(() => {
@@ -65,7 +52,6 @@ export default function TeamWorkflow() {
   // Handle selected teams - only depend on team status to avoid race conditions
   useEffect(() => {
     if (team?.status === "selected") {
-      console.log('SETTING STEP TO 4 - TEAM IS SELECTED');
       setCurrentStep(4);
     }
   }, [team?.status]);
@@ -73,16 +59,9 @@ export default function TeamWorkflow() {
   // Handle in-progress teams - only when not selected
   useEffect(() => {
     if (team && team.status !== "selected") {
-      console.log('HANDLING IN-PROGRESS TEAM:', { 
-        teamStatus: team.status, 
-        swimmerCount: swimmers.length 
-      });
-      
       if (swimmers.length > 0) {
-        console.log('SETTING STEP TO 3 - TEAM HAS SWIMMERS');
         setCurrentStep(3); // Go to event assignment if swimmers exist
       } else {
-        console.log('SETTING STEP TO 1 - TEAM EXISTS BUT NO SWIMMERS');
         setCurrentStep(1); // Start with file upload
       }
     }

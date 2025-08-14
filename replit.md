@@ -42,6 +42,14 @@ The application implements a 4-step workflow:
 -   Time display standardized to mm:ss.mm format across the frontend.
 -   Persistent storage of optimization results to database.
 
+### Recent Fixes (August 2025)
+-   **Results Navigation Bug**: Fixed critical issue where "View Results" showed wrong page instead of optimization results.
+    -   Root cause: Team query using wrong API endpoint (`/api/teams` array instead of `/api/teams/{id}` single team)
+    -   Solution: Corrected query key to fetch individual team data with proper status
+    -   Impact: "View Results" now correctly displays Step 4 with full individual and relay event results
+-   **Race Condition Resolution**: Split step logic into separate useEffect hooks to prevent status override conflicts.
+-   **Production Ready**: Removed debug logging, successful build verification completed.
+
 ## External Dependencies
 -   **PostgreSQL**: Primary database for all application data, including swimmer information, teams, competition settings, and optimization results.
 -   **Python 3**: Used for the core optimization algorithm, integrated via subprocess execution from the Node.js backend.
