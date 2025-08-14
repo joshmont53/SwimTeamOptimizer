@@ -4,12 +4,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
+import TeamWorkflow from "@/pages/team-workflow";
 
-// Temporary routing while we implement the new team system
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/team/:id/workflow" component={TeamWorkflow} />
       <Route component={Home} />
     </Switch>
   );

@@ -173,10 +173,6 @@ export default function TeamWorkflow() {
 
         {/* Step Content */}
         <div className="max-w-6xl mx-auto">
-          <div style={{backgroundColor: 'red', color: 'white', padding: '20px', margin: '10px', fontSize: '18px', fontWeight: 'bold'}}>
-            CRITICAL DEBUG: currentStep = {currentStep}, team status = {team?.status}, swimmers count = {swimmers.length}
-          </div>
-          
           {currentStep === 1 && (
             <FileUploadSection 
               isActive={currentStep === 1}
@@ -207,30 +203,11 @@ export default function TeamWorkflow() {
           )}
 
           {currentStep === 4 && (
-            <div>
-              <div style={{backgroundColor: 'yellow', padding: '10px', margin: '10px', border: '2px solid red'}}>
-                DEBUG INFO:<br/>
-                currentStep: {currentStep}<br/>
-                optimizationResults: {optimizationResults ? `${optimizationResults.individual?.length || 0} individual, ${optimizationResults.relay?.length || 0} relay` : 'NULL'}<br/>
-                storedResults: {storedResults ? `${storedResults.individual?.length || 0} individual, ${storedResults.relay?.length || 0} relay` : 'NULL'}<br/>
-                finalResults: {(optimizationResults || storedResults) ? 'HAS DATA' : 'NULL'}<br/>
-                isLoading: {loadingStoredResults ? 'YES' : 'NO'}<br/>
-                queryEnabled: {(!!teamId && team?.status === "selected") ? 'YES' : 'NO'}<br/>
-                teamId: {teamId}<br/>
-                teamStatus: {team?.status}
-              </div>
-              
-              {/* FORCE DISPLAY RESULTS REGARDLESS */}
-              <div style={{backgroundColor: 'green', color: 'white', padding: '10px', margin: '10px'}}>
-                FORCING RESULTS DISPLAY - This should show results even if React state is broken
-              </div>
-              
-              <ResultsSection 
-                results={optimizationResults || storedResults}
-                onBackToEventAssignment={handleBackToEventAssignment}
-                selectedTeam={team}
-              />
-            </div>
+            <ResultsSection 
+              results={optimizationResults || storedResults}
+              onBackToEventAssignment={handleBackToEventAssignment}
+              selectedTeam={team}
+            />
           )}
         </div>
       </div>

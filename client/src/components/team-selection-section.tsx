@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Plus, Trophy, Users, Target, CheckCircle, Calendar, Settings, Trash2 } from "lucide-react";
+import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Team, InsertTeam } from "@shared/schema";
@@ -340,15 +341,28 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
                   </div>
 
                   <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={() => onTeamSelected(team)}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      {team.status === "selected" ? "View Results" : "Continue Setup"}
-                    </Button>
+                    {team.status === "selected" ? (
+                      <Link href={`/team/${team.id}/workflow`} className="flex-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                        >
+                          <Settings className="mr-2 h-4 w-4" />
+                          View Results
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => onTeamSelected(team)}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Continue Setup
+                      </Button>
+                    )}
                     
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
