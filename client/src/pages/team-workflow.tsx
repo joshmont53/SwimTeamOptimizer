@@ -36,7 +36,8 @@ export default function TeamWorkflow() {
   // Fetch optimization results for completed teams
   const { data: storedResults, isLoading: loadingStoredResults, error: queryError } = useQuery({
     queryKey: [`/api/teams/${teamId}/optimization-results`],
-    enabled: !!teamId && team?.status === "selected",
+    enabled: !!teamId,
+    retry: 1, // Don't retry on 404 for teams without results
   });
 
   // Debug logging
@@ -58,26 +59,29 @@ export default function TeamWorkflow() {
     }
   }, [match, teamId, setLocation]);
 
-  // Determine initial step based on team state
+  // Handle selected teams - only depend on team status to avoid race conditions
   useEffect(() => {
-    console.log('STEP EFFECT RUNNING:', { 
-      teamStatus: team?.status, 
-      swimmerCount: swimmers.length, 
-      teamExists: !!team 
-    });
-    
     if (team?.status === "selected") {
       console.log('SETTING STEP TO 4 - TEAM IS SELECTED');
-      setCurrentStep(4); // Show results if complete - highest priority
-      return; // Early return prevents further logic from overriding this
-    } else if (team && swimmers.length > 0) {
-      console.log('SETTING STEP TO 3 - TEAM HAS SWIMMERS');
-      setCurrentStep(3); // Go to event assignment if swimmers exist
-    } else if (team) {
-      console.log('SETTING STEP TO 1 - TEAM EXISTS BUT NO SWIMMERS');
-      setCurrentStep(1); // Start with file upload
-    } else {
-      console.log('NO ACTION - NO TEAM DATA YET');
+      setCurrentStep(4);
+    }
+  }, [team?.status]);
+
+  // Handle in-progress teams - only when not selected
+  useEffect(() => {
+    if (team && team.status !== "selected") {
+      console.log('HANDLING IN-PROGRESS TEAM:', { 
+        teamStatus: team.status, 
+        swimmerCount: swimmers.length 
+      });
+      
+      if (swimmers.length > 0) {
+        console.log('SETTING STEP TO 3 - TEAM HAS SWIMMERS');
+        setCurrentStep(3); // Go to event assignment if swimmers exist
+      } else {
+        console.log('SETTING STEP TO 1 - TEAM EXISTS BUT NO SWIMMERS');
+        setCurrentStep(1); // Start with file upload
+      }
     }
   }, [team, swimmers]);
 
@@ -134,6 +138,18 @@ export default function TeamWorkflow() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400">Loading team...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // For selected teams, ensure results are loaded before rendering step content
+  if (team.status === "selected" && currentStep === 4 && !storedResults && !queryError && loadingStoredResults) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading results...</p>
         </div>
       </div>
     );
