@@ -29,7 +29,7 @@ export default function TeamWorkflow() {
   });
 
   const { data: swimmers = [], refetch: refetchSwimmers } = useQuery<Swimmer[]>({
-    queryKey: ["/api/swimmers", teamId],
+    queryKey: [`/api/swimmers/${teamId}`],
     enabled: !!teamId,
   });
 
@@ -69,6 +69,7 @@ export default function TeamWorkflow() {
     if (team?.status === "selected") {
       console.log('SETTING STEP TO 4 - TEAM IS SELECTED');
       setCurrentStep(4); // Show results if complete - highest priority
+      return; // Early return prevents further logic from overriding this
     } else if (team && swimmers.length > 0) {
       console.log('SETTING STEP TO 3 - TEAM HAS SWIMMERS');
       setCurrentStep(3); // Go to event assignment if swimmers exist
