@@ -35,9 +35,13 @@ export default function SquadSelectionSection({
   const { toast } = useToast();
 
   const ageOptions = [
-    { value: "11-12", label: "11-12" },
-    { value: "13-14", label: "13-14" },
-    { value: "15-16", label: "15-16" },
+    { value: "10-under", label: "10 and Under" },
+    { value: "11", label: "11" },
+    { value: "12", label: "12" },
+    { value: "13", label: "13" },
+    { value: "14", label: "14" },
+    { value: "15", label: "15" },
+    { value: "16", label: "16" },
     { value: "17+", label: "17+" }
   ];
 
@@ -75,9 +79,13 @@ export default function SquadSelectionSection({
       // Multi-select age filtering - if no ages selected, show all
       const matchesAge = ageFilters.length === 0 || ageFilters.some(ageRange => {
         switch(ageRange) {
-          case "11-12": return competitionAge >= 11 && competitionAge <= 12;
-          case "13-14": return competitionAge >= 13 && competitionAge <= 14;
-          case "15-16": return competitionAge >= 15 && competitionAge <= 16;
+          case "10-under": return competitionAge <= 10;
+          case "11": return competitionAge === 11;
+          case "12": return competitionAge === 12;
+          case "13": return competitionAge === 13;
+          case "14": return competitionAge === 14;
+          case "15": return competitionAge === 15;
+          case "16": return competitionAge === 16;
           case "17+": return competitionAge >= 17;
           default: return false;
         }
