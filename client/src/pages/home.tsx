@@ -7,6 +7,7 @@ import SquadSelectionSection from "@/components/squad-selection-section";
 import EventAssignmentSection from "@/components/event-assignment-section";
 import ResultsSection from "@/components/results-section";
 import TeamSelectionSection from "@/components/team-selection-section";
+import logoUrl from "@assets/logo_1755250916499.png";
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0); // Start with team selection
@@ -127,8 +128,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <i className="fas fa-swimmer text-primary-500 text-2xl mr-3"></i>
-              <h1 className="text-xl font-semibold text-gray-900">Swimming Team Optimiser</h1>
+              <img 
+                src={logoUrl} 
+                alt="JMP Logo" 
+                className="h-10 w-auto"
+              />
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">

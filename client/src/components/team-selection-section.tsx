@@ -175,7 +175,8 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Select or Create Team</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Swimming Team Optimiser</h1>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Select or Create Team</h2>
         <p className="text-gray-600">
           Choose an existing team to continue working on, or create a new team for your competition
         </p>
