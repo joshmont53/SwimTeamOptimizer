@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ArrowLeft, ChevronDown, X } from "lucide-react";
 import { getCompetitionTypeDisplay } from "@shared/constants";
 import { calculateCompetitionAge } from "@/lib/utils";
 
@@ -30,8 +31,15 @@ export default function SquadSelectionSection({
 }: SquadSelectionSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [genderFilter, setGenderFilter] = useState("all");
-  const [ageFilter, setAgeFilter] = useState("all");
+  const [ageFilters, setAgeFilters] = useState<string[]>([]);
   const { toast } = useToast();
+
+  const ageOptions = [
+    { value: "11-12", label: "11-12" },
+    { value: "13-14", label: "13-14" },
+    { value: "15-16", label: "15-16" },
+    { value: "17+", label: "17+" }
+  ];
 
   const updateAvailabilityMutation = useMutation({
     mutationFn: async ({ id, isAvailable }: { id: number; isAvailable: boolean }) => {
@@ -63,21 +71,46 @@ export default function SquadSelectionSection({
       
       // Use competition age for filtering
       const competitionAge = calculateCompetitionAge(swimmer.dateOfBirth);
-      const matchesAge = ageFilter === "all" || 
-        (ageFilter === "11-12" && competitionAge >= 11 && competitionAge <= 12) ||
-        (ageFilter === "13-14" && competitionAge >= 13 && competitionAge <= 14) ||
-        (ageFilter === "15-16" && competitionAge >= 15 && competitionAge <= 16) ||
-        (ageFilter === "17+" && competitionAge >= 17);
+      
+      // Multi-select age filtering - if no ages selected, show all
+      const matchesAge = ageFilters.length === 0 || ageFilters.some(ageRange => {
+        switch(ageRange) {
+          case "11-12": return competitionAge >= 11 && competitionAge <= 12;
+          case "13-14": return competitionAge >= 13 && competitionAge <= 14;
+          case "15-16": return competitionAge >= 15 && competitionAge <= 16;
+          case "17+": return competitionAge >= 17;
+          default: return false;
+        }
+      });
       
       return matchesSearch && matchesGender && matchesAge;
     });
-  }, [swimmers, searchTerm, genderFilter, ageFilter]);
+  }, [swimmers, searchTerm, genderFilter, ageFilters]);
 
   const availableCount = swimmers.filter(s => s.isAvailable).length;
   const unavailableCount = swimmers.length - availableCount;
 
   const handleAvailabilityChange = (swimmer: Swimmer, isAvailable: boolean) => {
     updateAvailabilityMutation.mutate({ id: swimmer.id, isAvailable });
+  };
+
+  const handleAgeFilterToggle = (ageRange: string) => {
+    setAgeFilters(prev => 
+      prev.includes(ageRange) 
+        ? prev.filter(age => age !== ageRange)
+        : [...prev, ageRange]
+    );
+  };
+
+  const clearAgeFilters = () => {
+    setAgeFilters([]);
+  };
+
+  const getAgeFilterDisplayText = () => {
+    if (ageFilters.length === 0) return "All Ages";
+    if (ageFilters.length === 1) return ageFilters[0];
+    if (ageFilters.length === ageOptions.length) return "All Selected";
+    return `${ageFilters.length} selected`;
   };
 
   const handleSelectAllAvailable = () => {
@@ -158,18 +191,52 @@ export default function SquadSelectionSection({
                 <SelectItem value="Female">Female</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={ageFilter} onValueChange={setAgeFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="All Ages" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Ages</SelectItem>
-                <SelectItem value="11-12">11-12</SelectItem>
-                <SelectItem value="13-14">13-14</SelectItem>
-                <SelectItem value="15-16">15-16</SelectItem>
-                <SelectItem value="17+">17+</SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-40 justify-between"
+                  role="combobox"
+                >
+                  <span className="truncate">{getAgeFilterDisplayText()}</span>
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40 p-0">
+                <div className="p-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Age Ranges</span>
+                    {ageFilters.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearAgeFilters}
+                        className="h-6 px-2 text-xs"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    {ageOptions.map(option => (
+                      <div key={option.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`age-${option.value}`}
+                          checked={ageFilters.includes(option.value)}
+                          onCheckedChange={() => handleAgeFilterToggle(option.value)}
+                        />
+                        <label
+                          htmlFor={`age-${option.value}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
