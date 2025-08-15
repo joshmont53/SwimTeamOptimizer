@@ -193,24 +193,25 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
           </DialogTrigger>
           <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
             <DialogHeader>
-              <DialogTitle>Create New Team</DialogTitle>
+              <DialogTitle className="text-foreground">Create New Team</DialogTitle>
             </DialogHeader>
             
             <div className="space-y-6">
               {/* Team Name */}
               <div className="space-y-2">
-                <Label htmlFor="teamName">Team Name</Label>
+                <Label htmlFor="teamName" className="text-foreground font-medium">Team Name</Label>
                 <Input
                   id="teamName"
                   placeholder="e.g., County Championship 2025"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
+                  className="text-foreground"
                 />
               </div>
 
               {/* Competition Type */}
               <div className="space-y-4">
-                <Label>Competition Type</Label>
+                <Label className="text-foreground font-medium">Competition Type</Label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {competitionOptions.map((option) => (
                     <Card
@@ -257,7 +258,7 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
               {/* Custom Configuration */}
               {selectedType === COMPETITION_TYPES.CUSTOM && (
                 <div className="space-y-2">
-                  <Label htmlFor="maxEvents">Maximum individual events per swimmer</Label>
+                  <Label htmlFor="maxEvents" className="text-foreground font-medium">Maximum individual events per swimmer</Label>
                   <div className="flex items-center gap-4">
                     <Input
                       id="maxEvents"
@@ -268,7 +269,7 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
                       onChange={(e) => setMaxIndividualEvents(
                         e.target.value ? parseInt(e.target.value) : null
                       )}
-                      className="w-24"
+                      className="w-24 text-foreground"
                     />
                     <Button
                       variant="outline"
