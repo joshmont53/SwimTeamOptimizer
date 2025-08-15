@@ -7,7 +7,7 @@ import SquadSelectionSection from "@/components/squad-selection-section";
 import EventAssignmentSection from "@/components/event-assignment-section";
 import ResultsSection from "@/components/results-section";
 import TeamSelectionSection from "@/components/team-selection-section";
-import logoUrl from "@assets/logo_1755250916499.png";
+import logoUrl from "@assets/logo_1755251717460.png";
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0); // Start with team selection
