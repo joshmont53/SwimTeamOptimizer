@@ -136,9 +136,6 @@ export default function Home() {
               />
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Last updated: <span>{lastUpdated || "Not updated"}</span>
-              </span>
               {/* Home Navigation - only show when not on team selection */}
               {currentStep > 0 && (
                 <button 
