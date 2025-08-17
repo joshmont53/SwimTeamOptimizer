@@ -48,7 +48,15 @@ The application implements a 4-step workflow:
     -   Solution: Corrected query key to fetch individual team data with proper status
     -   Impact: "View Results" now correctly displays Step 4 with full individual and relay event results
 -   **Race Condition Resolution**: Split step logic into separate useEffect hooks to prevent status override conflicts.
--   **Production Ready**: Removed debug logging, successful build verification completed.
+-   **County Times Index for 10U Bug**: Fixed optimization script to handle swimmers aged 10 and under.
+    -   Root cause: County times start at age 11, leaving younger swimmers without qualifying time baselines
+    -   Solution: Added fallback logic to use age 11 county times for swimmers aged 10 and under
+    -   Impact: 10U swimmers now get proper county time indexing for optimization calculations
+-   **Relay Swimmer Count Bug**: Fixed hardcoded relay swimmer count detection to support dynamic extraction.
+    -   Root cause: Script only recognized "6x" pattern, defaulting all others to 4 swimmers
+    -   Solution: Implemented regex-based dynamic extraction from event names (4x, 6x, 8x, etc.)
+    -   Impact: Custom templates can now correctly specify any relay swimmer count (verified with 8x50m relays)
+-   **Production Ready**: All template types (Arena League, County Relays, Custom Templates) fully functional with comprehensive regression testing completed.
 
 ## External Dependencies
 -   **PostgreSQL**: Primary database for all application data, including swimmer information, teams, competition settings, and optimization results.
