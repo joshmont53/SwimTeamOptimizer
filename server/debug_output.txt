@@ -1371,15 +1371,21 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
 Proceeding to optimization with 1363 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 0
+Events auto-assigned: 8
 Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
+  1. 10U Male 50m Freestyle -> Rudy Aspland
+  2. 10U Female 50m Freestyle -> Emma Goddard
+  3. 11U Male 100m Breaststroke -> Kristian Gulcz
+  4. 11U Female 100m Breaststroke -> Miya Cook
+  5. 14U Male 100m Butterfly -> Kaylem Livesey
+  6. 16U Female 200m Breaststroke -> Amy Jones
+  7. 99U Male 100m Backstroke -> Daniel Richards
+  8. 99U Female 100m Backstroke -> Lara Charlton
 
-Unassigned events: 18
-  - 12U Male 4 x 50m Freestyle
-  - 12U Female 4 x 50m Freestyle
+Unassigned events: 4
   - 14U Male 4 x 50m Freestyle
-  - 14U Female 4 x 50m Freestyle
-  - 16U Male 4 x 50m Freestyle
-  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
+  - 16U Female 4 x 100m Medley
+  - 99U Male 8 x 50m Freestyle
+  - 99U Female 8 x 50m Freestyle
