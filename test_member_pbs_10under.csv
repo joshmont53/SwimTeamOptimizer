@@ -1,0 +1,5 @@
+firstname,lastname,stroke,gender,competition_age,time,course,asa_no,available
+TestChild,Smith,50m Freestyle,Male,10,35.50,SC,123456,true
+TestChild,Jones,50m Freestyle,Female,9,38.20,SC,123457,true
+TestYoung,Brown,100m Freestyle,Male,10,85.30,SC,123458,true
+TestYoung,White,50m Backstroke,Female,10,42.10,SC,123459,true

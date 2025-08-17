@@ -1,7 +1,7 @@
 {
   "maxIndividualEvents": 1,
-  "competitionType": "custom",
-  "totalEvents": 12,
-  "individualEvents": 8,
-  "relayEvents": 4
+  "competitionType": "county_relays",
+  "totalEvents": 18,
+  "individualEvents": 0,
+  "relayEvents": 18
 }

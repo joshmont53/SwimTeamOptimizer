@@ -281,6 +281,16 @@ def main():
                     ):
                         full_list[i].append(time[1])
                         break
+            # For age 10 and under, use age 11 county times as minimum
+            elif full_list[i][1] <= 10:
+                for time in county_times:
+                    if (
+                        time[0] == full_list[i][0] and
+                        int(time[2]) == 11 and  # Use age 11 as minimum baseline
+                        time[3] == full_list[i][2]
+                    ):
+                        full_list[i].append(time[1])
+                        break
 
     # Calculate differences and indices
     for row in full_list:
@@ -551,7 +561,9 @@ def main():
         for event_name in event_names:
             if 'freestyle' in event_name.lower() and 'medley' not in event_name.lower():
                 # Freestyle relay - determine number of swimmers needed
-                swimmers_needed = 6 if '6x' in event_name else 4
+                import re
+                match = re.search(r'(\d+)\s*x', event_name)
+                swimmers_needed = int(match.group(1)) if match else 4
                 
                 # Detect relay distance and use appropriate times
                 distance = extract_relay_distance(event_name)
