@@ -73,6 +73,12 @@ export interface IStorage {
   updateTeam(id: number, updates: Partial<InsertTeam>): Promise<Team | undefined>;
   deleteTeam(id: number): Promise<void>;
 
+  // Team events operations  
+  getTeamEvents(teamId: number): Promise<TeamEvent[]>;
+  createTeamEvent(event: InsertTeamEvent): Promise<TeamEvent>;
+  createTeamEventsBatch(events: InsertTeamEvent[]): Promise<TeamEvent[]>;
+  clearTeamEvents(teamId: number): Promise<void>;
+
   // Team events operations
   getTeamEvents(teamId: number): Promise<TeamEvent[]>;
   createTeamEvent(event: InsertTeamEvent): Promise<TeamEvent>;

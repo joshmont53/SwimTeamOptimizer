@@ -66,45 +66,15 @@ function calculateAgeFromDateOfBirth(dateOfBirth: string): number {
   }
 }
 
-// Generate custom event list from selected events
-function generateCustomEventList(customEvents: {individual: string[], relay: string[]}): any[] {
-  const events = [];
-  
-  // Process individual events
-  for (const eventKey of customEvents.individual) {
-    const eventConfig = CUSTOM_COMPETITION_CONFIG.individualEvents.find(e => e.key === eventKey);
-    if (eventConfig) {
-      for (const ageCategory of eventConfig.ageCategories) {
-        for (const gender of eventConfig.genders) {
-          events.push({
-            event: eventConfig.event,
-            ageCategory,
-            gender,
-            isRelay: false
-          });
-        }
-      }
-    }
+// Generate custom event list from saved custom events
+function generateCustomEventList(customEventsJson: string): any[] {
+  try {
+    const customEvents = JSON.parse(customEventsJson);
+    return customEvents;
+  } catch (error) {
+    console.error('Error parsing custom events JSON:', error);
+    return [];
   }
-  
-  // Process relay events
-  for (const relayKey of customEvents.relay) {
-    const relayConfig = CUSTOM_COMPETITION_CONFIG.relayEvents.find(r => r.key === relayKey);
-    if (relayConfig) {
-      for (const ageCategory of relayConfig.ageCategories) {
-        for (const gender of relayConfig.genders) {
-          events.push({
-            event: relayConfig.relayName,
-            ageCategory,
-            gender,
-            isRelay: true
-          });
-        }
-      }
-    }
-  }
-  
-  return events;
 }
 
 function convertTimeToSeconds(timeStr: string): number {
@@ -850,6 +820,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(events);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch team events" });
+    }
+  });
+
+  // Route for saving custom team events
+  app.post("/api/teams/:id/events", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.id);
+      const { events } = req.body;
+      
+      // Clear existing events for this team
+      await storage.clearTeamEvents(teamId);
+      
+      // Insert new events
+      const teamEvents = events.map((event: any) => ({
+        teamId,
+        event: event.event,
+        ageCategory: event.ageCategory,
+        gender: event.gender,
+        isRelay: event.isRelay
+      }));
+      
+      await storage.createTeamEventsBatch(teamEvents);
+      
+      res.json({ message: "Events saved successfully", count: events.length });
+    } catch (error) {
+      console.error("Error saving team events:", error);
+      res.status(500).json({ message: "Failed to save team events" });
     }
   });
 

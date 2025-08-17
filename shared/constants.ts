@@ -120,24 +120,49 @@ export const CUSTOM_COMPETITION_CONFIG = {
   name: 'Custom Competition',
   maxIndividualEvents: null, // User-defined
   events: [], // Will be populated by user selection
-  individualEvents: [
-    { key: '50m-freestyle', event: '50m Freestyle', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '50m-backstroke', event: '50m Backstroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '50m-breaststroke', event: '50m Breaststroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '50m-butterfly', event: '50m Butterfly', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '100m-freestyle', event: '100m Freestyle', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '100m-backstroke', event: '100m Backstroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '100m-breaststroke', event: '100m Breaststroke', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '100m-butterfly', event: '100m Butterfly', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-    { key: '200m-im', event: '200m Individual Medley', ageCategories: [11, 12, 13, 14, 15, 16, 99], genders: ['Male', 'Female'] },
-  ],
-  relayEvents: [
-    { key: '4x50m-freestyle', relayName: '4x50m Freestyle', ageCategories: [12, 14, 16, 99], genders: ['Male', 'Female'] },
-    { key: '4x50m-medley', relayName: '4x50m Medley', ageCategories: [12, 14, 16, 99], genders: ['Male', 'Female'] },
-    { key: '4x100m-freestyle', relayName: '4x100m Freestyle', ageCategories: [99], genders: ['Male', 'Female'] },
-    { key: '4x100m-medley', relayName: '4x100m Medley', ageCategories: [99], genders: ['Male', 'Female'] },
-  ]
 };
+
+// Available event types for custom event builder
+export const INDIVIDUAL_EVENT_TYPES = [
+  '50m Freestyle',
+  '100m Freestyle', 
+  '200m Freestyle',
+  '50m Backstroke',
+  '100m Backstroke',
+  '200m Backstroke', 
+  '50m Breaststroke',
+  '100m Breaststroke',
+  '200m Breaststroke',
+  '50m Butterfly',
+  '100m Butterfly',
+  '200m Butterfly',
+  '100m Individual Medley',
+  '200m Individual Medley'
+];
+
+export const RELAY_TYPES = [
+  'Freestyle',
+  'Medley'
+];
+
+export const RELAY_DISTANCES = [50, 100, 200];
+
+export const CUSTOM_AGE_GROUPS = [
+  { value: 10, label: '10 & Under' },
+  { value: 11, label: '11 & Under' },
+  { value: 12, label: '12 & Under' },
+  { value: 13, label: '13 & Under' },
+  { value: 14, label: '14 & Under' },
+  { value: 15, label: '15 & Under' },
+  { value: 16, label: '16 & Under' },
+  { value: 99, label: 'Open' }
+];
+
+export const GENDER_OPTIONS = [
+  { value: 'Male', label: 'Male' },
+  { value: 'Female', label: 'Female' },
+  { value: 'Both', label: 'Both (creates 2 events)' }
+];
 
 // Available events for custom competitions
 export const CUSTOM_EVENTS_POOL = {

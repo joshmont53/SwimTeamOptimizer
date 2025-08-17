@@ -7,6 +7,7 @@ import SquadSelectionSection from "@/components/squad-selection-section";
 import EventAssignmentSection from "@/components/event-assignment-section";
 import ResultsSection from "@/components/results-section";
 import TeamSelectionSection from "@/components/team-selection-section";
+import EventBuilderSection from "@/components/event-builder-section";
 import logoUrl from "@assets/logo_1755251717460.png";
 
 export default function Home() {
@@ -35,7 +36,29 @@ export default function Home() {
       // TODO: Load previous optimization results
     } else {
       // Team is in progress, resume from current step
-      setCurrentStep(team.currentStep || 1);
+      // For custom templates without events defined, start with event builder
+      if (team.competitionType === 'custom' && (!team.customEvents || team.currentStep === 0)) {
+        setCurrentStep(0.5); // Event builder step
+      } else {
+        setCurrentStep(team.currentStep || 1);
+      }
+    }
+  };
+
+  const handleEventsBuilt = async () => {
+    setCurrentStep(1);
+    
+    // Update team's current step in database
+    if (selectedTeam?.id) {
+      try {
+        await fetch(`/api/teams/${selectedTeam.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentStep: 1 })
+        });
+      } catch (error) {
+        console.error('Failed to update team step:', error);
+      }
     }
   };
 
@@ -152,13 +175,27 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Indicator - only show for steps 1-4 */}
-        {currentStep > 0 && <ProgressIndicator currentStep={currentStep} />}
+        {/* Progress Indicator - only show for steps 0.5-4 */}
+        {currentStep >= 0.5 && (
+          <ProgressIndicator 
+            currentStep={currentStep} 
+            isCustomTemplate={selectedTeam?.competitionType === 'custom'} 
+          />
+        )}
 
         {/* Step 0: Team Selection */}
         {currentStep === 0 && (
           <TeamSelectionSection 
             onTeamSelected={handleTeamSelected}
+          />
+        )}
+
+        {/* Step 0.5: Event Builder (Custom Templates Only) */}
+        {currentStep === 0.5 && selectedTeam && selectedTeam.competitionType === 'custom' && (
+          <EventBuilderSection 
+            selectedTeam={selectedTeam}
+            onEventsConfirmed={handleEventsBuilt}
+            onBackToTeamSelection={handleBackToTeamSelection}
           />
         )}
 

@@ -66,7 +66,8 @@ export const teams = pgTable("teams", {
   competitionType: text("competition_type").notNull(), // 'arena_league', 'county_relays', 'custom'
   maxIndividualEvents: integer("max_individual_events"), // null means no limit
   status: text("status").notNull().default("in_progress"), // 'in_progress', 'selected'
-  currentStep: integer("current_step").notNull().default(0), // 0=team_selection, 1=file_upload, 2=squad_selection, 3=event_assignment, 4=results
+  currentStep: integer("current_step").notNull().default(0), // 0=team_selection, 1=file_upload, 1.5=event_builder(custom only), 2=squad_selection, 3=event_assignment, 4=results
+  customEvents: text("custom_events"), // JSON string of custom events for custom competitions
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
