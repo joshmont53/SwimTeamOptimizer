@@ -1,91 +1,41 @@
 [
   [
-    "4 x 50m Freestyle",
-    12,
+    "50m Breaststroke",
+    10,
     "Male"
   ],
   [
-    "4 x 50m Freestyle",
-    12,
+    "50m Breaststroke",
+    10,
     "Female"
   ],
   [
-    "4 x 50m Freestyle",
-    14,
-    "Male"
-  ],
-  [
-    "4 x 50m Freestyle",
-    14,
-    "Female"
-  ],
-  [
-    "4 x 50m Freestyle",
-    16,
-    "Male"
-  ],
-  [
-    "4 x 50m Freestyle",
+    "100m Butterfly",
     16,
     "Female"
   ],
   [
-    "4 x 100m Freestyle",
+    "200m Backstroke",
+    13,
+    "Male"
+  ],
+  [
+    "200m Individual Medley",
     99,
     "Male"
   ],
   [
-    "4 x 100m Freestyle",
+    "200m Individual Medley",
     99,
     "Female"
   ],
   [
-    "4 x 200m Freestyle",
-    99,
-    "Male"
-  ],
-  [
-    "4 x 200m Freestyle",
-    99,
-    "Female"
-  ],
-  [
-    "4 x 50m Medley",
-    12,
-    "Male"
-  ],
-  [
-    "4 x 50m Medley",
-    12,
-    "Female"
-  ],
-  [
-    "4 x 50m Medley",
-    14,
-    "Male"
-  ],
-  [
-    "4 x 50m Medley",
-    14,
-    "Female"
-  ],
-  [
-    "4 x 50m Medley",
+    "2 x 50m Freestyle",
     16,
     "Male"
   ],
   [
-    "4 x 50m Medley",
-    16,
-    "Female"
-  ],
-  [
-    "4 x 100m Medley",
-    99,
-    "Male"
-  ],
-  [
-    "4 x 100m Medley",
+    "8 x 50m Freestyle",
     99,
     "Female"
   ]
