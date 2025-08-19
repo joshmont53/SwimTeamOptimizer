@@ -56,7 +56,7 @@ export const relayAssignments = pgTable("relay_assignments", {
   gender: text("gender").notNull(),
   position: integer("position").notNull(), // 1-4 for relay positions
   stroke: text("stroke"), // for medley relays
-  swimmerId: integer("swimmer_id"),
+  swimmerId: text("swimmer_id"), // Use ASA number (text) for consistency with eventAssignments
   isPreAssigned: boolean("is_pre_assigned").notNull().default(false),
 });
 

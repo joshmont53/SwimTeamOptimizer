@@ -124,7 +124,69 @@ export default function EventAssignmentSection({
       }
     }
     
-    console.log(`Saving ${assignmentPromises.length} pre-assignments...`);
+    // Save relay assignments
+    for (const [relayKey, swimmerId] of Object.entries(relayAssignments)) {
+      if (swimmerId) {
+        console.log(`Processing relay assignment: ${relayKey} -> ${swimmerId}`);
+        
+        // Parse relay key: complex format like "4 x 100m Freestyle_99_Male_1_Backstroke"
+        const keyParts = relayKey.split('_');
+        
+        // Extract position (always 4th from end, or 3rd from end if no stroke)
+        let position, stroke, gender, ageCategory, relayName;
+        
+        if (keyParts.length >= 4) {
+          // Work backwards from the end
+          const possibleStroke = keyParts[keyParts.length - 1];
+          const possiblePosition = keyParts[keyParts.length - 2];
+          const possibleGender = keyParts[keyParts.length - 3];
+          const possibleAge = keyParts[keyParts.length - 4];
+          
+          // Check if last part is a stroke (for medley relays)
+          if (['Backstroke', 'Breaststroke', 'Butterfly', 'Freestyle'].includes(possibleStroke)) {
+            stroke = possibleStroke;
+            position = parseInt(possiblePosition);
+            gender = possibleGender;
+            ageCategory = parseInt(possibleAge);
+            relayName = keyParts.slice(0, -4).join('_');
+          } else {
+            // No stroke, position is last part
+            position = parseInt(possibleStroke);
+            gender = possibleGender;
+            ageCategory = parseInt(possibleAge);
+            relayName = keyParts.slice(0, -3).join('_');
+          }
+        }
+        
+        console.log(`Parsed relay assignment:`, { relayKey, relayName, ageCategory, gender, position, stroke });
+        
+        // Find the swimmer to get their ASA number
+        const swimmer = availableSwimmers.find(s => s.id === parseInt(swimmerId.toString()));
+        if (swimmer) {
+          console.log(`Found relay swimmer: ${swimmer.firstName} ${swimmer.lastName} (ASA: ${swimmer.asaNo})`);
+          assignmentPromises.push(
+            fetch(`/api/relay-assignments`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                teamId: selectedTeam?.id,
+                relayName,
+                ageCategory,
+                gender,
+                position,
+                stroke,
+                swimmerId: swimmer.asaNo, // Use ASA number for consistency with individual assignments
+                isPreAssigned: true
+              })
+            })
+          );
+        } else {
+          console.log(`ERROR: Could not find relay swimmer with ID ${swimmerId}`);
+        }
+      }
+    }
+    
+    console.log(`Saving ${assignmentPromises.length} total pre-assignments (individual + relay)...`);
     
     try {
       await Promise.all(assignmentPromises);

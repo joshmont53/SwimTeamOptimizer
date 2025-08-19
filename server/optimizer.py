@@ -464,18 +464,30 @@ def main():
         stroke = relay_assignment.get('stroke', None)  # For medley relays
         swimmer_id = relay_assignment['swimmerId']
         
-        # Find swimmer by ASA number
+        # Find swimmer by ASA number in the original swimmer_list (used for relay building)
         swimmer_name = None
         target_asa = str(swimmer_id).strip()
-        print(f"DEBUG: Looking for relay swimmer ASA '{target_asa}'", file=sys.stderr)
+        print(f"DEBUG: Looking for relay swimmer ASA '{target_asa}' in swimmer_list", file=sys.stderr)
         
-        for time_row in full_list:
-            if len(time_row) >= 7:
-                swimmer_asa = str(time_row[6]).strip() if time_row[6] else None
+        for swimmer_row in swimmer_list:
+            # swimmer_list structure: [firstName, lastName, event, gender, ageTime, timeSeconds, asaNo]
+            if len(swimmer_row) >= 7:
+                swimmer_asa = str(swimmer_row[6]).strip() if swimmer_row[6] else None  # ASA number at index 6
                 if target_asa == swimmer_asa:
-                    swimmer_name = f"{time_row[3]} {time_row[4]}"
+                    swimmer_name = f"{swimmer_row[0]} {swimmer_row[1]}"  # First_Name is index 0, Last_Name is index 1
                     print(f"SUCCESS: Found relay swimmer '{swimmer_name}' for ASA '{target_asa}'", file=sys.stderr)
                     break
+        
+        if not swimmer_name:
+            # Debug: Show a sample of swimmers in swimmer_list for troubleshooting
+            print(f"RELAY DEBUG: swimmer_list contains {len(swimmer_list)} entries. Sample of swimmers:", file=sys.stderr)
+            unique_swimmers = set()
+            for row in swimmer_list:
+                if len(row) >= 7:
+                    swimmer_info = f"{row[0]} {row[1]} (ASA: {row[6]})"
+                    unique_swimmers.add(swimmer_info)
+                    if len(unique_swimmers) <= 5:  # Show first 5 unique swimmers
+                        print(f"  - {swimmer_info}", file=sys.stderr)
         
         if swimmer_name:
             relay_key = (relay_name, age_category, gender)

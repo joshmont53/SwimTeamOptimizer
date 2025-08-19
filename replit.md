@@ -61,7 +61,21 @@ The application implements a 4-step workflow:
     -   Solution: Added sorting by stroke time before selecting top 10 swimmers for each stroke (backstroke, breaststroke, butterfly, freestyle)
     -   Impact: Medley relays now use fastest swimmers per stroke, achieving 4+ second improvements (e.g., Open Male 4x100m Medley: 4:10.99 → 4:06.10)
     -   Technical: Modified lines 612-631 in `server/optimizer.py` to sort stroke pools using `sorted(..., key=lambda x: x.stroke_time)`
--   **Production Ready**: All template types (Arena League, County Relays, Custom Templates) fully functional with comprehensive regression testing completed.
+-   **Relay Pre-Assignment Critical Fix**: Implemented comprehensive relay pre-assignment functionality that was previously non-functional.
+    -   Root cause: Frontend collected relay assignments but never saved them to database; Python optimizer had processing logic but received empty relay assignments
+    -   Solution: Added missing relay assignment saving logic in frontend with proper key parsing for complex relay names; enhanced Python script with position-specific and stroke-specific validation
+    -   Frontend fix: Added relay assignment saving loop in `handleRunOptimization` with complex key parsing for formats like "4 x 100m Freestyle_99_Male_1_Backstroke"
+    -   Backend enhancement: Enhanced Python script to process relay pre-assignments before optimization with fallback to optimal selection when assignments are invalid
+    -   Impact: Users can now pre-assign swimmers to specific relay positions (1-4) and medley stroke positions with full validation and graceful fallback
+-   **Relay Pre-Assignment Implementation Complete**: Successfully implemented comprehensive relay pre-assignment functionality that was previously non-functional.
+    -   Root cause: Frontend collected relay assignments but never saved them to database; Python optimizer had processing logic but received empty relay assignments
+    -   Solution: Fixed relay assignment saving logic in frontend with proper ASA number handling; corrected Python script to search swimmer_list instead of full_list for relay lookups
+    -   Frontend fix: Updated relay assignment saving in `handleRunOptimization` to use swimmer ASA numbers for consistency with individual assignments
+    -   Backend enhancement: Fixed swimmer lookup in Python script to use `swimmer_list` (index 6 for ASA) instead of `full_list` which was empty for relay-only competitions
+    -   Schema fix: Changed `relayAssignments.swimmer_id` from integer to text to match `eventAssignments` and support ASA number storage
+    -   Impact: Users can now pre-assign swimmers to specific relay positions (1-4) and medley stroke positions with full validation and preservation during optimization
+    -   Verification: Comprehensive testing confirms Josh Montgomery correctly appears in position 1 of 4x100m Freestyle and Freestyle leg of 4x100m Medley; Max Walton correctly appears in Breaststroke leg of 4x100m Medley
+-   **Production Ready**: All template types (Arena League, County Relays, Custom Templates) fully functional with comprehensive relay pre-assignment support and regression testing completed.
 
 ## External Dependencies
 -   **PostgreSQL**: Primary database for all application data, including swimmer information, teams, competition settings, and optimization results.
