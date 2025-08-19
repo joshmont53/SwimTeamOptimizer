@@ -449,55 +449,6 @@ def main():
     
     print(f"OPTIMIZATION COMPLETE: {optimization_assignments} events auto-assigned, {len(protected_events)} pre-assigned", file=sys.stderr)
     
-    # Process relay pre-assignments BEFORE relay optimization
-    relay_protected_assignments = {}  # Track pre-assigned positions per relay
-    print(f"PYTHON: Processing {len(pre_assignments.get('relay', []))} relay pre-assignments", file=sys.stderr)
-    
-    for relay_assignment in pre_assignments.get("relay", []):
-        print(f"Processing relay assignment: {relay_assignment}", file=sys.stderr)
-        
-        # Extract relay assignment details
-        relay_name = relay_assignment['relayName']
-        age_category = relay_assignment['ageCategory']
-        gender = relay_assignment['gender']
-        position = relay_assignment['position']  # 1-4 for relay positions
-        stroke = relay_assignment.get('stroke', None)  # For medley relays
-        swimmer_id = relay_assignment['swimmerId']
-        
-        # Find swimmer by ASA number
-        swimmer_name = None
-        target_asa = str(swimmer_id).strip()
-        print(f"DEBUG: Looking for relay swimmer ASA '{target_asa}'", file=sys.stderr)
-        
-        for time_row in full_list:
-            if len(time_row) >= 7:
-                swimmer_asa = str(time_row[6]).strip() if time_row[6] else None
-                if target_asa == swimmer_asa:
-                    swimmer_name = f"{time_row[3]} {time_row[4]}"
-                    print(f"SUCCESS: Found relay swimmer '{swimmer_name}' for ASA '{target_asa}'", file=sys.stderr)
-                    break
-        
-        if swimmer_name:
-            relay_key = (relay_name, age_category, gender)
-            if relay_key not in relay_protected_assignments:
-                relay_protected_assignments[relay_key] = {}
-            
-            relay_protected_assignments[relay_key][position] = {
-                'swimmer': swimmer_name,
-                'stroke': stroke
-            }
-            print(f"SUCCESS: Pre-assigned {swimmer_name} to {relay_name} {age_category} {gender} position {position} ({stroke or 'freestyle'})", file=sys.stderr)
-        else:
-            print(f"ERROR: Could not find relay swimmer with ASA: {swimmer_id}", file=sys.stderr)
-    
-    # Show summary of relay pre-assignments
-    print(f"RELAY SUMMARY: {len(relay_protected_assignments)} relays have pre-assignments:", file=sys.stderr)
-    for relay_key, positions in relay_protected_assignments.items():
-        relay_name, age_cat, gender = relay_key
-        print(f"  - {relay_name} {age_cat} {gender}: {len(positions)} pre-assigned positions", file=sys.stderr)
-        for pos, assignment in positions.items():
-            print(f"    Position {pos}: {assignment['swimmer']} ({assignment['stroke'] or 'freestyle'})", file=sys.stderr)
-    
     # Add optimization results to debug file
     with open('debug_output.txt', 'a') as debug_file:
         debug_file.write("=== OPTIMIZATION RESULTS ===\n")
@@ -617,375 +568,143 @@ def main():
                 # Detect relay distance and use appropriate times
                 distance = extract_relay_distance(event_name)
                 
-                # Check if this relay has pre-assignments
-                relay_key = (event_name, age, gender)
-                has_pre_assignments = relay_key in relay_protected_assignments
-                
-                if has_pre_assignments:
-                    print(f"FREESTYLE RELAY: Processing pre-assignments for {event_name} {age} {gender}", file=sys.stderr)
-                    
-                    # Build team with pre-assigned swimmers in correct positions
-                    team_slots = [None] * swimmers_needed
-                    pre_assigned_swimmers_set = set()
-                    
-                    # Fill pre-assigned positions
-                    for pos, assignment in relay_protected_assignments[relay_key].items():
-                        if 1 <= pos <= swimmers_needed:
-                            team_slots[pos - 1] = assignment['swimmer']  # Convert to 0-based index
-                            pre_assigned_swimmers_set.add(assignment['swimmer'])
-                            print(f"  Pre-assigned position {pos}: {assignment['swimmer']}", file=sys.stderr)
-                    
-                    # Get all available swimmers for this distance
-                    if distance == 50:
-                        all_swimmers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
-                        time_attr = 'freestyle_50'
-                    elif distance == 100:
-                        all_swimmers = sorted([s for s in group if s.freestyle_100 is not None], key=lambda x: x.freestyle_100)
-                        time_attr = 'freestyle_100'
-                    elif distance == 200:
-                        all_swimmers = sorted([s for s in group if s.freestyle_200 is not None], key=lambda x: x.freestyle_200)
-                        time_attr = 'freestyle_200'
-                    else:
-                        # Fallback to 50m
-                        all_swimmers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
-                        time_attr = 'freestyle_50'
-                    
-                    # Validate pre-assigned swimmers have required times
-                    valid_team = True
-                    for pos, assignment in relay_protected_assignments[relay_key].items():
-                        if 1 <= pos <= swimmers_needed:
-                            swimmer_name = assignment['swimmer']
-                            # Find swimmer object
-                            swimmer_obj = None
-                            for s in all_swimmers:
-                                if s.name == swimmer_name:
-                                    swimmer_obj = s
-                                    break
-                            
-                            if swimmer_obj is None or getattr(swimmer_obj, time_attr) is None:
-                                print(f"  WARNING: Pre-assigned swimmer {swimmer_name} has no {distance}m freestyle time - skipping pre-assignment", file=sys.stderr)
-                                valid_team = False
-                                break
-                    
-                    if valid_team:
-                        # Get available swimmers (excluding pre-assigned ones)
-                        available_swimmers = [s for s in all_swimmers if s.name not in pre_assigned_swimmers_set]
-                        
-                        # Fill remaining positions with fastest available swimmers
-                        available_index = 0
-                        for i in range(swimmers_needed):
-                            if team_slots[i] is None and available_index < len(available_swimmers):
-                                team_slots[i] = available_swimmers[available_index].name
-                                available_index += 1
-                        
-                        # Build final team if all positions filled
-                        if all(slot is not None for slot in team_slots):
-                            # Calculate total time and create swimmer_times array
-                            total_time = 0
-                            swimmer_times = []
-                            
-                            for swimmer_name in team_slots:
-                                # Find swimmer object
-                                swimmer_obj = None
-                                for s in all_swimmers:
-                                    if s.name == swimmer_name:
-                                        swimmer_obj = s
-                                        break
-                                
-                                if swimmer_obj:
-                                    swimmer_time = getattr(swimmer_obj, time_attr)
-                                    total_time += swimmer_time
-                                    swimmer_times.append({'name': swimmer_name, 'time': f'{swimmer_time:.2f}s'})
-                            
-                            total_time = round(total_time, 2)
-                            
-                            # Format age display: 99 -> Open, others -> XU
-                            age_display = "Open" if age == 99 else f"{age}U"
-                            
-                            freestyle_relay_teams.append({
-                                'relay': f'{age_display} {gender} {event_name}',
-                                'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
-                                'swimmers': swimmer_times
-                            })
-                            print(f"  SUCCESS: Built pre-assigned freestyle relay with time {total_time:.2f}s", file=sys.stderr)
-                        else:
-                            print(f"  WARNING: Could not fill all positions for pre-assigned freestyle relay", file=sys.stderr)
-                    else:
-                        # Fall back to optimal selection if pre-assignments are invalid
-                        print(f"  Falling back to optimal selection for {event_name}", file=sys.stderr)
-                        has_pre_assignments = False
-                
-                # Original optimal logic (used when no pre-assignments or fallback)
-                if not has_pre_assignments:
-                    if distance == 50:
-                        freestyle_swimmers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)[:swimmers_needed]
-                        if len(freestyle_swimmers) == swimmers_needed:
-                            total_time = round(sum(s.freestyle_50 for s in freestyle_swimmers), 2)
-                            swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_50:.2f}s'} for s in freestyle_swimmers]
-                    elif distance == 100:
-                        freestyle_swimmers = sorted([s for s in group if s.freestyle_100 is not None], key=lambda x: x.freestyle_100)[:swimmers_needed]
-                        if len(freestyle_swimmers) == swimmers_needed:
-                            total_time = round(sum(s.freestyle_100 for s in freestyle_swimmers), 2)
-                            swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_100:.2f}s'} for s in freestyle_swimmers]
-                    elif distance == 200:
-                        freestyle_swimmers = sorted([s for s in group if s.freestyle_200 is not None], key=lambda x: x.freestyle_200)[:swimmers_needed]
-                        if len(freestyle_swimmers) == swimmers_needed:
-                            total_time = round(sum(s.freestyle_200 for s in freestyle_swimmers), 2)
-                            swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_200:.2f}s'} for s in freestyle_swimmers]
-                    else:
-                        # Fallback to 50m if distance not recognized
-                        freestyle_swimmers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)[:swimmers_needed]
-                        if len(freestyle_swimmers) == swimmers_needed:
-                            total_time = round(sum(s.freestyle_50 for s in freestyle_swimmers), 2)
-                            swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_50:.2f}s'} for s in freestyle_swimmers]
-                    
+                if distance == 50:
+                    freestyle_swimmers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)[:swimmers_needed]
                     if len(freestyle_swimmers) == swimmers_needed:
-                        # Format age display: 99 -> Open, others -> XU
-                        age_display = "Open" if age == 99 else f"{age}U"
-                        
-                        freestyle_relay_teams.append({
-                            'relay': f'{age_display} {gender} {event_name}',
-                            'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
-                            'swimmers': swimmer_times
-                        })
+                        total_time = round(sum(s.freestyle_50 for s in freestyle_swimmers), 2)
+                        swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_50:.2f}s'} for s in freestyle_swimmers]
+                elif distance == 100:
+                    freestyle_swimmers = sorted([s for s in group if s.freestyle_100 is not None], key=lambda x: x.freestyle_100)[:swimmers_needed]
+                    if len(freestyle_swimmers) == swimmers_needed:
+                        total_time = round(sum(s.freestyle_100 for s in freestyle_swimmers), 2)
+                        swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_100:.2f}s'} for s in freestyle_swimmers]
+                elif distance == 200:
+                    freestyle_swimmers = sorted([s for s in group if s.freestyle_200 is not None], key=lambda x: x.freestyle_200)[:swimmers_needed]
+                    if len(freestyle_swimmers) == swimmers_needed:
+                        total_time = round(sum(s.freestyle_200 for s in freestyle_swimmers), 2)
+                        swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_200:.2f}s'} for s in freestyle_swimmers]
+                else:
+                    # Fallback to 50m if distance not recognized
+                    freestyle_swimmers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)[:swimmers_needed]
+                    if len(freestyle_swimmers) == swimmers_needed:
+                        total_time = round(sum(s.freestyle_50 for s in freestyle_swimmers), 2)
+                        swimmer_times = [{'name': s.name, 'time': f'{s.freestyle_50:.2f}s'} for s in freestyle_swimmers]
+                
+                if len(freestyle_swimmers) == swimmers_needed:
+                    # Format age display: 99 -> Open, others -> XU
+                    age_display = "Open" if age == 99 else f"{age}U"
+                    
+                    freestyle_relay_teams.append({
+                        'relay': f'{age_display} {gender} {event_name}',
+                        'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
+                        'swimmers': swimmer_times
+                    })
 
             elif 'medley' in event_name.lower():
                 # Medley relay - detect distance and use appropriate times
                 distance = extract_relay_distance(event_name)
+                possible_teams = []
                 
-                # Check if this relay has pre-assignments
-                relay_key = (event_name, age, gender)
-                has_pre_assignments = relay_key in relay_protected_assignments
+                # Select swimmers based on distance and sort by time (fastest first)
+                if distance == 50:
+                    backstrokers = sorted([s for s in group if s.backstroke_50 is not None], key=lambda x: x.backstroke_50)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_50 is not None], key=lambda x: x.breaststroke_50)
+                    butterflies = sorted([s for s in group if s.butterfly_50 is not None], key=lambda x: x.butterfly_50)
+                    freestylers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
+                elif distance == 100:
+                    backstrokers = sorted([s for s in group if s.backstroke_100 is not None], key=lambda x: x.backstroke_100)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_100 is not None], key=lambda x: x.breaststroke_100)
+                    butterflies = sorted([s for s in group if s.butterfly_100 is not None], key=lambda x: x.butterfly_100)
+                    freestylers = sorted([s for s in group if s.freestyle_100 is not None], key=lambda x: x.freestyle_100)
+                elif distance == 200:
+                    backstrokers = sorted([s for s in group if s.backstroke_200 is not None], key=lambda x: x.backstroke_200)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_200 is not None], key=lambda x: x.breaststroke_200)
+                    butterflies = sorted([s for s in group if s.butterfly_200 is not None], key=lambda x: x.butterfly_200)
+                    freestylers = sorted([s for s in group if s.freestyle_200 is not None], key=lambda x: x.freestyle_200)
+                else:
+                    # Fallback to 50m
+                    backstrokers = sorted([s for s in group if s.backstroke_50 is not None], key=lambda x: x.backstroke_50)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_50 is not None], key=lambda x: x.breaststroke_50)
+                    butterflies = sorted([s for s in group if s.butterfly_50 is not None], key=lambda x: x.butterfly_50)
+                    freestylers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
+
+                # Limit combinations to prevent performance issues
+                max_combinations = 1000
+                combination_count = 0
                 
-                if has_pre_assignments:
-                    print(f"MEDLEY RELAY: Processing pre-assignments for {event_name} {age} {gender}", file=sys.stderr)
-                    
-                    # Build stroke pools considering pre-assignments
-                    stroke_assignments = {}
-                    pre_assigned_swimmers_set = set()
-                    
-                    # Track pre-assigned strokes and swimmers
-                    for pos, assignment in relay_protected_assignments[relay_key].items():
-                        stroke = assignment['stroke']
-                        swimmer_name = assignment['swimmer']
-                        stroke_assignments[stroke] = swimmer_name
-                        pre_assigned_swimmers_set.add(swimmer_name)
-                        print(f"  Pre-assigned {stroke}: {swimmer_name}", file=sys.stderr)
-                    
-                    # Build stroke pools with pre-assignment validation
-                    def get_stroke_pool(stroke_name, time_attr, all_group_swimmers):
-                        if stroke_name in stroke_assignments:
-                            # Find pre-assigned swimmer
-                            pre_assigned_swimmer = stroke_assignments[stroke_name]
-                            swimmer_obj = None
-                            for s in all_group_swimmers:
-                                if s.name == pre_assigned_swimmer:
-                                    swimmer_obj = s
-                                    break
-                            
-                            if swimmer_obj and getattr(swimmer_obj, time_attr) is not None:
-                                return [swimmer_obj]  # Return only pre-assigned swimmer
-                            else:
-                                print(f"  WARNING: Pre-assigned swimmer {pre_assigned_swimmer} has no {distance}m {stroke_name.lower()} time - falling back to optimal", file=sys.stderr)
-                                return []  # Invalid pre-assignment
-                        else:
-                            # Return top 10 swimmers excluding pre-assigned ones
-                            eligible = [s for s in all_group_swimmers if s.name not in pre_assigned_swimmers_set and getattr(s, time_attr) is not None]
-                            return sorted(eligible, key=lambda x: getattr(x, time_attr))[:10]
-                    
-                    # Build stroke pools based on distance
-                    if distance == 50:
-                        backstrokers = get_stroke_pool('Backstroke', 'backstroke_50', group)
-                        breaststrokers = get_stroke_pool('Breaststroke', 'breaststroke_50', group)
-                        butterflies = get_stroke_pool('Butterfly', 'butterfly_50', group)
-                        freestylers = get_stroke_pool('Freestyle', 'freestyle_50', group)
-                        time_attrs = ('backstroke_50', 'breaststroke_50', 'butterfly_50', 'freestyle_50')
-                    elif distance == 100:
-                        backstrokers = get_stroke_pool('Backstroke', 'backstroke_100', group)
-                        breaststrokers = get_stroke_pool('Breaststroke', 'breaststroke_100', group)
-                        butterflies = get_stroke_pool('Butterfly', 'butterfly_100', group)
-                        freestylers = get_stroke_pool('Freestyle', 'freestyle_100', group)
-                        time_attrs = ('backstroke_100', 'breaststroke_100', 'butterfly_100', 'freestyle_100')
-                    elif distance == 200:
-                        backstrokers = get_stroke_pool('Backstroke', 'backstroke_200', group)
-                        breaststrokers = get_stroke_pool('Breaststroke', 'breaststroke_200', group)
-                        butterflies = get_stroke_pool('Butterfly', 'butterfly_200', group)
-                        freestylers = get_stroke_pool('Freestyle', 'freestyle_200', group)
-                        time_attrs = ('backstroke_200', 'breaststroke_200', 'butterfly_200', 'freestyle_200')
-                    else:
-                        # Fallback to 50m
-                        backstrokers = get_stroke_pool('Backstroke', 'backstroke_50', group)
-                        breaststrokers = get_stroke_pool('Breaststroke', 'breaststroke_50', group)
-                        butterflies = get_stroke_pool('Butterfly', 'butterfly_50', group)
-                        freestylers = get_stroke_pool('Freestyle', 'freestyle_50', group)
-                        time_attrs = ('backstroke_50', 'breaststroke_50', 'butterfly_50', 'freestyle_50')
-                    
-                    # Check if all stroke pools have at least one swimmer
-                    if all(len(pool) > 0 for pool in [backstrokers, breaststrokers, butterflies, freestylers]):
-                        possible_teams = []
-                        max_combinations = 1000
-                        combination_count = 0
-                        
-                        for b in backstrokers:
-                            for br in breaststrokers:
-                                if br.name == b.name:
-                                    continue
-                                for fly in butterflies:
-                                    if fly.name in {b.name, br.name}:
-                                        continue
-                                    for free in freestylers:
-                                        if free.name in {b.name, br.name, fly.name}:
-                                            continue
-                                        
-                                        combination_count += 1
-                                        if combination_count > max_combinations:
-                                            break
-                                        
-                                        # Calculate total time and build team data
-                                        total = (getattr(b, time_attrs[0]) + getattr(br, time_attrs[1]) + 
-                                                getattr(fly, time_attrs[2]) + getattr(free, time_attrs[3]))
-                                        
-                                        team_data = [
-                                            {'name': b.name, 'stroke': 'Backstroke', 'time': f'{getattr(b, time_attrs[0]):.2f}s'},
-                                            {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{getattr(br, time_attrs[1]):.2f}s'},
-                                            {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{getattr(fly, time_attrs[2]):.2f}s'},
-                                            {'name': free.name, 'stroke': 'Freestyle', 'time': f'{getattr(free, time_attrs[3]):.2f}s'}
-                                        ]
-                                        
-                                        possible_teams.append({
-                                            'time': round(total, 2),
-                                            'team': team_data
-                                        })
-                                    if combination_count > max_combinations:
-                                        break
-                                if combination_count > max_combinations:
-                                    break
-                            if combination_count > max_combinations:
-                                break
-                        
-                        if possible_teams:
-                            best_team = min(possible_teams, key=lambda x: x['time'])
-                            total_time = best_team['time']
-                            
-                            # Format age display: 99 -> Open, others -> XU
-                            age_display = "Open" if age == 99 else f"{age}U"
-                            
-                            medley_relay_teams.append({
-                                'relay': f'{age_display} {gender} {event_name}',
-                                'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
-                                'swimmers': best_team['team']
-                            })
-                            print(f"  SUCCESS: Built pre-assigned medley relay with time {total_time:.2f}s", file=sys.stderr)
-                        else:
-                            print(f"  WARNING: No valid combinations found for pre-assigned medley relay", file=sys.stderr)
-                    else:
-                        print(f"  WARNING: Missing swimmers for pre-assigned strokes - falling back to optimal", file=sys.stderr)
-                        has_pre_assignments = False
-                
-                # Original optimal logic (used when no pre-assignments or fallback)
-                if not has_pre_assignments:
-                    possible_teams = []
-                    
-                    # Select swimmers based on distance and sort by time (fastest first)
-                    if distance == 50:
-                        backstrokers = sorted([s for s in group if s.backstroke_50 is not None], key=lambda x: x.backstroke_50)
-                        breaststrokers = sorted([s for s in group if s.breaststroke_50 is not None], key=lambda x: x.breaststroke_50)
-                        butterflies = sorted([s for s in group if s.butterfly_50 is not None], key=lambda x: x.butterfly_50)
-                        freestylers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
-                    elif distance == 100:
-                        backstrokers = sorted([s for s in group if s.backstroke_100 is not None], key=lambda x: x.backstroke_100)
-                        breaststrokers = sorted([s for s in group if s.breaststroke_100 is not None], key=lambda x: x.breaststroke_100)
-                        butterflies = sorted([s for s in group if s.butterfly_100 is not None], key=lambda x: x.butterfly_100)
-                        freestylers = sorted([s for s in group if s.freestyle_100 is not None], key=lambda x: x.freestyle_100)
-                    elif distance == 200:
-                        backstrokers = sorted([s for s in group if s.backstroke_200 is not None], key=lambda x: x.backstroke_200)
-                        breaststrokers = sorted([s for s in group if s.breaststroke_200 is not None], key=lambda x: x.breaststroke_200)
-                        butterflies = sorted([s for s in group if s.butterfly_200 is not None], key=lambda x: x.butterfly_200)
-                        freestylers = sorted([s for s in group if s.freestyle_200 is not None], key=lambda x: x.freestyle_200)
-                    else:
-                        # Fallback to 50m
-                        backstrokers = sorted([s for s in group if s.backstroke_50 is not None], key=lambda x: x.backstroke_50)
-                        breaststrokers = sorted([s for s in group if s.breaststroke_50 is not None], key=lambda x: x.breaststroke_50)
-                        butterflies = sorted([s for s in group if s.butterfly_50 is not None], key=lambda x: x.butterfly_50)
-                        freestylers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
-    
-                    # Limit combinations to prevent performance issues
-                    max_combinations = 1000
-                    combination_count = 0
-                    
-                    for b in backstrokers[:10]:  # Limit to top 10 swimmers per stroke
-                        for br in breaststrokers[:10]:
-                            if br.name == b.name:
+                for b in backstrokers[:10]:  # Limit to top 10 swimmers per stroke
+                    for br in breaststrokers[:10]:
+                        if br.name == b.name:
+                            continue
+                        for fly in butterflies[:10]:
+                            if fly.name in {b.name, br.name}:
                                 continue
-                            for fly in butterflies[:10]:
-                                if fly.name in {b.name, br.name}:
+                            for free in freestylers[:10]:
+                                if free.name in {b.name, br.name, fly.name}:
                                     continue
-                                for free in freestylers[:10]:
-                                    if free.name in {b.name, br.name, fly.name}:
-                                        continue
-                                    
-                                    combination_count += 1
-                                    if combination_count > max_combinations:
-                                        break
-                                    
-                                    # Get times based on distance
-                                    if distance == 50:
-                                        total = b.backstroke_50 + br.breaststroke_50 + fly.butterfly_50 + free.freestyle_50
-                                        team_data = [
-                                            {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_50:.2f}s'},
-                                            {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_50:.2f}s'},
-                                            {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_50:.2f}s'},
-                                            {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_50:.2f}s'}
-                                        ]
-                                    elif distance == 100:
-                                        total = b.backstroke_100 + br.breaststroke_100 + fly.butterfly_100 + free.freestyle_100
-                                        team_data = [
-                                            {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_100:.2f}s'},
-                                            {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_100:.2f}s'},
-                                            {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_100:.2f}s'},
-                                            {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_100:.2f}s'}
-                                        ]
-                                    elif distance == 200:
-                                        total = b.backstroke_200 + br.breaststroke_200 + fly.butterfly_200 + free.freestyle_200
-                                        team_data = [
-                                            {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_200:.2f}s'},
-                                            {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_200:.2f}s'},
-                                            {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_200:.2f}s'},
-                                            {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_200:.2f}s'}
-                                        ]
-                                    else:
-                                        # Fallback to 50m
-                                        total = b.backstroke_50 + br.breaststroke_50 + fly.butterfly_50 + free.freestyle_50
-                                        team_data = [
-                                            {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_50:.2f}s'},
-                                            {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_50:.2f}s'},
-                                            {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_50:.2f}s'},
-                                            {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_50:.2f}s'}
-                                        ]
-                                        
-                                    possible_teams.append({
-                                        'time': round(total, 2),
-                                        'team': team_data
-                                    })
+                                
+                                combination_count += 1
                                 if combination_count > max_combinations:
                                     break
+                                
+                                # Get times based on distance
+                                if distance == 50:
+                                    total = b.backstroke_50 + br.breaststroke_50 + fly.butterfly_50 + free.freestyle_50
+                                    team_data = [
+                                        {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_50:.2f}s'},
+                                        {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_50:.2f}s'},
+                                        {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_50:.2f}s'},
+                                        {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_50:.2f}s'}
+                                    ]
+                                elif distance == 100:
+                                    total = b.backstroke_100 + br.breaststroke_100 + fly.butterfly_100 + free.freestyle_100
+                                    team_data = [
+                                        {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_100:.2f}s'},
+                                        {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_100:.2f}s'},
+                                        {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_100:.2f}s'},
+                                        {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_100:.2f}s'}
+                                    ]
+                                elif distance == 200:
+                                    total = b.backstroke_200 + br.breaststroke_200 + fly.butterfly_200 + free.freestyle_200
+                                    team_data = [
+                                        {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_200:.2f}s'},
+                                        {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_200:.2f}s'},
+                                        {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_200:.2f}s'},
+                                        {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_200:.2f}s'}
+                                    ]
+                                else:
+                                    # Fallback to 50m
+                                    total = b.backstroke_50 + br.breaststroke_50 + fly.butterfly_50 + free.freestyle_50
+                                    team_data = [
+                                        {'name': b.name, 'stroke': 'Backstroke', 'time': f'{b.backstroke_50:.2f}s'},
+                                        {'name': br.name, 'stroke': 'Breaststroke', 'time': f'{br.breaststroke_50:.2f}s'},
+                                        {'name': fly.name, 'stroke': 'Butterfly', 'time': f'{fly.butterfly_50:.2f}s'},
+                                        {'name': free.name, 'stroke': 'Freestyle', 'time': f'{free.freestyle_50:.2f}s'}
+                                    ]
+                                    
+                                possible_teams.append({
+                                    'time': round(total, 2),
+                                    'team': team_data
+                                })
                             if combination_count > max_combinations:
                                 break
                         if combination_count > max_combinations:
                             break
-    
-                    if possible_teams:
-                        best_team = min(possible_teams, key=lambda x: x['time'])
-                        total_time = best_team['time']
-                        
-                        # Format age display: 99 -> Open, others -> XU
-                        age_display = "Open" if age == 99 else f"{age}U"
-                        
-                        medley_relay_teams.append({
-                            'relay': f'{age_display} {gender} {event_name}',
-                            'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
-                            'swimmers': best_team['team']
-                        })
+                    if combination_count > max_combinations:
+                        break
+
+                if possible_teams:
+                    best_team = min(possible_teams, key=lambda x: x['time'])
+                    total_time = best_team['time']
+                    
+                    # Format age display: 99 -> Open, others -> XU
+                    age_display = "Open" if age == 99 else f"{age}U"
+                    
+                    medley_relay_teams.append({
+                        'relay': f'{age_display} {gender} {event_name}',
+                        'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
+                        'swimmers': best_team['team']
+                    })
 
     # Prepare results
     individual_results = []
