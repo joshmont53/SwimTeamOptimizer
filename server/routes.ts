@@ -383,6 +383,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get relay assignments for a team
+  app.get("/api/relay-assignments/:teamId", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.teamId);
+      const assignments = await storage.getRelayAssignments(teamId);
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error getting relay assignments:", error);
+      res.status(500).json({ error: "Failed to get relay assignments" });
+    }
+  });
+
+  // Clear relay assignments for a team
+  app.delete("/api/relay-assignments/team/:teamId", async (req, res) => {
+    try {
+      const teamId = parseInt(req.params.teamId);
+      await storage.clearRelayAssignments(teamId);
+      res.json({ message: "Relay assignments cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing relay assignments:", error);
+      res.status(500).json({ error: "Failed to clear relay assignments" });
+    }
+  });
+
   // Run optimization for a specific team
   app.post("/api/optimize/:teamId", async (req, res) => {
     const teamId = parseInt(req.params.teamId);

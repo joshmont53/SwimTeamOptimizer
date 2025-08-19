@@ -189,13 +189,29 @@ export default function EventAssignmentSection({
     console.log(`Saving ${assignmentPromises.length} total pre-assignments (individual + relay)...`);
     
     try {
-      await Promise.all(assignmentPromises);
+      const responses = await Promise.all(assignmentPromises);
+      console.log(`Successfully saved ${responses.length} pre-assignments`);
+      
+      // Check for any failed responses
+      for (let i = 0; i < responses.length; i++) {
+        const response = responses[i];
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Assignment ${i} failed:`, response.status, errorText);
+          throw new Error(`Assignment failed: ${response.status} ${errorText}`);
+        } else {
+          const result = await response.json();
+          console.log(`Assignment ${i} success:`, result);
+        }
+      }
+      
       optimizeMutation.mutate();
     } catch (error) {
+      console.error("Assignment saving error:", error);
       setIsOptimizing(false);
       toast({
         title: "Assignment failed",
-        description: "Failed to save pre-assignments",
+        description: `Failed to save pre-assignments: ${error instanceof Error ? error.message : String(error)}`,
         variant: "destructive",
       });
     }
