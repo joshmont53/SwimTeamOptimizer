@@ -605,28 +605,28 @@ def main():
                 distance = extract_relay_distance(event_name)
                 possible_teams = []
                 
-                # Select swimmers based on distance
+                # Select swimmers based on distance and sort by time (fastest first)
                 if distance == 50:
-                    backstrokers = [s for s in group if s.backstroke_50 is not None]
-                    breaststrokers = [s for s in group if s.breaststroke_50 is not None]
-                    butterflies = [s for s in group if s.butterfly_50 is not None]
-                    freestylers = [s for s in group if s.freestyle_50 is not None]
+                    backstrokers = sorted([s for s in group if s.backstroke_50 is not None], key=lambda x: x.backstroke_50)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_50 is not None], key=lambda x: x.breaststroke_50)
+                    butterflies = sorted([s for s in group if s.butterfly_50 is not None], key=lambda x: x.butterfly_50)
+                    freestylers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
                 elif distance == 100:
-                    backstrokers = [s for s in group if s.backstroke_100 is not None]
-                    breaststrokers = [s for s in group if s.breaststroke_100 is not None]
-                    butterflies = [s for s in group if s.butterfly_100 is not None]
-                    freestylers = [s for s in group if s.freestyle_100 is not None]
+                    backstrokers = sorted([s for s in group if s.backstroke_100 is not None], key=lambda x: x.backstroke_100)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_100 is not None], key=lambda x: x.breaststroke_100)
+                    butterflies = sorted([s for s in group if s.butterfly_100 is not None], key=lambda x: x.butterfly_100)
+                    freestylers = sorted([s for s in group if s.freestyle_100 is not None], key=lambda x: x.freestyle_100)
                 elif distance == 200:
-                    backstrokers = [s for s in group if s.backstroke_200 is not None]
-                    breaststrokers = [s for s in group if s.breaststroke_200 is not None]
-                    butterflies = [s for s in group if s.butterfly_200 is not None]
-                    freestylers = [s for s in group if s.freestyle_200 is not None]
+                    backstrokers = sorted([s for s in group if s.backstroke_200 is not None], key=lambda x: x.backstroke_200)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_200 is not None], key=lambda x: x.breaststroke_200)
+                    butterflies = sorted([s for s in group if s.butterfly_200 is not None], key=lambda x: x.butterfly_200)
+                    freestylers = sorted([s for s in group if s.freestyle_200 is not None], key=lambda x: x.freestyle_200)
                 else:
                     # Fallback to 50m
-                    backstrokers = [s for s in group if s.backstroke_50 is not None]
-                    breaststrokers = [s for s in group if s.breaststroke_50 is not None]
-                    butterflies = [s for s in group if s.butterfly_50 is not None]
-                    freestylers = [s for s in group if s.freestyle_50 is not None]
+                    backstrokers = sorted([s for s in group if s.backstroke_50 is not None], key=lambda x: x.backstroke_50)
+                    breaststrokers = sorted([s for s in group if s.breaststroke_50 is not None], key=lambda x: x.breaststroke_50)
+                    butterflies = sorted([s for s in group if s.butterfly_50 is not None], key=lambda x: x.butterfly_50)
+                    freestylers = sorted([s for s in group if s.freestyle_50 is not None], key=lambda x: x.freestyle_50)
 
                 # Limit combinations to prevent performance issues
                 max_combinations = 1000

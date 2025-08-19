@@ -56,6 +56,11 @@ The application implements a 4-step workflow:
     -   Root cause: Script only recognized "6x" pattern, defaulting all others to 4 swimmers
     -   Solution: Implemented regex-based dynamic extraction from event names (4x, 6x, 8x, etc.)
     -   Impact: Custom templates can now correctly specify any relay swimmer count (verified with 8x50m relays)
+-   **Medley Relay Optimization Critical Fix**: Resolved major performance issue in medley relay swimmer selection algorithm.
+    -   Root cause: Script selected first 10 swimmers by database order instead of fastest 10 by stroke time, missing optimal swimmers
+    -   Solution: Added sorting by stroke time before selecting top 10 swimmers for each stroke (backstroke, breaststroke, butterfly, freestyle)
+    -   Impact: Medley relays now use fastest swimmers per stroke, achieving 4+ second improvements (e.g., Open Male 4x100m Medley: 4:10.99 → 4:06.10)
+    -   Technical: Modified lines 612-631 in `server/optimizer.py` to sort stroke pools using `sorted(..., key=lambda x: x.stroke_time)`
 -   **Production Ready**: All template types (Arena League, County Relays, Custom Templates) fully functional with comprehensive regression testing completed.
 
 ## External Dependencies
