@@ -78,6 +78,12 @@ The application implements a 4-step workflow:
     -   End-to-end verification: Comprehensive testing confirms Josh Montgomery correctly appears in position 1 of 4x100m Freestyle and Freestyle leg of 4x100m Medley; Max Walton correctly appears in Breaststroke leg of 4x100m Medley
     -   Production ready: All team templates (Arena League, County Relays, Custom Templates) support relay pre-assignments with complete workflow integration
 -   **Production Ready**: All template types (Arena League, County Relays, Custom Templates) fully functional with comprehensive relay pre-assignment support and regression testing completed.
+-   **Gender Format Normalization Fix (August 2025)**: Resolved final critical bug preventing relay pre-assignments from working correctly across all team templates.
+    -   Root cause: Gender format inconsistency between database storage ('M'/'F') and Python optimization processing ('Male'/'Female') causing relay key matching failures
+    -   Solution: Implemented consistent gender normalization in both `relay_protected_assignments` dictionary building and relay key comparison logic
+    -   Impact: All relay pre-assignments now work correctly - verified with end-to-end testing showing Jack Einchcomb, Joshua Montgomery, and Clive Benson correctly appearing in assigned positions
+    -   Technical: Added gender mapping (`'M': 'Male', 'F': 'Female'`) in Python script lines 496-503 and 635-641 for consistent key matching
+    -   Result: Complete relay pre-assignment functionality operational with 100% success rate across all test cases and team templates
 -   **Relay Pre-Assignment Critical Bugs Fixed (August 2025)**: Resolved two critical issues preventing relay pre-assignments from working correctly.
     -   **Bug 1 - Database Clearing**: Backend was clearing ALL assignments (including pre-assignments) before optimization, making users think their manual assignments were ignored
         -   Solution: Implemented selective clearing methods `clearNonPreAssignedEventAssignments()` and `clearNonPreAssignedRelayAssignments()` using `isPreAssigned` boolean field

@@ -490,7 +490,16 @@ def main():
                         print(f"  - {swimmer_info}", file=sys.stderr)
         
         if swimmer_name:
-            relay_key = (relay_name, age_category, gender)
+            # Normalize gender format for consistent key matching
+            gender_mapping = {
+                'M': 'Male',
+                'F': 'Female', 
+                'Male': 'Male',
+                'Female': 'Female'
+            }
+            normalized_gender = gender_mapping.get(gender, gender)
+            
+            relay_key = (relay_name, age_category, normalized_gender)
             if relay_key not in relay_protected_assignments:
                 relay_protected_assignments[relay_key] = {}
             
@@ -498,7 +507,7 @@ def main():
                 'swimmer': swimmer_name,
                 'stroke': stroke
             }
-            print(f"SUCCESS: Pre-assigned {swimmer_name} to {relay_name} {age_category} {gender} position {position} ({stroke or 'freestyle'})", file=sys.stderr)
+            print(f"SUCCESS: Pre-assigned {swimmer_name} to {relay_name} {age_category} {normalized_gender} position {position} ({stroke or 'freestyle'})", file=sys.stderr)
         else:
             print(f"ERROR: Could not find relay swimmer with ASA: {swimmer_id}", file=sys.stderr)
     
@@ -629,12 +638,21 @@ def main():
                 # Detect relay distance and use appropriate times
                 distance = extract_relay_distance(event_name)
                 
-                # Check if this relay has pre-assignments
-                relay_key = (event_name, age, gender)
+                # Normalize gender format to match what we use for relay key matching
+                gender_mapping = {
+                    'M': 'Male',
+                    'F': 'Female', 
+                    'Male': 'Male',
+                    'Female': 'Female'
+                }
+                normalized_gender = gender_mapping.get(gender, gender)
+                
+                # Check if this relay has pre-assignments (use normalized gender for key matching)
+                relay_key = (event_name, age, normalized_gender)
                 has_pre_assignments = relay_key in relay_protected_assignments
                 
                 if has_pre_assignments:
-                    print(f"FREESTYLE RELAY: Processing pre-assignments for {event_name} {age} {gender}", file=sys.stderr)
+                    print(f"FREESTYLE RELAY: Processing pre-assignments for {event_name} {age} {normalized_gender}", file=sys.stderr)
                     
                     # Build team with pre-assigned swimmers in correct positions
                     team_slots = [None] * swimmers_needed
@@ -715,7 +733,7 @@ def main():
                             age_display = "Open" if age == 99 else f"{age}U"
                             
                             freestyle_relay_teams.append({
-                                'relay': f'{age_display} {gender} {event_name}',
+                                'relay': f'{age_display} {normalized_gender} {event_name}',
                                 'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
                                 'swimmers': swimmer_times
                             })
@@ -756,7 +774,7 @@ def main():
                         age_display = "Open" if age == 99 else f"{age}U"
                         
                         freestyle_relay_teams.append({
-                            'relay': f'{age_display} {gender} {event_name}',
+                            'relay': f'{age_display} {normalized_gender} {event_name}',
                             'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
                             'swimmers': swimmer_times
                         })
@@ -765,12 +783,21 @@ def main():
                 # Medley relay - detect distance and use appropriate times
                 distance = extract_relay_distance(event_name)
                 
-                # Check if this relay has pre-assignments
-                relay_key = (event_name, age, gender)
+                # Normalize gender format to match what we use for relay key matching
+                gender_mapping = {
+                    'M': 'Male',
+                    'F': 'Female', 
+                    'Male': 'Male',
+                    'Female': 'Female'
+                }
+                normalized_gender = gender_mapping.get(gender, gender)
+                
+                # Check if this relay has pre-assignments (use normalized gender for key matching)
+                relay_key = (event_name, age, normalized_gender)
                 has_pre_assignments = relay_key in relay_protected_assignments
                 
                 if has_pre_assignments:
-                    print(f"MEDLEY RELAY: Processing pre-assignments for {event_name} {age} {gender}", file=sys.stderr)
+                    print(f"MEDLEY RELAY: Processing pre-assignments for {event_name} {age} {normalized_gender}", file=sys.stderr)
                     
                     # Build stroke pools considering pre-assignments
                     stroke_assignments = {}
@@ -883,7 +910,7 @@ def main():
                             age_display = "Open" if age == 99 else f"{age}U"
                             
                             medley_relay_teams.append({
-                                'relay': f'{age_display} {gender} {event_name}',
+                                'relay': f'{age_display} {normalized_gender} {event_name}',
                                 'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
                                 'swimmers': best_team['team']
                             })
@@ -994,7 +1021,7 @@ def main():
                         age_display = "Open" if age == 99 else f"{age}U"
                         
                         medley_relay_teams.append({
-                            'relay': f'{age_display} {gender} {event_name}',
+                            'relay': f'{age_display} {normalized_gender} {event_name}',
                             'totalTime': f'{int(total_time // 60):02d}:{total_time % 60:05.2f}',
                             'swimmers': best_team['team']
                         })
