@@ -132,28 +132,25 @@ export default function EventAssignmentSection({
         // Parse relay key: complex format like "4 x 100m Freestyle_99_Male_1_Backstroke"
         const keyParts = relayKey.split('_');
         
-        // Extract position (always 4th from end, or 3rd from end if no stroke)
+        // Extract components by working backwards from the end
         let position, stroke, gender, ageCategory, relayName;
         
         if (keyParts.length >= 4) {
-          // Work backwards from the end
-          const possibleStroke = keyParts[keyParts.length - 1];
-          const possiblePosition = keyParts[keyParts.length - 2];
-          const possibleGender = keyParts[keyParts.length - 3];
-          const possibleAge = keyParts[keyParts.length - 4];
-          
           // Check if last part is a stroke (for medley relays)
-          if (['Backstroke', 'Breaststroke', 'Butterfly', 'Freestyle'].includes(possibleStroke)) {
-            stroke = possibleStroke;
-            position = parseInt(possiblePosition);
-            gender = possibleGender;
-            ageCategory = parseInt(possibleAge);
+          const lastPart = keyParts[keyParts.length - 1];
+          
+          if (['Backstroke', 'Breaststroke', 'Butterfly', 'Freestyle'].includes(lastPart)) {
+            // Format: "RelayName_Age_Gender_Position_Stroke"
+            stroke = lastPart;
+            position = parseInt(keyParts[keyParts.length - 2]);
+            gender = keyParts[keyParts.length - 3];
+            ageCategory = parseInt(keyParts[keyParts.length - 4]);
             relayName = keyParts.slice(0, -4).join('_');
           } else {
-            // No stroke, position is last part
-            position = parseInt(possibleStroke);
-            gender = possibleGender;
-            ageCategory = parseInt(possibleAge);
+            // Format: "RelayName_Age_Gender_Position"
+            position = parseInt(lastPart);
+            gender = keyParts[keyParts.length - 2];
+            ageCategory = parseInt(keyParts[keyParts.length - 3]);
             relayName = keyParts.slice(0, -3).join('_');
           }
         }
