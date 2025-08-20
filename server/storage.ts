@@ -53,12 +53,14 @@ export interface IStorage {
   createEventAssignment(assignment: InsertEventAssignment): Promise<EventAssignment>;
   updateEventAssignment(id: number, updates: Partial<InsertEventAssignment>): Promise<EventAssignment | undefined>;
   clearEventAssignments(teamId?: number): Promise<void>;
+  clearNonPreAssignedEventAssignments(teamId: number): Promise<void>;
 
   // Relay assignments operations (team-specific)
   getRelayAssignments(teamId?: number): Promise<RelayAssignment[]>;
   createRelayAssignment(assignment: InsertRelayAssignment): Promise<RelayAssignment>;
   updateRelayAssignment(id: number, updates: Partial<InsertRelayAssignment>): Promise<RelayAssignment | undefined>;
   clearRelayAssignments(teamId?: number): Promise<void>;
+  clearNonPreAssignedRelayAssignments(teamId: number): Promise<void>;
 
   // Optimization results operations (team-specific)
   getOptimizationResults(sessionId: string, teamId?: number): Promise<OptimizationResult[]>;
@@ -200,6 +202,14 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async clearNonPreAssignedEventAssignments(teamId: number): Promise<void> {
+    await db.delete(eventAssignments)
+      .where(and(
+        eq(eventAssignments.teamId, teamId),
+        eq(eventAssignments.isPreAssigned, false)
+      ));
+  }
+
   // Relay assignments operations (team-specific)
   async getRelayAssignments(teamId?: number): Promise<RelayAssignment[]> {
     if (teamId) {
@@ -224,6 +234,14 @@ export class DatabaseStorage implements IStorage {
     } else {
       await db.delete(relayAssignments);
     }
+  }
+
+  async clearNonPreAssignedRelayAssignments(teamId: number): Promise<void> {
+    await db.delete(relayAssignments)
+      .where(and(
+        eq(relayAssignments.teamId, teamId),
+        eq(relayAssignments.isPreAssigned, false)
+      ));
   }
 
   // Optimization results operations (team-specific)

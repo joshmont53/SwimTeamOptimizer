@@ -78,6 +78,14 @@ The application implements a 4-step workflow:
     -   End-to-end verification: Comprehensive testing confirms Josh Montgomery correctly appears in position 1 of 4x100m Freestyle and Freestyle leg of 4x100m Medley; Max Walton correctly appears in Breaststroke leg of 4x100m Medley
     -   Production ready: All team templates (Arena League, County Relays, Custom Templates) support relay pre-assignments with complete workflow integration
 -   **Production Ready**: All template types (Arena League, County Relays, Custom Templates) fully functional with comprehensive relay pre-assignment support and regression testing completed.
+-   **Relay Pre-Assignment Database Persistence Critical Fix**: Resolved major issue where pre-assignments disappeared from database after optimization, causing user confusion.
+    -   Root cause: Backend was clearing ALL assignments (including pre-assignments) before optimization, making users think their manual assignments were ignored
+    -   Solution: Implemented selective clearing methods that preserve pre-assignments while clearing only auto-generated assignments
+    -   New storage methods: `clearNonPreAssignedEventAssignments()` and `clearNonPreAssignedRelayAssignments()` using `isPreAssigned` boolean field for filtering
+    -   Updated optimization route to use selective clearing instead of full database clearing
+    -   Impact: Pre-assignments now persist in database after optimization AND are correctly honored by Python algorithm
+    -   Comprehensive regression testing: Verified both relay and individual pre-assignments work correctly, optimization algorithm processes them properly, and standard optimization without pre-assignments remains functional
+    -   User experience: Users can now see their manual assignments remain active in the database after optimization, providing confidence the system respects their choices
 
 ## External Dependencies
 -   **PostgreSQL**: Primary database for all application data, including swimmer information, teams, competition settings, and optimization results.

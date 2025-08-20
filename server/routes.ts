@@ -475,9 +475,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Clear all assignments - the Python script will regenerate everything
-      await storage.clearEventAssignments(teamId);
-      await storage.clearRelayAssignments(teamId);
+      // Clear only non-pre-assigned assignments - preserve user's manual pre-assignments
+      await storage.clearNonPreAssignedEventAssignments(teamId);
+      await storage.clearNonPreAssignedRelayAssignments(teamId);
       
       // Generate event list for Python optimizer (ALL events - individual AND relay)
       const allEvents = teamEvents.map(e => [e.event, e.ageCategory, e.gender]);
