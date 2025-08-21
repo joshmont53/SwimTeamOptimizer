@@ -152,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Run conversion script
           await new Promise<void>((resolve, reject) => {
-            const pythonProcess = spawn('python3', ['enhanced_convert_csv_format.py', tempInputPath, tempOutputPath], {
+            const pythonProcess = spawn('python3', ['enhanced_convert_csv_format_optimized.py', tempInputPath, tempOutputPath], {
               cwd: process.cwd(),
               stdio: ['pipe', 'pipe', 'pipe']
             });
@@ -480,6 +480,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Failed to get swimmer gender:", error);
       res.status(500).json({ message: "Failed to get swimmer gender" });
+    }
+  });
+
+  // Bulk gender lookup for performance optimization
+  app.post("/api/swimmers-registry/gender/bulk", async (req, res) => {
+    try {
+      const { asaNumbers } = req.body;
+      
+      if (!asaNumbers || !Array.isArray(asaNumbers)) {
+        return res.status(400).json({ message: "asaNumbers array is required" });
+      }
+      
+      const genders: { [asaNo: string]: string } = {};
+      
+      // Perform bulk lookup with a single database query
+      const swimmers = await storage.getSwimmersRegistryByAsaNos(asaNumbers);
+      
+      swimmers.forEach(swimmer => {
+        genders[swimmer.asaNo] = swimmer.gender;
+      });
+      
+      res.json({ genders });
+    } catch (error) {
+      console.error("Failed to get bulk swimmer genders:", error);
+      res.status(500).json({ message: "Failed to get bulk swimmer genders" });
     }
   });
 

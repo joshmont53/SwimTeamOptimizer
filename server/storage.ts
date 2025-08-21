@@ -28,7 +28,7 @@ import {
   swimmersRegistry
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Swimmer operations (team-specific)
@@ -87,6 +87,7 @@ export interface IStorage {
   // Swimmers Registry operations (global)
   getSwimmersRegistry(): Promise<SwimmersRegistry[]>;
   getSwimmerRegistryByAsaNo(asaNo: string): Promise<SwimmersRegistry | undefined>;
+  getSwimmersRegistryByAsaNos(asaNos: string[]): Promise<SwimmersRegistry[]>;
   createSwimmerRegistryEntry(swimmer: InsertSwimmersRegistry): Promise<SwimmersRegistry>;
   deleteSwimmerRegistryEntry(id: number): Promise<void>;
 }
@@ -114,7 +115,18 @@ export class DatabaseStorage implements IStorage {
 
   async createSwimmersBatch(insertSwimmers: InsertSwimmer[]): Promise<Swimmer[]> {
     if (insertSwimmers.length === 0) return [];
-    return await db.insert(swimmers).values(insertSwimmers).returning();
+    
+    // Process in chunks to avoid database limits and improve performance
+    const CHUNK_SIZE = 50;
+    const results: Swimmer[] = [];
+    
+    for (let i = 0; i < insertSwimmers.length; i += CHUNK_SIZE) {
+      const chunk = insertSwimmers.slice(i, i + CHUNK_SIZE);
+      const chunkResults = await db.insert(swimmers).values(chunk).returning();
+      results.push(...chunkResults);
+    }
+    
+    return results;
   }
 
   async updateSwimmer(id: number, updates: Partial<InsertSwimmer>): Promise<Swimmer | undefined> {
@@ -149,7 +161,18 @@ export class DatabaseStorage implements IStorage {
 
   async createSwimmerTimesBatch(insertTimes: InsertSwimmerTime[]): Promise<SwimmerTime[]> {
     if (insertTimes.length === 0) return [];
-    return await db.insert(swimmerTimes).values(insertTimes).returning();
+    
+    // Process in chunks to optimize performance for large datasets
+    const CHUNK_SIZE = 100;
+    const results: SwimmerTime[] = [];
+    
+    for (let i = 0; i < insertTimes.length; i += CHUNK_SIZE) {
+      const chunk = insertTimes.slice(i, i + CHUNK_SIZE);
+      const chunkResults = await db.insert(swimmerTimes).values(chunk).returning();
+      results.push(...chunkResults);
+    }
+    
+    return results;
   }
 
   async clearSwimmerTimes(teamId?: number): Promise<void> {
@@ -344,6 +367,11 @@ export class DatabaseStorage implements IStorage {
   async getSwimmerRegistryByAsaNo(asaNo: string): Promise<SwimmersRegistry | undefined> {
     const [swimmer] = await db.select().from(swimmersRegistry).where(eq(swimmersRegistry.asaNo, asaNo));
     return swimmer || undefined;
+  }
+
+  async getSwimmersRegistryByAsaNos(asaNos: string[]): Promise<SwimmersRegistry[]> {
+    if (asaNos.length === 0) return [];
+    return await db.select().from(swimmersRegistry).where(inArray(swimmersRegistry.asaNo, asaNos));
   }
 
   async createSwimmerRegistryEntry(insertSwimmer: InsertSwimmersRegistry): Promise<SwimmersRegistry> {
