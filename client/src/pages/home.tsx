@@ -8,7 +8,7 @@ import EventAssignmentSection from "@/components/event-assignment-section";
 import ResultsSection from "@/components/results-section";
 import TeamSelectionSection from "@/components/team-selection-section";
 import EventBuilderSection from "@/components/event-builder-section";
-import logoUrl from "@assets/logo_1755251717460.png";
+import logoUrl from "@assets/image_1755818146355.png";
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0); // Start with team selection
@@ -153,9 +153,9 @@ export default function Home() {
             <div className="flex items-center -ml-2">
               <img 
                 src={logoUrl} 
-                alt="JMP Logo" 
-                className="h-15 w-auto max-w-none"
-                style={{ height: '3.75rem' }}
+                alt="Hart Swimming Club Logo" 
+                className="h-12 w-auto max-w-none"
+                style={{ height: '3rem' }}
               />
             </div>
             <div className="flex items-center space-x-4">
