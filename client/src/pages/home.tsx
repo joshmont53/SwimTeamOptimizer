@@ -159,6 +159,16 @@ export default function Home() {
               />
             </div>
             <div className="flex items-center space-x-4">
+              {/* Swimmers Management Link */}
+              {currentStep === 0 && (
+                <a 
+                  href="/swimmers"
+                  className="text-gray-600 hover:text-blue-600 px-3 py-1 rounded-md transition-colors border border-gray-300 hover:border-blue-400 hover:bg-blue-50 flex items-center"
+                >
+                  <i className="fas fa-users mr-2"></i>Swimmers Registry
+                </a>
+              )}
+              
               {/* Home Navigation - only show when not on team selection */}
               {currentStep > 0 && (
                 <button 
