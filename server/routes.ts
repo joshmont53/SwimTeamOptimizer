@@ -128,19 +128,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const csvContent = req.file.buffer.toString('utf-8');
+      let csvContent = req.file.buffer.toString('utf-8');
       const lines = csvContent.split('\n').filter(line => line.trim());
       
       if (lines.length === 0) {
         return res.status(400).json({ message: "Empty CSV file" });
       }
 
+      // Check CSV format and convert if needed
+      const headerLine = lines[0];
+      const isNewFormat = headerLine.includes('First Name') && headerLine.includes('ASA No') && headerLine.includes('LC Time') && headerLine.includes('SC Time');
+      
+      if (isNewFormat) {
+        console.log("Detected new CSV format - converting to legacy format...");
+        
+        // Create temporary input file
+        const tempInputPath = path.join(process.cwd(), `temp_input_${Date.now()}.csv`);
+        const tempOutputPath = path.join(process.cwd(), `temp_output_${Date.now()}.csv`);
+        
+        try {
+          // Write original CSV to temp file
+          fs.writeFileSync(tempInputPath, csvContent);
+          
+          // Run conversion script
+          await new Promise<void>((resolve, reject) => {
+            const pythonProcess = spawn('python3', ['enhanced_convert_csv_format.py', tempInputPath, tempOutputPath], {
+              cwd: process.cwd(),
+              stdio: ['pipe', 'pipe', 'pipe']
+            });
+
+            let stdout = '';
+            let stderr = '';
+
+            pythonProcess.stdout.on('data', (data) => {
+              stdout += data.toString();
+            });
+
+            pythonProcess.stderr.on('data', (data) => {
+              stderr += data.toString();
+            });
+
+            pythonProcess.on('close', (code) => {
+              if (code === 0) {
+                console.log('CSV conversion completed successfully');
+                resolve();
+              } else {
+                console.error(`CSV conversion failed with code ${code}`);
+                console.error('Error output:', stderr);
+                reject(new Error(`CSV conversion failed: ${stderr}`));
+              }
+            });
+          });
+          
+          // Read converted CSV content
+          if (fs.existsSync(tempOutputPath)) {
+            csvContent = fs.readFileSync(tempOutputPath, 'utf-8');
+            console.log("Successfully converted CSV to legacy format");
+          } else {
+            throw new Error("Conversion output file not found");
+          }
+          
+        } finally {
+          // Clean up temp files
+          if (fs.existsSync(tempInputPath)) {
+            fs.unlinkSync(tempInputPath);
+          }
+          if (fs.existsSync(tempOutputPath)) {
+            fs.unlinkSync(tempOutputPath);
+          }
+        }
+      }
+
+      // Parse converted/original CSV content
+      const processedLines = csvContent.split('\n').filter(line => line.trim());
+
       // Clear existing team data
       await storage.clearSwimmers(teamId);
       await storage.clearSwimmerTimes(teamId);
 
       // Skip header row
-      const dataLines = lines.slice(1);
+      const dataLines = processedLines.slice(1);
       const swimmersToCreate: InsertSwimmer[] = [];
       const timesToCreate: InsertSwimmerTime[] = [];
       const swimmerMap = new Map<string, number>(); // Track swimmer IDs by key

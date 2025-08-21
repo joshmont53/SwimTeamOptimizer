@@ -130,10 +130,10 @@ def convert_csv_format(input_file, output_file):
     with open(output_file, 'w', newline='', encoding='utf-8') as outfile:
         writer = csv.writer(outfile)
         
-        # Write header matching existing format (11 columns - removed unnecessary ones)
+        # Write header matching existing format (15 columns - full legacy format)
         header = [
             'First_Name', 'Last_Name', 'ASA_No', 'Date_of_Birth', 'Meet', 'Date', 
-            'Event', 'SC_Time', 'Course', 'Gender', 'time_in_seconds'
+            'Event', 'SC_Time', 'Course', 'Gender', 'Age', 'AgeTime', 'County_QT', 'County_Qualify', 'time_in_seconds'
         ]
         writer.writerow(header)
         
@@ -145,7 +145,15 @@ def convert_csv_format(input_file, output_file):
             asa_no = row[2].strip()
             gender = get_swimmer_gender(asa_no)
             
-            # Map columns from new format to existing format
+            # Calculate age from date of birth for 2025/26 season (age as of Dec 31, 2025)
+            try:
+                birth_date = datetime.strptime(convert_date_format(row[3]), '%Y-%m-%d')
+                season_date = datetime(2025, 12, 31)
+                age = season_date.year - birth_date.year - ((season_date.month, season_date.day) < (birth_date.month, birth_date.day))
+            except:
+                age = 0  # Default if date parsing fails
+            
+            # Map columns from new format to existing format (15 columns)
             converted_row = [
                 row[0].strip(),  # First_Name
                 row[1].strip(),  # Last_Name  
@@ -157,6 +165,10 @@ def convert_csv_format(input_file, output_file):
                 format_time_to_standard(row[7]),  # SC_Time (formatted)
                 row[8].strip(),  # Course
                 gender,  # Gender (from API lookup)
+                str(age),  # Age (calculated)
+                '',  # AgeTime (empty - unused)
+                '',  # County_QT (empty - unused)
+                '',  # County_Qualify (empty - unused)
                 str(data['time_seconds'])  # time_in_seconds
             ]
             
