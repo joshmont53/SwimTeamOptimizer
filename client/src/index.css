@@ -13,7 +13,7 @@
   --card-foreground: 224 71% 4%; /* #0F172A */
   --border: 220 13% 91%; /* #E2E8F0 */
   --input: 220 13% 91%; /* #E2E8F0 */
-  --primary: 207 90% 54%; /* #1976D2 */
+  --primary: 120 70% 40%; /* Green matching logo */
   --primary-foreground: 211 100% 99%; /* #FFFFFF */
   --secondary: 210 11% 96%; /* #F1F5F9 */
   --secondary-foreground: 224 71% 4%; /* #0F172A */
@@ -21,15 +21,15 @@
   --accent-foreground: 224 71% 4%; /* #0F172A */
   --destructive: 0 84% 60%; /* #EF4444 */
   --destructive-foreground: 0 0% 98%; /* #FAFAFA */
-  --ring: 207 90% 54%; /* #1976D2 */
+  --ring: 120 70% 40%; /* Green matching logo */
   --radius: 0.5rem;
   
   /* Custom colors matching the design */
-  --primary-50: 227 100% 96%; /* #E3F2FD */
-  --primary-100: 220 100% 92%; /* #BBDEFB */
-  --primary-500: 207 90% 54%; /* #1976D2 */
-  --primary-600: 210 98% 44%; /* #1565C0 */
-  --primary-700: 221 83% 53%; /* #0D47A1 */
+  --primary-50: 120 60% 90%; /* Light Green */
+  --primary-100: 120 60% 80%; /* Lighter Green */
+  --primary-500: 120 70% 40%; /* Main Green matching logo */
+  --primary-600: 120 70% 32%; /* Darker Green */
+  --primary-700: 120 70% 24%; /* Darkest Green */
   --success: 122 39% 49%; /* #388E3C */
   --warning: 36 100% 50%; /* #F57C00 */
   --error: 4 90% 58%; /* #D32F2F */
@@ -46,7 +46,7 @@
   --card-foreground: 210 11% 98%; /* #F8FAFC */
   --border: 215 25% 27%; /* #334155 */
   --input: 215 25% 27%; /* #334155 */
-  --primary: 207 90% 54%; /* #1976D2 */
+  --primary: 120 70% 40%; /* Green matching logo */
   --primary-foreground: 211 100% 99%; /* #FFFFFF */
   --secondary: 215 25% 27%; /* #334155 */
   --secondary-foreground: 210 11% 98%; /* #F8FAFC */
@@ -54,7 +54,7 @@
   --accent-foreground: 210 11% 98%; /* #F8FAFC */
   --destructive: 0 63% 31%; /* #991B1B */
   --destructive-foreground: 210 11% 98%; /* #F8FAFC */
-  --ring: 207 90% 54%; /* #1976D2 */
+  --ring: 120 70% 40%; /* Green matching logo */
 }
 
 @layer base {
