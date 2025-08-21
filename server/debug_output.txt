@@ -1,7 +1,7 @@
 === SWIMMER AVAILABILITY DEBUG OUTPUT ===
 
 Total swimmers processed from CSV: 1509
-Swimmers included in optimization: 1492
+Swimmers included in optimization: 1509
 
 SWIMMERS INCLUDED IN OPTIMIZATION:
   1. Luca Righetti Zullo (ASA: 1786064)
@@ -1410,138 +1410,122 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   1404. Gavin Watson (ASA: 472063)
   1405. Gavin Watson (ASA: 472063)
   1406. Gavin Watson (ASA: 472063)
-  1407. Greg Smith (ASA: 460274)
-  1408. Greg Smith (ASA: 460274)
-  1409. Matthew Perry (ASA: 20643)
-  1410. Matthew Perry (ASA: 20643)
-  1411. Matthew Perry (ASA: 20643)
-  1412. Matthew Perry (ASA: 20643)
-  1413. Matthew Perry (ASA: 20643)
-  1414. Matthew Perry (ASA: 20643)
-  1415. Malcolm Rainier (ASA: 38258)
-  1416. Malcolm Rainier (ASA: 38258)
-  1417. Malcolm Rainier (ASA: 38258)
-  1418. Malcolm Rainier (ASA: 38258)
-  1419. Malcolm Rainier (ASA: 38258)
-  1420. Malcolm Rainier (ASA: 38258)
-  1421. Malcolm Rainier (ASA: 38258)
-  1422. Malcolm Rainier (ASA: 38258)
-  1423. Malcolm Rainier (ASA: 38258)
-  1424. Richard Brinck (ASA: 81368)
-  1425. Richard Brinck (ASA: 81368)
-  1426. Richard Brinck (ASA: 81368)
-  1427. Richard Brinck (ASA: 81368)
-  1428. Richard Brinck (ASA: 81368)
-  1429. Richard Brinck (ASA: 81368)
-  1430. Richard Brinck (ASA: 81368)
-  1431. William Fuller (ASA: 285199)
-  1432. William Fuller (ASA: 285199)
-  1433. William Fuller (ASA: 285199)
-  1434. William Fuller (ASA: 285199)
-  1435. William Fuller (ASA: 285199)
-  1436. William Fuller (ASA: 285199)
-  1437. William Fuller (ASA: 285199)
-  1438. William Fuller (ASA: 285199)
-  1439. William Fuller (ASA: 285199)
-  1440. William Fuller (ASA: 285199)
-  1441. William Fuller (ASA: 285199)
-  1442. William Fuller (ASA: 285199)
-  1443. William Fuller (ASA: 285199)
-  1444. Zoe Sadler (ASA: 753455)
-  1445. Zoe Sadler (ASA: 753455)
-  1446. Zoe Sadler (ASA: 753455)
-  1447. Zoe Sadler (ASA: 753455)
-  1448. Zoe Sadler (ASA: 753455)
-  1449. Zoe Sadler (ASA: 753455)
-  1450. Zoe Sadler (ASA: 753455)
-  1451. Zoe Sadler (ASA: 753455)
-  1452. Zoe Sadler (ASA: 753455)
-  1453. Zoe Sadler (ASA: 753455)
-  1454. Zoe Sadler (ASA: 753455)
-  1455. Zoe Sadler (ASA: 753455)
-  1456. Zoe Sadler (ASA: 753455)
-  1457. Zoe Sadler (ASA: 753455)
-  1458. Zoe Sadler (ASA: 753455)
-  1459. Rachael Rock (ASA: 60149)
-  1460. Rachael Rock (ASA: 60149)
-  1461. Rachael Rock (ASA: 60149)
-  1462. Rachael Rock (ASA: 60149)
-  1463. Sean Bailey (ASA: 2657)
-  1464. Sean Bailey (ASA: 2657)
-  1465. Sean Bailey (ASA: 2657)
-  1466. Sean Bailey (ASA: 2657)
-  1467. Sean Bailey (ASA: 2657)
-  1468. Sean Bailey (ASA: 2657)
-  1469. Sean Bailey (ASA: 2657)
-  1470. Sean Bailey (ASA: 2657)
-  1471. Sean Bailey (ASA: 2657)
-  1472. Sean Bailey (ASA: 2657)
-  1473. Sean Bailey (ASA: 2657)
-  1474. Sean Bailey (ASA: 2657)
-  1475. Chris Fawkes (ASA: 3354)
-  1476. Chris Fawkes (ASA: 3354)
-  1477. Chris Fawkes (ASA: 3354)
-  1478. Chris Fawkes (ASA: 3354)
-  1479. Chris Fawkes (ASA: 3354)
-  1480. Chris Fawkes (ASA: 3354)
-  1481. Alice Tillett (ASA: 1638246)
-  1482. Alice Tillett (ASA: 1638246)
-  1483. Alice Tillett (ASA: 1638246)
-  1484. Vincent Fanning (ASA: 1154425)
-  1485. Vincent Fanning (ASA: 1154425)
-  1486. Vincent Fanning (ASA: 1154425)
-  1487. Vincent Fanning (ASA: 1154425)
-  1488. Denise Tripp (ASA: 540269)
-  1489. Helen Ramsay (ASA: 708)
-  1490. Helen Ramsay (ASA: 708)
-  1491. Helen Ramsay (ASA: 708)
-  1492. Sara Hunter (ASA: 1807115)
+  1407. Daniel Richards (ASA: 387108)
+  1408. Daniel Richards (ASA: 387108)
+  1409. Daniel Richards (ASA: 387108)
+  1410. Daniel Richards (ASA: 387108)
+  1411. Daniel Richards (ASA: 387108)
+  1412. Daniel Richards (ASA: 387108)
+  1413. Daniel Richards (ASA: 387108)
+  1414. Daniel Richards (ASA: 387108)
+  1415. Daniel Richards (ASA: 387108)
+  1416. Daniel Richards (ASA: 387108)
+  1417. Daniel Richards (ASA: 387108)
+  1418. Daniel Richards (ASA: 387108)
+  1419. Daniel Richards (ASA: 387108)
+  1420. Daniel Richards (ASA: 387108)
+  1421. Daniel Richards (ASA: 387108)
+  1422. Daniel Richards (ASA: 387108)
+  1423. Daniel Richards (ASA: 387108)
+  1424. Greg Smith (ASA: 460274)
+  1425. Greg Smith (ASA: 460274)
+  1426. Matthew Perry (ASA: 20643)
+  1427. Matthew Perry (ASA: 20643)
+  1428. Matthew Perry (ASA: 20643)
+  1429. Matthew Perry (ASA: 20643)
+  1430. Matthew Perry (ASA: 20643)
+  1431. Matthew Perry (ASA: 20643)
+  1432. Malcolm Rainier (ASA: 38258)
+  1433. Malcolm Rainier (ASA: 38258)
+  1434. Malcolm Rainier (ASA: 38258)
+  1435. Malcolm Rainier (ASA: 38258)
+  1436. Malcolm Rainier (ASA: 38258)
+  1437. Malcolm Rainier (ASA: 38258)
+  1438. Malcolm Rainier (ASA: 38258)
+  1439. Malcolm Rainier (ASA: 38258)
+  1440. Malcolm Rainier (ASA: 38258)
+  1441. Richard Brinck (ASA: 81368)
+  1442. Richard Brinck (ASA: 81368)
+  1443. Richard Brinck (ASA: 81368)
+  1444. Richard Brinck (ASA: 81368)
+  1445. Richard Brinck (ASA: 81368)
+  1446. Richard Brinck (ASA: 81368)
+  1447. Richard Brinck (ASA: 81368)
+  1448. William Fuller (ASA: 285199)
+  1449. William Fuller (ASA: 285199)
+  1450. William Fuller (ASA: 285199)
+  1451. William Fuller (ASA: 285199)
+  1452. William Fuller (ASA: 285199)
+  1453. William Fuller (ASA: 285199)
+  1454. William Fuller (ASA: 285199)
+  1455. William Fuller (ASA: 285199)
+  1456. William Fuller (ASA: 285199)
+  1457. William Fuller (ASA: 285199)
+  1458. William Fuller (ASA: 285199)
+  1459. William Fuller (ASA: 285199)
+  1460. William Fuller (ASA: 285199)
+  1461. Zoe Sadler (ASA: 753455)
+  1462. Zoe Sadler (ASA: 753455)
+  1463. Zoe Sadler (ASA: 753455)
+  1464. Zoe Sadler (ASA: 753455)
+  1465. Zoe Sadler (ASA: 753455)
+  1466. Zoe Sadler (ASA: 753455)
+  1467. Zoe Sadler (ASA: 753455)
+  1468. Zoe Sadler (ASA: 753455)
+  1469. Zoe Sadler (ASA: 753455)
+  1470. Zoe Sadler (ASA: 753455)
+  1471. Zoe Sadler (ASA: 753455)
+  1472. Zoe Sadler (ASA: 753455)
+  1473. Zoe Sadler (ASA: 753455)
+  1474. Zoe Sadler (ASA: 753455)
+  1475. Zoe Sadler (ASA: 753455)
+  1476. Rachael Rock (ASA: 60149)
+  1477. Rachael Rock (ASA: 60149)
+  1478. Rachael Rock (ASA: 60149)
+  1479. Rachael Rock (ASA: 60149)
+  1480. Sean Bailey (ASA: 2657)
+  1481. Sean Bailey (ASA: 2657)
+  1482. Sean Bailey (ASA: 2657)
+  1483. Sean Bailey (ASA: 2657)
+  1484. Sean Bailey (ASA: 2657)
+  1485. Sean Bailey (ASA: 2657)
+  1486. Sean Bailey (ASA: 2657)
+  1487. Sean Bailey (ASA: 2657)
+  1488. Sean Bailey (ASA: 2657)
+  1489. Sean Bailey (ASA: 2657)
+  1490. Sean Bailey (ASA: 2657)
+  1491. Sean Bailey (ASA: 2657)
+  1492. Chris Fawkes (ASA: 3354)
+  1493. Chris Fawkes (ASA: 3354)
+  1494. Chris Fawkes (ASA: 3354)
+  1495. Chris Fawkes (ASA: 3354)
+  1496. Chris Fawkes (ASA: 3354)
+  1497. Chris Fawkes (ASA: 3354)
+  1498. Alice Tillett (ASA: 1638246)
+  1499. Alice Tillett (ASA: 1638246)
+  1500. Alice Tillett (ASA: 1638246)
+  1501. Vincent Fanning (ASA: 1154425)
+  1502. Vincent Fanning (ASA: 1154425)
+  1503. Vincent Fanning (ASA: 1154425)
+  1504. Vincent Fanning (ASA: 1154425)
+  1505. Denise Tripp (ASA: 540269)
+  1506. Helen Ramsay (ASA: 708)
+  1507. Helen Ramsay (ASA: 708)
+  1508. Helen Ramsay (ASA: 708)
+  1509. Sara Hunter (ASA: 1807115)
 
-Proceeding to optimization with 1492 swimmers...
+Proceeding to optimization with 1509 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 33
-Events pre-assigned: 1
+Events auto-assigned: 0
+Events pre-assigned: 0
 
 FINAL EVENT ASSIGNMENTS:
-  1. 11U Male 50m Freestyle -> Jack Einchcomb
-  2. 11U Female 50m Freestyle -> Emma Goddard
-  3. 11U Male 50m Backstroke -> Rudy Aspland
-  4. 11U Female 50m Backstroke -> Skylar Welch
-  5. 11U Male 50m Breaststroke -> Kristian Gulcz
-  6. 11U Female 50m Breaststroke -> Miya Cook
-  7. 11U Male 50m Butterfly -> Rudy Aspland
-  8. 11U Female 50m Butterfly -> Miya Cook
-  9. 13U Male 100m Freestyle -> Evan Ian
-  10. 13U Female 100m Freestyle -> Isabelle Riches
-  11. 13U Male 100m Backstroke -> Kaylem Livesey
-  12. 13U Female 100m Backstroke -> Isabelle Riches
-  13. 13U Male 100m Breaststroke -> Evan Ian
-  14. 13U Female 100m Breaststroke -> Abigail van der Westhuizen
-  15. 13U Male 100m Butterfly -> Kaylem Livesey
-  16. 13U Female 100m Butterfly -> Eva Harvey
-  17. 15U Male 100m Freestyle -> Owen Channing
-  18. 15U Female 100m Freestyle -> Ella Head
-  19. 15U Male 100m Backstroke -> Finlay Stuart
-  20. 15U Female 100m Backstroke -> Ella Head
-  21. 15U Male 100m Breaststroke -> Thomas Warne
-  22. 15U Female 100m Breaststroke -> Lily Riches
-  23. 15U Male 100m Butterfly -> Thomas Warne
-  24. 15U Female 100m Butterfly -> Hannah Vanstone
-  25. 99U Male 100m Freestyle -> Balazs Toth
-  26. 99U Female 100m Freestyle -> Lara Charlton
-  27. 99U Male 100m Backstroke -> Max Walton
-  28. 99U Female 100m Backstroke -> Lara Charlton
-  29. 99U Male 100m Breaststroke -> Sam Law Chin Yung
-  30. 99U Female 100m Breaststroke -> Isobel Neighbour
-  31. 99U Male 100m Butterfly -> Balazs Toth
-  32. 99U Female 100m Butterfly -> Ffion Thomas
-  33. 99U Male 200m Individual Medley -> Sam Law Chin Yung
-  34. 99U Female 200m Individual Medley -> Emma Jones
 
-Unassigned events: 16
-  - 11U Male 4x50m Freestyle
-  - 11U Female 4x50m Freestyle
-  - 11U Male 4x50m Medley
-  - 11U Female 4x50m Medley
-  - 13U Male 4x50m Freestyle
+Unassigned events: 18
+  - 12U Male 4 x 50m Freestyle
+  - 12U Female 4 x 50m Freestyle
+  - 14U Male 4 x 50m Freestyle
+  - 14U Female 4 x 50m Freestyle
+  - 16U Male 4 x 50m Freestyle
+  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
