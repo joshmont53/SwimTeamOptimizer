@@ -15,6 +15,8 @@ import {
   type InsertTeam,
   type TeamEvent,
   type InsertTeamEvent,
+  type SwimmersRegistry,
+  type InsertSwimmersRegistry,
   swimmers,
   swimmerTimes,
   countyTimes,
@@ -22,7 +24,8 @@ import {
   relayAssignments,
   optimizationResults,
   teams,
-  teamEvents
+  teamEvents,
+  swimmersRegistry
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -81,11 +84,11 @@ export interface IStorage {
   createTeamEventsBatch(events: InsertTeamEvent[]): Promise<TeamEvent[]>;
   clearTeamEvents(teamId: number): Promise<void>;
 
-  // Team events operations
-  getTeamEvents(teamId: number): Promise<TeamEvent[]>;
-  createTeamEvent(event: InsertTeamEvent): Promise<TeamEvent>;
-  createTeamEventsBatch(events: InsertTeamEvent[]): Promise<TeamEvent[]>;
-  clearTeamEvents(teamId: number): Promise<void>;
+  // Swimmers Registry operations (global)
+  getSwimmersRegistry(): Promise<SwimmersRegistry[]>;
+  getSwimmerRegistryByAsaNo(asaNo: string): Promise<SwimmersRegistry | undefined>;
+  createSwimmerRegistryEntry(swimmer: InsertSwimmersRegistry): Promise<SwimmersRegistry>;
+  deleteSwimmerRegistryEntry(id: number): Promise<void>;
 }
 
 
@@ -331,6 +334,25 @@ export class DatabaseStorage implements IStorage {
 
   async clearTeamEvents(teamId: number): Promise<void> {
     await db.delete(teamEvents).where(eq(teamEvents.teamId, teamId));
+  }
+
+  // Swimmers Registry operations (global)
+  async getSwimmersRegistry(): Promise<SwimmersRegistry[]> {
+    return await db.select().from(swimmersRegistry);
+  }
+
+  async getSwimmerRegistryByAsaNo(asaNo: string): Promise<SwimmersRegistry | undefined> {
+    const [swimmer] = await db.select().from(swimmersRegistry).where(eq(swimmersRegistry.asaNo, asaNo));
+    return swimmer || undefined;
+  }
+
+  async createSwimmerRegistryEntry(insertSwimmer: InsertSwimmersRegistry): Promise<SwimmersRegistry> {
+    const [swimmer] = await db.insert(swimmersRegistry).values(insertSwimmer).returning();
+    return swimmer;
+  }
+
+  async deleteSwimmerRegistryEntry(id: number): Promise<void> {
+    await db.delete(swimmersRegistry).where(eq(swimmersRegistry.id, id));
   }
 }
 

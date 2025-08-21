@@ -60,6 +60,16 @@ export const relayAssignments = pgTable("relay_assignments", {
   isPreAssigned: boolean("is_pre_assigned").notNull().default(false),
 });
 
+// Global swimmers registry for gender lookup
+export const swimmersRegistry = pgTable("swimmers_registry", {
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  dateOfBirth: text("date_of_birth").notNull(),
+  gender: text("gender").notNull(),
+  asaNo: text("asa_no").notNull().unique(), // ASA Number (Membership Number)
+});
+
 export const teams = pgTable("teams", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -124,7 +134,13 @@ export const insertTeamEventSchema = createInsertSchema(teamEvents).omit({
   id: true,
 });
 
+export const insertSwimmersRegistrySchema = createInsertSchema(swimmersRegistry).omit({
+  id: true,
+});
+
 export type Swimmer = typeof swimmers.$inferSelect;
+export type SwimmersRegistry = typeof swimmersRegistry.$inferSelect;
+export type InsertSwimmersRegistry = z.infer<typeof insertSwimmersRegistrySchema>;
 export type InsertSwimmer = z.infer<typeof insertSwimmerSchema>;
 export type SwimmerTime = typeof swimmerTimes.$inferSelect;
 export type InsertSwimmerTime = z.infer<typeof insertSwimmerTimeSchema>;

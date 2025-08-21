@@ -8,6 +8,7 @@ import {
   insertCountyTimeSchema,
   insertEventAssignmentSchema,
   insertRelayAssignmentSchema,
+  insertSwimmersRegistrySchema,
   type InsertSwimmer,
   type InsertSwimmerTime,
 } from "../shared/schema";
@@ -330,6 +331,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(swimmer);
     } catch (error) {
       res.status(500).json({ message: "Failed to update swimmer" });
+    }
+  });
+
+  // Swimmers Registry Management Routes
+  app.get("/api/swimmers-registry", async (req, res) => {
+    try {
+      const swimmers = await storage.getSwimmersRegistry();
+      res.json(swimmers);
+    } catch (error) {
+      console.error("Failed to fetch swimmers registry:", error);
+      res.status(500).json({ message: "Failed to fetch swimmers registry" });
+    }
+  });
+
+  app.post("/api/swimmers-registry", async (req, res) => {
+    try {
+      const validatedData = insertSwimmersRegistrySchema.parse(req.body);
+      const swimmer = await storage.createSwimmerRegistryEntry(validatedData);
+      res.json(swimmer);
+    } catch (error) {
+      console.error("Failed to create swimmer registry entry:", error);
+      res.status(500).json({ message: "Failed to create swimmer registry entry" });
+    }
+  });
+
+  app.delete("/api/swimmers-registry/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteSwimmerRegistryEntry(id);
+      res.json({ message: "Swimmer registry entry deleted successfully" });
+    } catch (error) {
+      console.error("Failed to delete swimmer registry entry:", error);
+      res.status(500).json({ message: "Failed to delete swimmer registry entry" });
+    }
+  });
+
+  app.post("/api/swimmers-registry/import", async (req, res) => {
+    try {
+      const { swimmers } = req.body;
+      if (!Array.isArray(swimmers)) {
+        return res.status(400).json({ message: "Swimmers data must be an array" });
+      }
+
+      let imported = 0;
+      let skipped = 0;
+
+      for (const swimmerData of swimmers) {
+        try {
+          const validatedData = insertSwimmersRegistrySchema.parse(swimmerData);
+          await storage.createSwimmerRegistryEntry(validatedData);
+          imported++;
+        } catch (error) {
+          console.warn(`Skipping swimmer ${swimmerData.firstName} ${swimmerData.lastName}:`, error instanceof Error ? error.message : String(error));
+          skipped++;
+        }
+      }
+
+      res.json({ 
+        message: "Import completed",
+        imported,
+        skipped,
+        total: swimmers.length
+      });
+    } catch (error) {
+      console.error("Failed to import swimmers:", error);
+      res.status(500).json({ message: "Failed to import swimmers" });
+    }
+  });
+
+  app.get("/api/swimmers-registry/gender/:asaNo", async (req, res) => {
+    try {
+      const asaNo = req.params.asaNo;
+      const swimmer = await storage.getSwimmerRegistryByAsaNo(asaNo);
+      
+      if (!swimmer) {
+        return res.status(404).json({ message: "Swimmer not found" });
+      }
+      
+      res.json({ gender: swimmer.gender });
+    } catch (error) {
+      console.error("Failed to get swimmer gender:", error);
+      res.status(500).json({ message: "Failed to get swimmer gender" });
     }
   });
 
