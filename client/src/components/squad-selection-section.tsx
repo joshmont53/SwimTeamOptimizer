@@ -156,7 +156,30 @@ export default function SquadSelectionSection({
           </div>
         )}
         
-        <div className="flex items-center justify-between mb-6">
+        {/* Mobile layout - stacked */}
+        <div className="sm:hidden mb-6">
+          <div className="flex items-center mb-4">
+            <i className="fas fa-users text-primary-500 mr-3"></i>
+            <h2 className="text-lg font-semibold text-gray-900">Step 2: Squad Selection</h2>
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="text-sm text-gray-600 text-center">
+              <span className="font-medium text-success">{availableCount} available</span> • 
+              <span className="font-medium text-error ml-1">{unavailableCount} unavailable</span>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleSelectAllAvailable}
+              className="text-primary-500 hover:text-primary-600 w-full"
+            >
+              Select All Available
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop layout - horizontal */}
+        <div className="hidden sm:flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-users text-primary-500 mr-3"></i>
             <h2 className="text-lg font-semibold text-gray-900">Step 2: Squad Selection</h2>
@@ -178,7 +201,80 @@ export default function SquadSelectionSection({
         </div>
 
         <div className="mb-4">
-          <div className="flex items-center space-x-4">
+          {/* Mobile layout - search on its own row, filters below */}
+          <div className="sm:hidden space-y-3">
+            <div className="relative">
+              <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <Input 
+                type="text" 
+                placeholder="Search swimmers..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Select value={genderFilter} onValueChange={setGenderFilter}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="All Genders" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Genders</SelectItem>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
+                </SelectContent>
+              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 justify-between"
+                    role="combobox"
+                  >
+                    <span className="truncate">{getAgeFilterDisplayText()}</span>
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-0">
+                  <div className="p-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Age Ranges</span>
+                      {ageFilters.length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={clearAgeFilters}
+                          className="h-6 px-2 text-xs"
+                        >
+                          Clear
+                        </Button>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      {ageOptions.map(option => (
+                        <div key={option.value} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`age-${option.value}`}
+                            checked={ageFilters.includes(option.value)}
+                            onCheckedChange={() => handleAgeFilterToggle(option.value)}
+                          />
+                          <label
+                            htmlFor={`age-${option.value}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {option.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          {/* Desktop layout - all inline */}
+          <div className="hidden sm:flex items-center space-x-4">
             <div className="relative flex-1">
               <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               <Input 
@@ -316,14 +412,37 @@ export default function SquadSelectionSection({
           </table>
         </div>
 
-        <div className="mt-6 flex justify-between items-center">
+        {/* Mobile layout - stacked footer */}
+        <div className="mt-6 sm:hidden">
+          <div className="text-sm text-gray-600 text-center mb-4">
+            Showing {filteredSwimmers.length} of {swimmers.length} swimmers
+          </div>
+          <div className="flex flex-col gap-2">
+            <Button 
+              variant="outline"
+              onClick={onBackToFileUpload}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 w-full"
+            >
+              ← Back to Upload
+            </Button>
+            <Button 
+              onClick={onSquadConfirmed}
+              className="bg-primary-500 hover:bg-primary-600 text-white w-full"
+            >
+              Continue to Event Assignment
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop layout - horizontal footer */}
+        <div className="mt-6 hidden sm:flex justify-between items-center">
           <span className="text-sm text-gray-600">
             Showing {filteredSwimmers.length} of {swimmers.length} swimmers
           </span>
           <div className="flex items-center space-x-3">
             <Button 
               variant="outline"
-              onClick={onBackToFileUpload} // Fixed: Now properly navigates back to file upload step
+              onClick={onBackToFileUpload}
               className="border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               ← Back to Upload
