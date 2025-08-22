@@ -126,7 +126,34 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
           </div>
         )}
         
-        <div className="flex items-center justify-between mb-6">
+        {/* Mobile layout - stacked */}
+        <div className="sm:hidden mb-6">
+          <div className="flex items-center mb-4">
+            <i className="fas fa-trophy text-warning mr-3"></i>
+            <h2 className="text-lg font-semibold text-gray-900">Step 4: Optimisation Results</h2>
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="text-sm text-gray-600 text-center">
+              <span className="font-medium text-success">{stats.totalEvents} events</span> • 
+              <span className="font-medium">{stats.relayTeams} relays</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button 
+                variant="outline" 
+                onClick={onBackToHome || (() => window.location.reload())}
+                className="text-blue-600 border-blue-600 hover:bg-blue-50 w-full"
+              >
+                <i className="fas fa-home mr-2"></i>Back to Home
+              </Button>
+              <Button onClick={handleExport} className="bg-primary-500 hover:bg-primary-600 text-white w-full">
+                <i className="fas fa-file-export mr-2"></i>Export Team Sheet
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop layout - horizontal */}
+        <div className="hidden sm:flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-trophy text-warning mr-3"></i>
             <h2 className="text-lg font-semibold text-gray-900">Step 4: Optimisation Results</h2>
@@ -215,7 +242,7 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
                       <div className="text-xs text-green-600">Projected Time</div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                     {result.swimmers.map((swimmer, swimmerIndex) => (
                       <div key={swimmerIndex} className="text-gray-600">
                         {swimmer.stroke ? `${swimmer.stroke}: ` : `${swimmerIndex + 1}. `}
@@ -229,24 +256,21 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="mt-6 flex justify-between items-center">
+        {/* Navigation - Mobile only shows back button, export is handled above */}
+        <div className="mt-6">
           <Button 
             variant="outline"
-            onClick={onBackToEventAssignment} // Fixed: Now properly navigates back to event assignment step
-            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            onClick={onBackToEventAssignment}
+            className="border-gray-300 text-gray-700 hover:bg-gray-50 w-full sm:w-auto"
           >
             ← Back to Event Assignment
-          </Button>
-          <Button onClick={handleExport} className="bg-primary-500 hover:bg-primary-600 text-white">
-            <i className="fas fa-file-export mr-2"></i>Export Team Sheet
           </Button>
         </div>
 
         {/* Swimmer Load Summary */}
         <div className="mt-6">
           <h3 className="text-base font-semibold text-gray-900 mb-4">Swimmer Event Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Calculate swimmer summaries from results */}
             {(() => {
               const swimmerSummary = new Map<string, { individual: string[], relay: number }>();

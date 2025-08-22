@@ -19,7 +19,32 @@ export default function ProgressIndicator({ currentStep, isCustomTemplate = fals
 
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between">
+      {/* Mobile View - Stacked */}
+      <div className="sm:hidden">
+        <div className="flex flex-wrap gap-2">
+          {steps.map((step, index) => (
+            <div key={step.number} className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                currentStep >= step.number 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                {step.displayNumber}
+              </div>
+              <span className={`ml-2 text-xs ${
+                currentStep >= step.number 
+                  ? 'text-primary-600 font-medium' 
+                  : 'text-gray-500'
+              }`}>
+                {step.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop View - Horizontal with connectors */}
+      <div className="hidden sm:flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
