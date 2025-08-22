@@ -37,7 +37,6 @@ export default function SwimmersManagement() {
   const [newSwimmer, setNewSwimmer] = useState({
     firstName: "",
     lastName: "",
-    dateOfBirth: "",
     gender: "",
     asaNo: "",
   });
@@ -62,7 +61,7 @@ export default function SwimmersManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/swimmers-registry"] });
       setIsAddDialogOpen(false);
-      setNewSwimmer({ firstName: "", lastName: "", dateOfBirth: "", gender: "", asaNo: "" });
+      setNewSwimmer({ firstName: "", lastName: "", gender: "", asaNo: "" });
       toast({
         title: "Success",
         description: "Swimmer added successfully",
@@ -124,24 +123,6 @@ export default function SwimmersManagement() {
     }
   };
 
-  const formatDateForInput = (dateString: string) => {
-    // Convert YYYY-MM-DD to YYYY-MM-DD for HTML date input
-    return dateString;
-  };
-
-  const formatDateFromInput = (dateString: string) => {
-    // Keep YYYY-MM-DD format
-    return dateString;
-  };
-
-  const formatDateForDisplay = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
-    } catch {
-      return dateString;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -222,15 +203,6 @@ export default function SwimmersManagement() {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={formatDateForInput(newSwimmer.dateOfBirth)}
-                      onChange={(e) => setNewSwimmer({ ...newSwimmer, dateOfBirth: formatDateFromInput(e.target.value) })}
-                    />
-                  </div>
 
                   <div>
                     <Label htmlFor="gender">Gender *</Label>
@@ -289,7 +261,6 @@ export default function SwimmersManagement() {
                     <TableHead>First Name</TableHead>
                     <TableHead>Last Name</TableHead>
                     <TableHead>ASA Number</TableHead>
-                    <TableHead>Date of Birth</TableHead>
                     <TableHead>Gender</TableHead>
                     <TableHead className="w-24">Actions</TableHead>
                   </TableRow>
@@ -300,7 +271,6 @@ export default function SwimmersManagement() {
                       <TableCell className="font-medium">{swimmer.firstName}</TableCell>
                       <TableCell>{swimmer.lastName}</TableCell>
                       <TableCell className="font-mono">{swimmer.asaNo}</TableCell>
-                      <TableCell>{formatDateForDisplay(swimmer.dateOfBirth)}</TableCell>
                       <TableCell>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           swimmer.gender === 'Male' 

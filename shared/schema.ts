@@ -65,7 +65,6 @@ export const swimmersRegistry = pgTable("swimmers_registry", {
   id: serial("id").primaryKey(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
-  dateOfBirth: text("date_of_birth").notNull(),
   gender: text("gender").notNull(),
   asaNo: text("asa_no").notNull().unique(), // ASA Number (Membership Number)
 });
