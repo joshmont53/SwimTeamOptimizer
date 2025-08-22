@@ -191,12 +191,12 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
               Create New Team
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
-            <DialogHeader>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
+            <DialogHeader className="sticky top-0 bg-white z-10 pb-4">
               <DialogTitle className="text-foreground">Create New Team</DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-6">
+            <div className="space-y-6 px-1">
               {/* Team Name */}
               <div className="space-y-2">
                 <Label htmlFor="teamName" className="text-foreground font-medium">Team Name</Label>
@@ -283,24 +283,28 @@ export default function TeamSelectionSection({ onTeamSelected }: TeamSelectionSe
               )}
 
               {/* Actions */}
-              <div className="flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowCreateDialog(false);
-                    resetForm();
-                  }}
-                  type="button"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCreateTeam}
-                  disabled={!teamName.trim() || !selectedType || createTeamMutation.isPending}
-                  type="button"
-                >
-                  {createTeamMutation.isPending ? "Creating..." : "Create Team"}
-                </Button>
+              <div className="sticky bottom-0 bg-white pt-4 mt-6 border-t">
+                <div className="flex flex-col sm:flex-row justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCreateDialog(false);
+                      resetForm();
+                    }}
+                    type="button"
+                    className="w-full sm:w-auto"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateTeam}
+                    disabled={!teamName.trim() || !selectedType || createTeamMutation.isPending}
+                    type="button"
+                    className="w-full sm:w-auto"
+                  >
+                    {createTeamMutation.isPending ? "Creating..." : "Create Team"}
+                  </Button>
+                </div>
               </div>
             </div>
           </DialogContent>
