@@ -343,7 +343,33 @@ export default function EventAssignmentSection({
           </div>
         )}
         
-        <div className="flex items-center justify-between mb-6">
+        {/* Mobile layout - stacked */}
+        <div className="sm:hidden mb-6">
+          <div className="flex items-center mb-4">
+            <i className="fas fa-clipboard-list text-primary-500 mr-3"></i>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Step 3: Event Assignment</h2>
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="text-sm text-gray-600 text-center">
+              <span className="font-medium">{assignedCount} assigned</span> • 
+              <span className="font-medium text-warning">{totalEvents - assignedCount} auto-optimized</span>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => {
+                setEventAssignments({});
+                setRelayAssignments({});
+              }}
+              className="text-primary-500 hover:text-primary-600 w-full"
+            >
+              Clear All Assignments
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop layout - horizontal */}
+        <div className="hidden sm:flex items-center justify-between mb-6">
           <div className="flex items-center">
             <i className="fas fa-clipboard-list text-primary-500 mr-3"></i>
             <h2 className="text-lg font-semibold text-gray-900">Step 3: Predetermined Event Assignment</h2>
@@ -459,7 +485,7 @@ export default function EventAssignmentSection({
                         {hasAssignments ? 'Assigned' : 'Relay'}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {relayPositions.map((label, position) => {
                         const relayKey = getRelayKey(relay.event, relay.ageCategory, relay.gender, position + 1, 
                           relay.event.includes('Medley') ? label : undefined);
@@ -500,10 +526,39 @@ export default function EventAssignmentSection({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-between items-center">
+        {/* Mobile layout - stacked footer */}
+        <div className="mt-6 sm:hidden">
+          <div className="flex flex-col gap-3">
+            <Button 
+              variant="outline"
+              onClick={onBackToSquadSelection}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 w-full"
+            >
+              ← Back to Squad Selection
+            </Button>
+            <Button 
+              onClick={handleRunOptimization}
+              disabled={isOptimizing}
+              className="bg-success hover:bg-green-600 text-white px-8 py-3 font-medium w-full"
+            >
+              {isOptimizing ? (
+                <>
+                  <i className="fas fa-spinner fa-spin mr-2"></i>Optimising...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-play mr-2"></i>Run Team Optimisation
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop layout - horizontal footer */}
+        <div className="mt-6 hidden sm:flex justify-between items-center">
           <Button 
             variant="outline"
-            onClick={onBackToSquadSelection} // Fixed: Now properly navigates back to squad selection step
+            onClick={onBackToSquadSelection}
             className="border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             ← Back to Squad Selection
