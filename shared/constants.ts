@@ -73,8 +73,8 @@ export const ARENA_LEAGUE_CONFIG = {
     { event: '4x50m Medley', ageCategory: 15, gender: 'Female', isRelay: true },
     
     // Relay events - Open
-    { event: '6x50m Freestyle', ageCategory: 99, gender: 'Male', isRelay: true },
-    { event: '6x50m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
+    { event: '4x50m Freestyle', ageCategory: 99, gender: 'Male', isRelay: true },
+    { event: '4x50m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
     { event: '4x50m Medley', ageCategory: 99, gender: 'Male', isRelay: true },
     { event: '4x50m Medley', ageCategory: 99, gender: 'Female', isRelay: true },
   ]
