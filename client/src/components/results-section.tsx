@@ -20,6 +20,8 @@ interface ResultsSectionProps {
       swimmers: Array<{
         name: string;
         stroke?: string;
+        ageGroup?: string;
+        gender?: string;
         time: string;
       }>;
     }>;
@@ -245,7 +247,12 @@ export default function ResultsSection({ results, onBackToEventAssignment, selec
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                     {result.swimmers.map((swimmer, swimmerIndex) => (
                       <div key={swimmerIndex} className="text-gray-600">
-                        {swimmer.stroke ? `${swimmer.stroke}: ` : `${swimmerIndex + 1}. `}
+                        {swimmer.stroke 
+                          ? `${swimmer.stroke}: ` 
+                          : swimmer.ageGroup && swimmer.gender 
+                            ? `${swimmer.ageGroup} ${swimmer.gender}: `
+                            : `${swimmerIndex + 1}. `
+                        }
                         {swimmer.name} ({formatSwimmingTime(swimmer.time)})
                       </div>
                     ))}

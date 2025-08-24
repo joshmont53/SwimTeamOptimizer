@@ -236,6 +236,28 @@ export default function EventAssignmentSection({
     });
   };
 
+  const getSquadrunEligibleSwimmers = (positionLabel: string) => {
+    return availableSwimmers.filter(swimmer => {
+      // Parse position label like "11U Female", "Open Male", etc.
+      const parts = positionLabel.split(' ');
+      const ageGroup = parts[0]; // "11U", "13U", "15U", "Open"
+      const gender = parts[1]; // "Female", "Male"
+      
+      // Filter by gender first
+      if (swimmer.gender !== gender) {
+        return false;
+      }
+      
+      // Filter by age group
+      if (ageGroup === 'Open') {
+        return true; // No age restriction for Open
+      } else {
+        const maxAge = parseInt(ageGroup.replace('U', '')); // Extract number from "11U" etc.
+        return swimmer.age <= maxAge;
+      }
+    });
+  };
+
   if (!isActive) return null;
 
   // Show loading state while events are being fetched
@@ -457,6 +479,8 @@ export default function EventAssignmentSection({
               {events?.relay.map((relay) => {
                 const relayPositions = relay.event.includes('Medley') 
                   ? ['Backstroke', 'Breaststroke', 'Butterfly', 'Freestyle']
+                  : relay.event === 'Squadrun'
+                    ? ['11U Female', '11U Male', '13U Female', '13U Male', '15U Female', '15U Male', 'Open Female', 'Open Male']
                   : relay.event.includes('6x')
                     ? ['Swimmer 1', 'Swimmer 2', 'Swimmer 3', 'Swimmer 4', 'Swimmer 5', 'Swimmer 6']
                     : ['Swimmer 1', 'Swimmer 2', 'Swimmer 3', 'Swimmer 4'];
@@ -475,7 +499,7 @@ export default function EventAssignmentSection({
                   >
                     <div className="flex items-center justify-between mb-3">
                       <span className="font-medium text-gray-900">
-                        {relay.ageCategory === 99 ? 'Open' : `${relay.ageCategory}U`} {relay.gender} {relay.event}
+                        {relay.event === 'Squadrun' ? 'Mixed Squadrun' : `${relay.ageCategory === 99 ? 'Open' : `${relay.ageCategory}U`} ${relay.gender} ${relay.event}`}
                       </span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         hasAssignments 
@@ -485,11 +509,13 @@ export default function EventAssignmentSection({
                         {hasAssignments ? 'Assigned' : 'Relay'}
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className={`grid gap-2 ${relay.event === 'Squadrun' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'}`}>
                       {relayPositions.map((label, position) => {
                         const relayKey = getRelayKey(relay.event, relay.ageCategory, relay.gender, position + 1, 
                           relay.event.includes('Medley') ? label : undefined);
-                        const eligibleSwimmers = getEligibleSwimmers('50m Freestyle', relay.ageCategory, relay.gender);
+                        const eligibleSwimmers = relay.event === 'Squadrun' 
+                          ? getSquadrunEligibleSwimmers(label)
+                          : getEligibleSwimmers('50m Freestyle', relay.ageCategory, relay.gender);
                         
                         return (
                           <div key={relayKey}>
