@@ -1035,57 +1035,142 @@ def main():
     if squadrun_events:
         print(f"PYTHON: Processing Squadrun relay event", file=sys.stderr)
         
-        # Define age groups for Squadrun (11U, 13U, 15U, Open)
-        squadrun_age_groups = [11, 13, 15, 99]  # 99 = Open
+        # Check for Squadrun pre-assignments
+        squadrun_relay_key = 'Squadrun 998 Mixed'
+        has_pre_assignments = squadrun_relay_key in relay_protected_assignments and relay_protected_assignments[squadrun_relay_key]
+        
         squadrun_team = []
         total_squadrun_time = 0
         
-        # For each age group, find fastest male and female 50m Freestyle swimmers
-        for age_group in squadrun_age_groups:
-            age_display = "Open" if age_group == 99 else f"{age_group}U"
+        if has_pre_assignments:
+            print(f"SQUADRUN: Processing pre-assignments for {squadrun_relay_key}", file=sys.stderr)
             
-            # Filter swimmers by age group
-            if age_group == 99:
-                # Open category - no age limit
-                eligible_swimmers = list(relay_swimmers.values())
+            # Position mapping: 1=11U Female, 2=11U Male, 3=13U Female, 4=13U Male, 5=15U Female, 6=15U Male, 7=Open Female, 8=Open Male
+            position_mapping = [
+                ('11U', 'Female'), ('11U', 'Male'),    # positions 1, 2
+                ('13U', 'Female'), ('13U', 'Male'),    # positions 3, 4  
+                ('15U', 'Female'), ('15U', 'Male'),    # positions 5, 6
+                ('Open', 'Female'), ('Open', 'Male')   # positions 7, 8
+            ]
+            
+            # Initialize team slots (8 positions)
+            team_slots = [None] * 8
+            pre_assigned_swimmers_set = set()
+            
+            # Fill pre-assigned positions
+            for pos, assignment in relay_protected_assignments[squadrun_relay_key].items():
+                if 1 <= pos <= 8:
+                    team_slots[pos - 1] = assignment['swimmer']  # Convert to 0-based index
+                    pre_assigned_swimmers_set.add(assignment['swimmer'])
+                    age_group, gender = position_mapping[pos - 1]
+                    print(f"  Pre-assigned position {pos} ({age_group} {gender}): {assignment['swimmer']}", file=sys.stderr)
+            
+            # Fill remaining positions with fastest available swimmers
+            for i, (age_group, gender) in enumerate(position_mapping):
+                if team_slots[i] is None:  # Position not pre-assigned
+                    # Determine age limit
+                    if age_group == 'Open':
+                        eligible_swimmers = list(relay_swimmers.values())
+                    else:
+                        age_limit = int(age_group.replace('U', ''))
+                        eligible_swimmers = [s for s in relay_swimmers.values() if s.age <= age_limit]
+                    
+                    # Filter by gender, 50m freestyle time, and not already assigned
+                    available_swimmers = [
+                        s for s in eligible_swimmers 
+                        if (s.gender == gender and 
+                            s.freestyle_50 is not None and 
+                            s.name not in pre_assigned_swimmers_set)
+                    ]
+                    
+                    # Sort by 50m freestyle time and select fastest
+                    if available_swimmers:
+                        fastest = sorted(available_swimmers, key=lambda x: x.freestyle_50)[0]
+                        team_slots[i] = fastest.name
+                        pre_assigned_swimmers_set.add(fastest.name)
+                        print(f"  Auto-selected position {i+1} ({age_group} {gender}): {fastest.name}", file=sys.stderr)
+                    else:
+                        print(f"  WARNING: No available swimmers for position {i+1} ({age_group} {gender})", file=sys.stderr)
+            
+            # Build final team if all positions filled
+            if all(slot is not None for slot in team_slots):
+                for i, swimmer_name in enumerate(team_slots):
+                    # Find swimmer object to get time
+                    swimmer_obj = relay_swimmers.get(swimmer_name)
+                    if swimmer_obj and swimmer_obj.freestyle_50 is not None:
+                        age_group, gender = position_mapping[i]
+                        squadrun_team.append({
+                            'name': swimmer_name,
+                            'ageGroup': age_group,
+                            'gender': gender,
+                            'time': f'{swimmer_obj.freestyle_50:.2f}s'
+                        })
+                        total_squadrun_time += swimmer_obj.freestyle_50
+                        print(f"SQUADRUN: Using {swimmer_name} ({age_group} {gender}) - {swimmer_obj.freestyle_50:.2f}s", file=sys.stderr)
+                    else:
+                        print(f"SQUADRUN: ERROR - Could not find time for {swimmer_name}", file=sys.stderr)
+                        has_pre_assignments = False  # Fall back to automatic selection
+                        break
+                
+                if has_pre_assignments:
+                    print(f"SQUADRUN: SUCCESS - Built pre-assigned relay with time {total_squadrun_time:.2f}s", file=sys.stderr)
             else:
-                # Age-limited category
-                eligible_swimmers = [s for s in relay_swimmers.values() if s.age <= age_group]
+                print(f"SQUADRUN: WARNING - Could not fill all pre-assigned positions, falling back to automatic selection", file=sys.stderr)
+                has_pre_assignments = False
+        
+        # Original automatic selection logic (used when no pre-assignments or fallback)
+        if not has_pre_assignments:
+            # Define age groups for Squadrun (11U, 13U, 15U, Open)
+            squadrun_age_groups = [11, 13, 15, 99]  # 99 = Open
+            squadrun_team = []
+            total_squadrun_time = 0
             
-            # Find fastest male and female with 50m Freestyle times
-            males_with_times = [s for s in eligible_swimmers if s.gender == 'Male' and s.freestyle_50 is not None]
-            females_with_times = [s for s in eligible_swimmers if s.gender == 'Female' and s.freestyle_50 is not None]
-            
-            # Sort by 50m Freestyle time (fastest first)
-            males_with_times.sort(key=lambda x: x.freestyle_50)
-            females_with_times.sort(key=lambda x: x.freestyle_50)
-            
-            # Select fastest male and female for this age group
-            if males_with_times:
-                fastest_male = males_with_times[0]
-                squadrun_team.append({
-                    'name': fastest_male.name,
-                    'ageGroup': age_display,
-                    'gender': 'Male',
-                    'time': f'{fastest_male.freestyle_50:.2f}s'
-                })
-                total_squadrun_time += fastest_male.freestyle_50
-                print(f"SQUADRUN: Selected {fastest_male.name} ({age_display} Male) - {fastest_male.freestyle_50:.2f}s", file=sys.stderr)
-            else:
-                print(f"SQUADRUN: WARNING - No male swimmers with 50m Freestyle time for {age_display}", file=sys.stderr)
-            
-            if females_with_times:
-                fastest_female = females_with_times[0]
-                squadrun_team.append({
-                    'name': fastest_female.name,
-                    'ageGroup': age_display,
-                    'gender': 'Female',
-                    'time': f'{fastest_female.freestyle_50:.2f}s'
-                })
-                total_squadrun_time += fastest_female.freestyle_50
-                print(f"SQUADRUN: Selected {fastest_female.name} ({age_display} Female) - {fastest_female.freestyle_50:.2f}s", file=sys.stderr)
-            else:
-                print(f"SQUADRUN: WARNING - No female swimmers with 50m Freestyle time for {age_display}", file=sys.stderr)
+            # For each age group, find fastest male and female 50m Freestyle swimmers
+            for age_group in squadrun_age_groups:
+                age_display = "Open" if age_group == 99 else f"{age_group}U"
+                
+                # Filter swimmers by age group
+                if age_group == 99:
+                    # Open category - no age limit
+                    eligible_swimmers = list(relay_swimmers.values())
+                else:
+                    # Age-limited category
+                    eligible_swimmers = [s for s in relay_swimmers.values() if s.age <= age_group]
+                
+                # Find fastest male and female with 50m Freestyle times
+                males_with_times = [s for s in eligible_swimmers if s.gender == 'Male' and s.freestyle_50 is not None]
+                females_with_times = [s for s in eligible_swimmers if s.gender == 'Female' and s.freestyle_50 is not None]
+                
+                # Sort by 50m Freestyle time (fastest first)
+                males_with_times.sort(key=lambda x: x.freestyle_50)
+                females_with_times.sort(key=lambda x: x.freestyle_50)
+                
+                # Select fastest male and female for this age group
+                if males_with_times:
+                    fastest_male = males_with_times[0]
+                    squadrun_team.append({
+                        'name': fastest_male.name,
+                        'ageGroup': age_display,
+                        'gender': 'Male',
+                        'time': f'{fastest_male.freestyle_50:.2f}s'
+                    })
+                    total_squadrun_time += fastest_male.freestyle_50
+                    print(f"SQUADRUN: Selected {fastest_male.name} ({age_display} Male) - {fastest_male.freestyle_50:.2f}s", file=sys.stderr)
+                else:
+                    print(f"SQUADRUN: WARNING - No male swimmers with 50m Freestyle time for {age_display}", file=sys.stderr)
+                
+                if females_with_times:
+                    fastest_female = females_with_times[0]
+                    squadrun_team.append({
+                        'name': fastest_female.name,
+                        'ageGroup': age_display,
+                        'gender': 'Female',
+                        'time': f'{fastest_female.freestyle_50:.2f}s'
+                    })
+                    total_squadrun_time += fastest_female.freestyle_50
+                    print(f"SQUADRUN: Selected {fastest_female.name} ({age_display} Female) - {fastest_female.freestyle_50:.2f}s", file=sys.stderr)
+                else:
+                    print(f"SQUADRUN: WARNING - No female swimmers with 50m Freestyle time for {age_display}", file=sys.stderr)
         
         # If we have all 8 swimmers (2 per age group), create the Squadrun relay team
         if len(squadrun_team) == 8:
