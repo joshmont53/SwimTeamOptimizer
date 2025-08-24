@@ -130,7 +130,7 @@ def convert_csv_format(input_file, output_file):
             last_name = row[1].strip()
             asa_no = row[2].strip()
             event = row[6].strip()
-            time_str = row[7].strip()
+            time_str = row[10].strip()  # Using SC_Time column instead of Time
             
             if not first_name or not last_name or not asa_no or not event or not time_str:
                 continue
@@ -190,7 +190,7 @@ def convert_csv_format(input_file, output_file):
                 row[4].strip(),  # Meet
                 row[5].strip(),  # Date
                 row[6].strip(),  # Event
-                format_time_to_standard(row[7]),  # SC_Time (formatted)
+                format_time_to_standard(row[10]),  # SC_Time (formatted) - using actual SC_Time column
                 row[8].strip(),  # Course
                 gender,  # Gender (from bulk lookup)
                 str(age),  # Age (calculated)
