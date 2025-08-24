@@ -166,7 +166,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   160. Thomas Pride (ASA: 1752228)
   161. Thomas Pride (ASA: 1752228)
   162. Thomas Pride (ASA: 1752228)
-  163. Samuel Yates (ASA: 1585300)
+  163. Thomas Pride (ASA: 1752228)
   164. Thomas Pride (ASA: 1752228)
   165. Thomas Pride (ASA: 1752228)
   166. Thomas Pride (ASA: 1752228)
@@ -174,7 +174,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   168. Thomas Pride (ASA: 1752228)
   169. Thomas Pride (ASA: 1752228)
   170. Thomas Pride (ASA: 1752228)
-  171. Thomas Pride (ASA: 1752228)
+  171. Ho Kiu Kan (ASA: 1781492)
   172. Ho Kiu Kan (ASA: 1781492)
   173. Ho Kiu Kan (ASA: 1781492)
   174. Ho Kiu Kan (ASA: 1781492)
@@ -182,7 +182,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   176. Ho Kiu Kan (ASA: 1781492)
   177. Ho Kiu Kan (ASA: 1781492)
   178. Ho Kiu Kan (ASA: 1781492)
-  179. Ho Kiu Kan (ASA: 1781492)
+  179. Oliver Goddard (ASA: 1398527)
   180. Oliver Goddard (ASA: 1398527)
   181. Oliver Goddard (ASA: 1398527)
   182. Oliver Goddard (ASA: 1398527)
@@ -200,7 +200,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   194. Oliver Goddard (ASA: 1398527)
   195. Oliver Goddard (ASA: 1398527)
   196. Oliver Goddard (ASA: 1398527)
-  197. Oliver Goddard (ASA: 1398527)
+  197. Tom Clarke (ASA: 1708709)
   198. Tom Clarke (ASA: 1708709)
   199. Tom Clarke (ASA: 1708709)
   200. Tom Clarke (ASA: 1708709)
@@ -209,7 +209,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   203. Tom Clarke (ASA: 1708709)
   204. Tom Clarke (ASA: 1708709)
   205. Tom Clarke (ASA: 1708709)
-  206. Tom Clarke (ASA: 1708709)
+  206. Iwan Stone (ASA: 1706531)
   207. Iwan Stone (ASA: 1706531)
   208. Iwan Stone (ASA: 1706531)
   209. Iwan Stone (ASA: 1706531)
@@ -224,7 +224,7 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
   218. Iwan Stone (ASA: 1706531)
   219. Iwan Stone (ASA: 1706531)
   220. Iwan Stone (ASA: 1706531)
-  221. Iwan Stone (ASA: 1706531)
+  221. Samuel Yates (ASA: 1585300)
   222. Samuel Yates (ASA: 1585300)
   223. Samuel Yates (ASA: 1585300)
   224. Samuel Yates (ASA: 1585300)
@@ -1517,15 +1517,48 @@ SWIMMERS INCLUDED IN OPTIMIZATION:
 Proceeding to optimization with 1509 swimmers...
 
 === OPTIMIZATION RESULTS ===
-Events auto-assigned: 0
-Events pre-assigned: 0
+Events auto-assigned: 33
+Events pre-assigned: 1
 
 FINAL EVENT ASSIGNMENTS:
+  1. 11U Male 50m Freestyle -> Dexter Welch
+  2. 11U Female 50m Freestyle -> Emma Goddard
+  3. 11U Male 50m Backstroke -> Rudy Aspland
+  4. 11U Female 50m Backstroke -> Skylar Welch
+  5. 11U Male 50m Breaststroke -> Kristian Gulcz
+  6. 11U Female 50m Breaststroke -> Miya Cook
+  7. 11U Male 50m Butterfly -> Rudy Aspland
+  8. 11U Female 50m Butterfly -> Miya Cook
+  9. 13U Male 100m Freestyle -> Evan Ian
+  10. 13U Female 100m Freestyle -> Isabelle Riches
+  11. 13U Male 100m Backstroke -> Kaylem Livesey
+  12. 13U Female 100m Backstroke -> Isabelle Riches
+  13. 13U Male 100m Breaststroke -> Evan Ian
+  14. 13U Female 100m Breaststroke -> Abigail van der Westhuizen
+  15. 13U Male 100m Butterfly -> Kaylem Livesey
+  16. 13U Female 100m Butterfly -> Eva Harvey
+  17. 15U Male 100m Freestyle -> Owen Channing
+  18. 15U Female 100m Freestyle -> Ella Head
+  19. 15U Male 100m Backstroke -> Finlay Stuart
+  20. 15U Female 100m Backstroke -> Ella Head
+  21. 15U Male 100m Breaststroke -> Thomas Warne
+  22. 15U Female 100m Breaststroke -> Lily Riches
+  23. 15U Male 100m Butterfly -> Thomas Warne
+  24. 15U Female 100m Butterfly -> Hannah Vanstone
+  25. 99U Male 100m Freestyle -> Balazs Toth
+  26. 99U Female 100m Freestyle -> Lara Charlton
+  27. 99U Male 100m Backstroke -> Daniel Richards
+  28. 99U Female 100m Backstroke -> Lara Charlton
+  29. 99U Male 100m Breaststroke -> Sam Law Chin Yung
+  30. 99U Female 100m Breaststroke -> Isobel Neighbour
+  31. 99U Male 100m Butterfly -> Balazs Toth
+  32. 99U Female 100m Butterfly -> Ffion Thomas
+  33. 99U Male 200m Individual Medley -> Sam Law Chin Yung
+  34. 99U Female 200m Individual Medley -> Emma Jones
 
-Unassigned events: 18
-  - 12U Male 4 x 50m Freestyle
-  - 12U Female 4 x 50m Freestyle
-  - 14U Male 4 x 50m Freestyle
-  - 14U Female 4 x 50m Freestyle
-  - 16U Male 4 x 50m Freestyle
-  >>> NO EVENTS ASSIGNED - OPTIMIZATION FAILED! <<<
+Unassigned events: 16
+  - 11U Male 4x50m Freestyle
+  - 11U Female 4x50m Freestyle
+  - 11U Male 4x50m Medley
+  - 11U Female 4x50m Medley
+  - 13U Male 4x50m Freestyle
