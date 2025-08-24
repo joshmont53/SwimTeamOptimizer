@@ -13,9 +13,10 @@ A comprehensive web-based application designed to optimize swimming team selecti
 - **Real-time Results**: View optimized team selections with detailed statistics and export capabilities
 
 ### 📊 Advanced Relay Management
-- **Position-Specific Pre-Assignments**: Assign swimmers to exact relay positions (1-4)
+- **Position-Specific Pre-Assignments**: Assign swimmers to exact relay positions (1-4 for standard relays, 1-8 for Squadrun)
 - **Stroke-Specific Medley Assignments**: Assign swimmers to specific medley strokes (Backstroke, Breaststroke, Butterfly, Freestyle)
-- **Dynamic Relay Support**: Handles 4x, 6x, 8x relay configurations automatically
+- **Dynamic Relay Support**: Handles 4x, 6x, 8x relay configurations automatically with full pre-assignment support
+- **Squadrun Mixed Relay**: 8x50m Freestyle relay with age/gender position assignments (11U Female/Male, 13U Female/Male, 15U Female/Male, Open Female/Male)
 - **Pre-Assignment Preservation**: Relay assignments persist through optimization and remain in database
 
 ### 📊 Data Management  

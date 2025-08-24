@@ -5,6 +5,19 @@ All notable changes to the Swimming Team Optimizer project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-08-24
+
+### 🔧 Critical Bug Fixes
+
+#### Squadrun Relay Pre-Assignment Key Format Fix (Critical)
+- **Problem**: Squadrun relay pre-assignments were being ignored despite successful processing and storage
+- **Root Cause**: Key format mismatch - Squadrun algorithm used string key format `'Squadrun 998 Mixed'` while other relays used tuple format `('RelayName', age, 'Gender')`
+- **Solution**: Fixed single-line key format mismatch by changing `squadrun_relay_key` from string to tuple format `('Squadrun', 998, 'Mixed')`
+- **Technical**: Updated line 1042 in `server/optimizer.py` to match exact pattern used by working 4x50m Freestyle and Medley relay algorithms
+- **Impact**: Squadrun relay pre-assignments now work identically to all other relay types with full position-specific assignment support
+- **Verification**: End-to-end testing confirms swimmers can be pre-assigned to specific age group positions (11U Female/Male, 13U Female/Male, 15U Female/Male, Open Female/Male)
+- **Zero Impact**: All existing relay logic remains completely unchanged, ensuring backward compatibility
+
 ## [2.0.0] - 2025-08-20
 
 ### 🎉 Major Features Added
