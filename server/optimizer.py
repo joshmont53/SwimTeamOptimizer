@@ -590,7 +590,7 @@ def main():
     medley_relay_teams = []
     
     # Extract relay events from the loaded event list
-    relay_events = [event for event in event_list if len(event) >= 3 and ('relay' in event[0].lower() or 'x' in event[0].lower())]
+    relay_events = [event for event in event_list if len(event) >= 3 and ('relay' in event[0].lower() or 'x' in event[0].lower() or 'squadrun' in event[0].lower())]
     
     # If no relay events in the dynamic list, fall back to age group iteration for all relays
     if not relay_events:
@@ -1026,6 +1026,78 @@ def main():
                             'swimmers': best_team['team']
                         })
 
+    # SPECIAL HANDLING FOR SQUADRUN RELAY (8x50m Mixed Age/Gender Freestyle)
+    squadrun_relay_teams = []
+    
+    # Check if Squadrun event exists in the relay events list
+    squadrun_events = [event for event in relay_events if 'squadrun' in event[0].lower()]
+    
+    if squadrun_events:
+        print(f"PYTHON: Processing Squadrun relay event", file=sys.stderr)
+        
+        # Define age groups for Squadrun (11U, 13U, 15U, Open)
+        squadrun_age_groups = [11, 13, 15, 99]  # 99 = Open
+        squadrun_team = []
+        total_squadrun_time = 0
+        
+        # For each age group, find fastest male and female 50m Freestyle swimmers
+        for age_group in squadrun_age_groups:
+            age_display = "Open" if age_group == 99 else f"{age_group}U"
+            
+            # Filter swimmers by age group
+            if age_group == 99:
+                # Open category - no age limit
+                eligible_swimmers = list(relay_swimmers.values())
+            else:
+                # Age-limited category
+                eligible_swimmers = [s for s in relay_swimmers.values() if s.age <= age_group]
+            
+            # Find fastest male and female with 50m Freestyle times
+            males_with_times = [s for s in eligible_swimmers if s.gender == 'Male' and s.freestyle_50 is not None]
+            females_with_times = [s for s in eligible_swimmers if s.gender == 'Female' and s.freestyle_50 is not None]
+            
+            # Sort by 50m Freestyle time (fastest first)
+            males_with_times.sort(key=lambda x: x.freestyle_50)
+            females_with_times.sort(key=lambda x: x.freestyle_50)
+            
+            # Select fastest male and female for this age group
+            if males_with_times:
+                fastest_male = males_with_times[0]
+                squadrun_team.append({
+                    'name': fastest_male.name,
+                    'ageGroup': age_display,
+                    'gender': 'Male',
+                    'time': f'{fastest_male.freestyle_50:.2f}s'
+                })
+                total_squadrun_time += fastest_male.freestyle_50
+                print(f"SQUADRUN: Selected {fastest_male.name} ({age_display} Male) - {fastest_male.freestyle_50:.2f}s", file=sys.stderr)
+            else:
+                print(f"SQUADRUN: WARNING - No male swimmers with 50m Freestyle time for {age_display}", file=sys.stderr)
+            
+            if females_with_times:
+                fastest_female = females_with_times[0]
+                squadrun_team.append({
+                    'name': fastest_female.name,
+                    'ageGroup': age_display,
+                    'gender': 'Female',
+                    'time': f'{fastest_female.freestyle_50:.2f}s'
+                })
+                total_squadrun_time += fastest_female.freestyle_50
+                print(f"SQUADRUN: Selected {fastest_female.name} ({age_display} Female) - {fastest_female.freestyle_50:.2f}s", file=sys.stderr)
+            else:
+                print(f"SQUADRUN: WARNING - No female swimmers with 50m Freestyle time for {age_display}", file=sys.stderr)
+        
+        # If we have all 8 swimmers (2 per age group), create the Squadrun relay team
+        if len(squadrun_team) == 8:
+            squadrun_relay_teams.append({
+                'relay': 'Mixed Squadrun',
+                'totalTime': f'{int(total_squadrun_time // 60):02d}:{total_squadrun_time % 60:05.2f}',
+                'swimmers': squadrun_team
+            })
+            print(f"SQUADRUN: SUCCESS - Created 8-person mixed relay team with total time {total_squadrun_time:.2f}s", file=sys.stderr)
+        else:
+            print(f"SQUADRUN: ERROR - Only found {len(squadrun_team)} swimmers, need 8 for complete team", file=sys.stderr)
+
     # Prepare results
     individual_results = []
     for event in event_list:
@@ -1051,7 +1123,7 @@ def main():
     # Output results as JSON
     results = {
         'individual': individual_results,
-        'relay': freestyle_relay_teams + medley_relay_teams
+        'relay': freestyle_relay_teams + medley_relay_teams + squadrun_relay_teams
     }
 
     print(json.dumps(results))

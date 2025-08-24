@@ -77,6 +77,9 @@ export const ARENA_LEAGUE_CONFIG = {
     { event: '4x50m Freestyle', ageCategory: 99, gender: 'Female', isRelay: true },
     { event: '4x50m Medley', ageCategory: 99, gender: 'Male', isRelay: true },
     { event: '4x50m Medley', ageCategory: 99, gender: 'Female', isRelay: true },
+    
+    // Squadrun - Mixed age/gender relay (8 swimmers: M/F from 11U, 13U, 15U, Open)
+    { event: 'Squadrun', ageCategory: 998, gender: 'Mixed', isRelay: true },
   ]
 };
 

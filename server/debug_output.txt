@@ -1556,7 +1556,7 @@ FINAL EVENT ASSIGNMENTS:
   33. 99U Male 200m Individual Medley -> Sam Law Chin Yung
   34. 99U Female 200m Individual Medley -> Emma Jones
 
-Unassigned events: 16
+Unassigned events: 17
   - 11U Male 4x50m Freestyle
   - 11U Female 4x50m Freestyle
   - 11U Male 4x50m Medley
