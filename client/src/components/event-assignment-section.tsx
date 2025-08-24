@@ -509,7 +509,7 @@ export default function EventAssignmentSection({
                         {hasAssignments ? 'Assigned' : 'Relay'}
                       </span>
                     </div>
-                    <div className={`grid gap-2 ${relay.event === 'Squadrun' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                    <div className={`grid gap-3 ${relay.event === 'Squadrun' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
                       {relayPositions.map((label, position) => {
                         const relayKey = getRelayKey(relay.event, relay.ageCategory, relay.gender, position + 1, 
                           relay.event.includes('Medley') ? label : undefined);
@@ -518,8 +518,8 @@ export default function EventAssignmentSection({
                           : getEligibleSwimmers('50m Freestyle', relay.ageCategory, relay.gender);
                         
                         return (
-                          <div key={relayKey}>
-                            <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+                          <div key={relayKey} className={relay.event === 'Squadrun' ? 'grid grid-cols-1 sm:grid-cols-2 gap-2 items-center' : ''}>
+                            <label className={`${relay.event === 'Squadrun' ? 'text-sm' : 'text-xs'} font-medium text-gray-700 mb-1 ${relay.event === 'Squadrun' ? 'sm:mb-0' : ''}`}>{label}</label>
                             <Select 
                               value={relayAssignments[relayKey]?.toString() || "auto"} 
                               onValueChange={(value) => {
