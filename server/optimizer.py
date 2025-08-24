@@ -1036,7 +1036,7 @@ def main():
         print(f"PYTHON: Processing Squadrun relay event", file=sys.stderr)
         
         # Check for Squadrun pre-assignments
-        squadrun_relay_key = 'Squadrun 998 Mixed'
+        squadrun_relay_key = ('Squadrun', 998, 'Mixed')
         has_pre_assignments = squadrun_relay_key in relay_protected_assignments and relay_protected_assignments[squadrun_relay_key]
         
         squadrun_team = []
