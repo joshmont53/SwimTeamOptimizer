@@ -39,12 +39,15 @@ function parseCSVLine(line: string): string[] {
   return result;
 }
 
-function calculateAgeFromDateOfBirth(dateOfBirth: string): number {
+function calculateAgeFromDateOfBirth(dateOfBirth: string, competitionType?: string): number {
   try {
     // Parse date in YYYY-MM-DD format
     const birthDate = new Date(dateOfBirth);
-    // Calculate age as of December 31st, 2025 for 2025/26 swimming season
-    const referenceDate = new Date(2025, 11, 31); // December 31st, 2025
+    // Calculate age based on competition type:
+    // - County Relays: use December 31st, 2026 (age as of end of next year)
+    // - Other competitions: use December 31st, 2025 (age as of end of current year)
+    const referenceYear = competitionType === COMPETITION_TYPES.COUNTY_RELAYS ? 2026 : 2025;
+    const referenceDate = new Date(referenceYear, 11, 31); // December 31st
     
     // Check if date is valid
     if (isNaN(birthDate.getTime())) {
@@ -55,7 +58,7 @@ function calculateAgeFromDateOfBirth(dateOfBirth: string): number {
     let age = referenceDate.getFullYear() - birthDate.getFullYear();
     const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
     
-    // Adjust if birthday hasn't occurred by December 31st, 2025
+    // Adjust if birthday hasn't occurred by the reference date
     if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
       age--;
     }
@@ -133,6 +136,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (lines.length === 0) {
         return res.status(400).json({ message: "Empty CSV file" });
+      }
+
+      // Get team information to access competition type for age calculations
+      const team = await storage.getTeam(teamId);
+      if (!team) {
+        return res.status(404).json({ message: "Team not found" });
       }
 
       // Check CSV format and convert if needed
@@ -225,7 +234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (!swimmerMap.has(swimmerId)) {
           // Calculate age from date of birth instead of using CSV age column
-          const calculatedAge = calculateAgeFromDateOfBirth(dateOfBirth.trim());
+          const calculatedAge = calculateAgeFromDateOfBirth(dateOfBirth.trim(), team.competitionType);
           
 
           
@@ -712,7 +721,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             time.time || '',
             time.course || '',
             swimmer.gender || '',
-            calculateAgeFromDateOfBirth(swimmer.dateOfBirth) || '',
+            calculateAgeFromDateOfBirth(swimmer.dateOfBirth, team.competitionType) || '',
             '', // County_QT (empty)
             '', // Count_CT (empty)
             time.countyQualify || 'No',
